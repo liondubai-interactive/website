@@ -20,21 +20,35 @@ export default function ContactPage() {
           <h1>How can we help?</h1>
           <p>
             For support, account access, correction, deletion, or TikTok
-            unlinking requests, email the project operator. Include
+            unlinking requests, contact the project operator by email or
+            Telegram. Include
             &ldquo;LionDubai Interactive&rdquo; and your TikTok username so the
             correct account can be verified.
           </p>
-          <a
-            className="button button-primary"
-            href="mailto:aj.massalkhis@gmail.com?subject=LionDubai%20Interactive%20request"
-          >
-            Email support
-          </a>
+          <div className="contact-actions">
+            <a
+              className="button button-primary"
+              href="mailto:liondubai.interactive@gmail.com?subject=LionDubai%20Interactive%20request"
+            >
+              Email support
+            </a>
+            <a
+              className="button button-secondary"
+              href="https://t.me/Lion_Dubai"
+            >
+              Message on Telegram
+            </a>
+          </div>
+          <address className="contact-details" aria-label="Direct contact details">
+            <a href="mailto:liondubai.interactive@gmail.com">
+              liondubai.interactive@gmail.com
+            </a>
+            <span aria-hidden="true">·</span>
+            <a href="https://t.me/Lion_Dubai">@Lion_Dubai</a>
+          </address>
           <small>
-            aj.massalkhis@gmail.com
-            <br />
-            Never send passwords, session tokens, or other authentication
-            secrets.
+            Never send passwords, session tokens, OAuth codes, or other
+            authentication secrets through either channel.
           </small>
         </section>
       </main>

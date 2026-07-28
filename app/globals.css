@@ -445,13 +445,37 @@ a {
   box-shadow: 0 28px 70px rgba(56, 34, 31, 0.08);
 }
 
-.contact-card .button {
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 12px;
+}
+
+.contact-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 24px;
+  color: #8c8782;
+  font-size: 0.9rem;
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.contact-details a {
+  color: var(--red-dark);
+  font-weight: 620;
+  overflow-wrap: anywhere;
+}
+
+.contact-details span {
+  color: #bbb5b0;
 }
 
 .contact-card small {
   display: block;
-  margin-top: 24px;
+  margin-top: 16px;
   color: #8c8782;
   line-height: 1.5;
 }

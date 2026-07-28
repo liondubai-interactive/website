@@ -37,7 +37,10 @@ test("exports every compliance route", async () => {
     assert.match(html, expected);
     assert.match(html, /LionDubai Interactive/);
     if (route === "contact") {
-      assert.match(html, /mailto:aj\.massalkhis@gmail\.com/);
+      assert.match(html, /mailto:liondubai\.interactive@gmail\.com/);
+      assert.match(html, /https:\/\/t\.me\/Lion_Dubai/);
+      assert.match(html, /@Lion_Dubai/);
+      assert.doesNotMatch(html, /aj\.massalkhis@gmail\.com/);
     }
     assert.match(
       html,
