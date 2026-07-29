@@ -18,6 +18,8 @@ test("exports the product home with visible policy links", async () => {
   assert.match(html, new RegExp(`href="${basePath}/terms/"`));
   assert.match(html, new RegExp(`href="${basePath}/contact/"`));
   assert.match(html, /limited developer sandbox testing/i);
+  assert.match(html, /official TikTok LIVE agency/);
+  assert.match(html, /TikTok does not own or operate it/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 
   const footer = html.match(/<footer[\s\S]*?<\/footer>/i)?.[0];
@@ -49,8 +51,11 @@ test("exports every compliance route", async () => {
     }
     if (route === "privacy") {
       assert.doesNotMatch(html, /@massalkhis/);
-      assert.match(html, /official TikTok LIVE agency/);
       assert.match(html, new RegExp(`href="${basePath}/contact/"`));
+    }
+    if (route === "privacy" || route === "terms") {
+      assert.match(html, /official TikTok LIVE agency/);
+      assert.match(html, /TikTok does not own or operate it/);
     }
     assert.match(
       html,

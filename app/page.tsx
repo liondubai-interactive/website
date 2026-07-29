@@ -91,9 +91,10 @@ export default function Home() {
 
         <section className="independent-note shell">
           <p>
-            LionDubai Interactive is an independent project. It is not endorsed
-            by, sponsored by, or affiliated with TikTok, Brilliant Game Studios,
-            Steam, or Valve.
+            LionDubai Interactive is an official TikTok LIVE agency. Its UEBS2
+            desktop app is independently developed; TikTok does not own or
+            operate it. The app is not endorsed by, sponsored by, or affiliated
+            with Brilliant Game Studios, Steam, or Valve.
           </p>
         </section>
       </main>

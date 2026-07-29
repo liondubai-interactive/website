@@ -20,10 +20,10 @@ export default function PrivacyPage() {
       <section>
         <h2>Who operates the app</h2>
         <p>
-          The UEBS2 Live desktop app is operated by LionDubai, an official
-          TikTok LIVE agency. UEBS2 Live is an independent application and is
-          not affiliated with Brilliant Game Studios, Steam, or Valve. For
-          privacy or account requests, use our{" "}
+          LionDubai Interactive operates this desktop app and is an official
+          TikTok LIVE agency. The app is independently developed; TikTok does
+          not own or operate it. It is not affiliated with Brilliant Game
+          Studios, Steam, or Valve. For privacy or account requests, use our{" "}
           <Link href="/contact">contact page</Link>.
         </p>
       </section>

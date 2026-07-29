@@ -70,9 +70,10 @@ export default function TermsPage() {
           You need your own lawful access to Ultimate Epic Battle Simulator 2
           and any required Steam Workshop items. TikTok, TikTok Login Kit,
           UEBS2, Steam, and related services are governed by their owners&apos;
-          separate terms. LionDubai Interactive is independent and is not
-          sponsored, endorsed, or affiliated with TikTok, Brilliant Game
-          Studios, Steam, or Valve.
+          separate terms. LionDubai Interactive is an official TikTok LIVE
+          agency. This app is independently developed; TikTok does not own or
+          operate it. The app is not sponsored by, endorsed by, or affiliated
+          with Brilliant Game Studios, Steam, or Valve.
         </p>
       </section>
 
