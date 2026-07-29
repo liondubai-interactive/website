@@ -20,9 +20,11 @@ export default function PrivacyPage() {
       <section>
         <h2>Who operates the app</h2>
         <p>
-          LionDubai Interactive is an independent project operated by the
-          individual developer behind <strong>@massalkhis</strong>. It is not
-          affiliated with TikTok, Brilliant Game Studios, Steam, or Valve.
+          The UEBS2 Live desktop app is operated by LionDubai, an official
+          TikTok LIVE agency. UEBS2 Live is an independent application and is
+          not affiliated with Brilliant Game Studios, Steam, or Valve. For
+          privacy or account requests, use our{" "}
+          <Link href="/contact">contact page</Link>.
         </p>
       </section>
 

@@ -47,6 +47,11 @@ test("exports every compliance route", async () => {
       assert.match(html, /@Lion_Dubai/);
       assert.doesNotMatch(html, /aj\.massalkhis@gmail\.com/);
     }
+    if (route === "privacy") {
+      assert.doesNotMatch(html, /@massalkhis/);
+      assert.match(html, /official TikTok LIVE agency/);
+      assert.match(html, new RegExp(`href="${basePath}/contact/"`));
+    }
     assert.match(
       html,
       new RegExp(
