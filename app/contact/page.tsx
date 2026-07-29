@@ -43,7 +43,6 @@ export default function ContactPage() {
             <a href="mailto:liondubai.interactive@gmail.com">
               liondubai.interactive@gmail.com
             </a>
-            <span aria-hidden="true">·</span>
             <a href="https://t.me/Lion_Dubai">@Lion_Dubai</a>
           </address>
           <small>

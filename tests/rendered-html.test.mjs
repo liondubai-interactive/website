@@ -19,6 +19,11 @@ test("exports the product home with visible policy links", async () => {
   assert.match(html, new RegExp(`href="${basePath}/contact/"`));
   assert.match(html, /limited developer sandbox testing/i);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
+
+  const footer = html.match(/<footer[\s\S]*?<\/footer>/i)?.[0];
+  assert.ok(footer);
+  assert.match(footer, /© 2026 LionDubai Interactive/);
+  assert.doesNotMatch(footer, /<nav|href=/i);
 });
 
 test("exports every compliance route", async () => {

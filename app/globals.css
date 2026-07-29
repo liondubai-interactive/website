@@ -78,23 +78,20 @@ a {
   box-shadow: 0 6px 18px rgba(213, 34, 27, 0.18);
 }
 
-.site-nav,
-.site-footer nav {
+.site-nav {
   display: flex;
   align-items: center;
   gap: 26px;
 }
 
-.site-nav a,
-.site-footer a {
+.site-nav a {
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 540;
   text-decoration: none;
 }
 
-.site-nav a:hover,
-.site-footer a:hover {
+.site-nav a:hover {
   color: var(--ink);
 }
 
@@ -357,8 +354,8 @@ a {
 }
 
 .policy-intro {
-  max-width: 780px;
-  margin-bottom: 42px;
+  max-width: 900px;
+  margin: 0 auto 42px;
 }
 
 .policy-intro h1,
@@ -381,7 +378,9 @@ a {
 }
 
 .policy-card {
+  width: 100%;
   max-width: 900px;
+  margin-inline: auto;
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: clamp(28px, 5vw, 62px);
@@ -457,7 +456,6 @@ a {
   flex-wrap: wrap;
   gap: 6px 12px;
   margin-top: 24px;
-  color: #8c8782;
   font-size: 0.9rem;
   font-style: normal;
   line-height: 1.5;
@@ -469,14 +467,10 @@ a {
   overflow-wrap: anywhere;
 }
 
-.contact-details span {
-  color: #bbb5b0;
-}
-
 .contact-card small {
   display: block;
   margin-top: 16px;
-  color: #8c8782;
+  color: var(--muted);
   line-height: 1.5;
 }
 
@@ -486,12 +480,14 @@ a {
 
 .footer-inner {
   min-height: 90px;
+  justify-content: center;
 }
 
 .site-footer p {
   margin: 0;
-  color: #8c8782;
+  color: var(--muted);
   font-size: 0.82rem;
+  text-align: center;
 }
 
 @media (max-width: 860px) {
@@ -534,8 +530,7 @@ a {
     display: none;
   }
 
-  .site-nav,
-  .site-footer nav {
+  .site-nav {
     gap: 15px;
   }
 
@@ -569,12 +564,6 @@ a {
     padding-block: 58px 82px;
   }
 
-  .footer-inner {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: 24px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
