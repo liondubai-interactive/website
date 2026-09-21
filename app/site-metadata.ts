@@ -1,0 +1,38 @@
+import type { Metadata } from "next";
+import { publicAsset, siteOrigin } from "./site-config";
+
+export const socialImages = [
+  {
+    url: publicAsset("/og.png"),
+    width: 1536,
+    height: 1024,
+    alt: "LionDubai Interactive — Your stream. Their next move.",
+  },
+];
+
+export function pageMetadata(
+  title: string,
+  description: string,
+  route: string,
+): Metadata {
+  const url = `${siteOrigin}/${route}/`;
+  const socialTitle = `${title} · LionDubai Interactive`;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      url,
+      title: socialTitle,
+      description,
+      images: socialImages,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: socialTitle,
+      description,
+      images: socialImages,
+    },
+  };
+}
