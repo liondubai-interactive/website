@@ -20,8 +20,10 @@ export function SiteHeader() {
           <span>LionDubai Interactive</span>
         </Link>
         <nav className="site-nav" aria-label="Primary navigation">
+          <Link href="/pricing">Pricing</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
+          <Link href="/refunds">Refunds</Link>
           <Link href="/contact">Contact</Link>
         </nav>
       </div>

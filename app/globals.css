@@ -95,6 +95,7 @@ h3 {
 }
 .site-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 28px;
   font-size: 13px;
   color: var(--muted);
@@ -499,4 +500,60 @@ h3 {
 .contact-card small {
   font-size: 11px;
   color: var(--muted);
+}
+.pricing-shell {
+  max-width: 860px;
+  padding-block: 72px;
+}
+.pricing-intro h1 {
+  font-size: clamp(36px, 5vw, 58px);
+}
+.pricing-intro p:not(.eyebrow),
+.pricing-item p,
+.pricing-notes {
+  color: var(--muted);
+  font-size: 14px;
+}
+.pricing-list {
+  margin-block: 36px;
+  border-top: 1px solid var(--line);
+}
+.pricing-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 26px;
+  border-bottom: 1px solid var(--line);
+}
+.pricing-item h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+.pricing-item p {
+  margin: 0;
+  max-width: 480px;
+}
+.pricing-amount {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  text-align: right;
+}
+.pricing-amount strong {
+  color: var(--ink);
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+.pricing-amount span {
+  font-size: 12px;
+}
+@media (max-width: 480px) {
+  .pricing-shell {
+    padding-block: 45px;
+  }
+  .pricing-item {
+    align-items: flex-start;
+    gap: 16px;
+  }
 }

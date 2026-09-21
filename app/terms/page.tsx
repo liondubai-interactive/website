@@ -36,6 +36,26 @@ export default function TermsPage() {
       </section>
 
       <section>
+        <h2>Subscriptions and trials</h2>
+        <p>
+          When purchases become available, subscriptions unlock the selected
+          plugin at the <Link href="/pricing">published price</Link>. Each
+          subscription renews monthly until cancelled. Applicable taxes and the
+          full payable amount are shown at checkout. Cancellation stops future
+          renewals and access continues until the current paid period ends. Free
+          24-hour plugin trials do not automatically become paid subscriptions.
+        </p>
+        <p>
+          Paddle processes purchases as merchant of record under its{" "}
+          <a href="https://www.paddle.com/legal/buyer-terms">buyer terms</a>.
+          Payments are generally non-refundable, subject to applicable law and
+          Paddle&apos;s policy. See our{" "}
+          <Link href="/refunds">refund policy</Link> for details. Public
+          purchases are not available during the current limited testing phase.
+        </p>
+      </section>
+
+      <section>
         <h2>Your account</h2>
         <p>
           You are responsible for activity through your account and for keeping
@@ -78,8 +98,8 @@ export default function TermsPage() {
           required game content. TikTok, TikTok Login Kit, Minecraft and related
           services are governed by their owners&apos; separate terms. LionDubai
           Interactive develops this app independently; TikTok does not own or
-          operate it. The app is not sponsored
-          by, endorsed by, or affiliated with Mojang or Microsoft.
+          operate it. The app is not sponsored by, endorsed by, or affiliated
+          with Mojang or Microsoft.
         </p>
       </section>
 
