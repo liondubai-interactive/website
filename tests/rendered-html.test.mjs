@@ -47,7 +47,7 @@ test("exports every compliance route", async () => {
       assert.match(html, new RegExp(`href="${basePath}/contact/"`));
     }
     if (route === "privacy" || route === "terms") {
-          assert.match(html, /TikTok does not own or operate (?:it|this app)/);
+      assert.match(html, /TikTok does not own or operate (?:it|this app)/);
     }
     assert.match(
       html,

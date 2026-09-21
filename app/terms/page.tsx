@@ -20,8 +20,8 @@ export default function TermsPage() {
         <p>
           By using LionDubai Interactive, you agree to these terms and the
           <Link href="/privacy"> Privacy Policy</Link>. If you do not agree, do
-          not use the app. You must be legally able to use TikTok and
-          Minecraft in your location; minors must have any consent required by law.
+          not use the app. You must be legally able to use TikTok and Minecraft
+          in your location; minors must have any consent required by law.
         </p>
       </section>
 
@@ -74,12 +74,12 @@ export default function TermsPage() {
       <section>
         <h2>Third-party products</h2>
         <p>
-          You need your own lawful access to Minecraft Java Edition
-          and any required game content. TikTok, TikTok Login Kit,
-          Minecraft and related services are governed by their owners&apos;
-          separate terms. LionDubai Interactive develops this app independently. This app is independently developed; TikTok does not own or
-          operate it. The app is not sponsored by, endorsed by, or affiliated
-          with Mojang or Microsoft.
+          You need your own lawful access to Minecraft Java Edition and any
+          required game content. TikTok, TikTok Login Kit, Minecraft and related
+          services are governed by their owners&apos; separate terms. LionDubai
+          Interactive develops this app independently; TikTok does not own or
+          operate it. The app is not sponsored
+          by, endorsed by, or affiliated with Mojang or Microsoft.
         </p>
       </section>
 

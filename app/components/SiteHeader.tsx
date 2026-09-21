@@ -6,7 +6,11 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="header-inner shell">
-        <Link className="brand" href="/" aria-label="LionDubai Interactive home">
+        <Link
+          className="brand"
+          href="/"
+          aria-label="LionDubai Interactive home"
+        >
           <img
             src={publicAsset("/app-icon.png")}
             alt=""
