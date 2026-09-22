@@ -7,48 +7,43 @@ export const metadata = pageMetadata(
   "Contact LionDubai Interactive for support or privacy requests.",
   "contact",
 );
-
 export default function ContactPage() {
   return (
     <div className="site-frame">
       <SiteHeader />
-      <main className="contact-shell shell">
+      <main id="main-content" className="contact-shell shell">
         <section className="contact-card">
           <p className="eyebrow">CONTACT</p>
-          <h1>How can we help?</h1>
-          <p>
-            For support, account access, correction, deletion, or TikTok
-            unlinking requests, contact the project operator by email or
-            Telegram. Include &ldquo;LionDubai Interactive&rdquo; and your
-            TikTok username so the correct account can be verified.
+          <h1>
+            How can
+            <br />
+            we help?
+          </h1>
+          <p className="contact-lead">
+            Support, account questions or an idea for your stream. We&rsquo;re
+            here.
           </p>
-          <div className="contact-actions">
-            <a
-              className="button button-primary"
-              href="mailto:liondubai.interactive@gmail.com?subject=LionDubai%20Interactive%20request"
-            >
-              Email support
+          <div className="contact-links">
+            <a href="mailto:liondubai.interactive@gmail.com?subject=LionDubai%20Interactive%20request">
+              <span>
+                <span className="small-label">EMAIL</span>
+                <strong>liondubai.interactive@gmail.com</strong>
+              </span>
+              <span aria-hidden="true">↗</span>
             </a>
-            <a
-              className="button button-secondary"
-              href="https://t.me/Lion_Dubai"
-            >
-              Message on Telegram
+            <a href="https://t.me/Lion_Dubai">
+              <span>
+                <span className="small-label">TELEGRAM</span>
+                <strong>@Lion_Dubai</strong>
+              </span>
+              <span aria-hidden="true">↗</span>
             </a>
           </div>
-          <address
-            className="contact-details"
-            aria-label="Direct contact details"
-          >
-            <a href="mailto:liondubai.interactive@gmail.com">
-              liondubai.interactive@gmail.com
-            </a>
-            <a href="https://t.me/Lion_Dubai">@Lion_Dubai</a>
-          </address>
-          <small>
-            Never send passwords, session tokens, OAuth codes, or other
-            authentication secrets through either channel.
-          </small>
+          <p className="contact-note">
+            For account correction, deletion or TikTok unlinking, include your
+            TikTok username so we can verify the account. Never send passwords,
+            session tokens or sign-in codes.
+          </p>
         </section>
       </main>
       <SiteFooter />

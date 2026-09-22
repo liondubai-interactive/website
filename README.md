@@ -19,3 +19,15 @@ The public site does not host the API or database.
 No analytics, tracking scripts, payment keys or account database belong here.
 Public downloads and checkout must not be advertised until they are ready.
 Provider verification files in `public/` are intentionally public proof files.
+
+## Design
+
+Keep the header focused on integrations, pricing and contact; policy links live
+in the shared footer. `app/integrations.ts` owns the public product descriptions
+and planned prices used by both the home and pricing pages. The preset preview
+is a static illustration, not an interactive product demo. It adds no animation
+library, external font, tracker or image download.
+
+The layout supports narrow screens, visible keyboard focus, a skip link and
+reduced motion. When changing it, check home, pricing, contact and policy pages
+at mobile and desktop widths. Preserve launch-status and billing-policy notices.

@@ -1,116 +1,52 @@
 import Link from "next/link";
 import { SiteFooter } from "./components/SiteFooter";
 import { SiteHeader } from "./components/SiteHeader";
+import { EventPreview } from "./components/EventPreview";
+import { integrations } from "./integrations";
 
-const steps = [
-  [
-    "01",
-    "Connect your LIVE",
-    "Sign in with TikTok and connect your broadcast.",
-  ],
-  [
-    "02",
-    "Choose what happens",
-    "Match gifts, likes, comments and more to game events. Save your setup as a preset.",
-  ],
-  [
-    "03",
-    "Let viewers play along",
-    "Your audience’s interactions become part of the game while you keep control.",
-  ],
-];
 export default function Home() {
   return (
     <div className="site-frame">
       <SiteHeader />
-      <main>
+      <main id="main-content">
         <section className="hero shell">
           <div className="hero-copy">
             <p className="eyebrow">
-              <span className="status-dot" /> WINDOWS APP · IN DEVELOPMENT
+              <span className="status-dot" />
+              PLAY TOGETHER, LIVE
             </p>
             <h1>
               Your stream.
               <br />
-              Their next move.
+              <span>Their next move.</span>
             </h1>
             <p className="hero-lead">
-              Bring your TikTok LIVE audience into the game. Turn their gifts
-              and interactions into moments you create together.
+              Turn TikTok LIVE gifts, likes and comments into Minecraft moments.
+              You set the rules.
             </p>
-            <div className="hero-actions">
-              <a className="button button-primary" href="#games">
-                Explore the integrations <span aria-hidden="true">↗</span>
-              </a>
-              <Link className="text-link" href="/contact">
-                Get in touch
-              </Link>
-            </div>
+            <a className="button button-primary" href="#games">
+              Explore integrations <span aria-hidden="true">↗</span>
+            </a>
             <p className="beta-note">
-              Currently in limited testing. Public downloads and subscriptions
-              are not available yet.
+              Windows &middot; Limited testing &middot; Public launch coming
+              soon
             </p>
           </div>
-          <div
-            className="flow-preview"
-            aria-label="Example: a viewer gift activates your chosen Minecraft event"
-          >
-            <div className="preview-heading">
-              <span className="status-dot" /> A LITTLE INTERACTION. A NEW
-              POSSIBILITY.
-            </div>
-            <div className="flow-row">
-              <span className="flow-icon" aria-hidden="true">
-                ✦
-              </span>
-              <div>
-                <span className="small-label">TIKTOK LIVE</span>
-                <strong>A viewer sends a gift</strong>
-              </div>
-            </div>
-            <div className="flow-connector" aria-hidden="true">
-              ↓
-            </div>
-            <div className="flow-row rule">
-              <span className="flow-icon" aria-hidden="true">
-                ↗
-              </span>
-              <div>
-                <span className="small-label">YOUR PRESET</span>
-                <strong>One gift. Your chosen action.</strong>
-              </div>
-            </div>
-            <div className="flow-connector" aria-hidden="true">
-              ↓
-            </div>
-            <div className="flow-row result">
-              <span className="flow-icon" aria-hidden="true">
-                ▧
-              </span>
-              <div>
-                <span className="small-label">MINECRAFT</span>
-                <strong>A new creature joins your world</strong>
-              </div>
-            </div>
-            <p className="preview-caption">
-              You choose the rules. Your community brings the surprises.
-            </p>
-          </div>
+          <EventPreview />
         </section>
-        <section className="steps shell" aria-labelledby="how-it-works">
-          <div className="section-heading">
-            <p className="eyebrow">MADE TO FEEL SIMPLE</p>
-            <h2 id="how-it-works">From interaction to action.</h2>
-          </div>
-          <div className="step-grid">
-            {steps.map(([number, title, description]) => (
-              <article key={number}>
-                <span className="step-number">{number}</span>
-                <h3>{title}</h3>
-                <p>{description}</p>
-              </article>
-            ))}
-          </div>
+        <section className="setup-strip shell" aria-label="How it works">
+          <p>Make it yours.</p>
+          <ol>
+            <li>
+              <span>01</span>Connect TikTok
+            </li>
+            <li>
+              <span>02</span>Choose an integration
+            </li>
+            <li>
+              <span>03</span>Create your preset
+            </li>
+          </ol>
         </section>
         <section
           id="games"
@@ -118,49 +54,65 @@ export default function Home() {
           aria-labelledby="games-heading"
         >
           <div className="section-heading">
-            <p className="eyebrow">STARTING WITH MINECRAFT</p>
-            <h2 id="games-heading">One game. Different ways to play.</h2>
-            <p>Choose an integration, then make it yours.</p>
+            <div>
+              <p className="eyebrow">THE INTEGRATIONS</p>
+              <h2 id="games-heading">
+                A different kind
+                <br />
+                of audience participation.
+              </h2>
+            </div>
+            <p>
+              Built for Minecraft.
+              <br />
+              Made for your community.
+            </p>
           </div>
           <div className="game-list">
-            <article>
-              <span className="game-number" aria-hidden="true">
-                01
-              </span>
-              <div>
-                <h3>Survival</h3>
-                <p>
-                  Gifts become creatures, items and custom commands in your
-                  survival world.
-                </p>
-              </div>
-              <span className="pill">In testing</span>
-            </article>
-            <article>
-              <span className="game-number" aria-hidden="true">
-                02
-              </span>
-              <div>
-                <h3>Battle Simulator</h3>
-                <p>
-                  Let viewers join the action by bringing troops into an arena.
-                </p>
-              </div>
-              <span className="pill">In testing</span>
-            </article>
+            {integrations.map(({ id, name, description, price }, index) => (
+              <Link href={`/pricing#${id}`} className="game-item" key={id}>
+                <span className="game-number" aria-hidden="true">
+                  0{index + 1}
+                </span>
+                <div className="game-copy">
+                  <h3>{name}</h3>
+                  <p>{description}</p>
+                </div>
+                <span className="game-price">
+                  ${price}
+                  <span> / month</span>
+                </span>
+                <span className="game-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </Link>
+            ))}
+          </div>
+          <div className="games-footnote">
+            <p>
+              Planned launch prices in USD. One free 24-hour trial per plugin.
+            </p>
+            <Link className="text-link" href="/pricing">
+              Pricing details <span aria-hidden="true">↗</span>
+            </Link>
           </div>
         </section>
         <section className="closing shell">
-          <h2>Built around your broadcast.</h2>
-          <p>Reusable presets. Flexible events. A focused desktop workspace.</p>
-          <Link className="text-link" href="/contact">
-            Talk to LionDubai ↗
+          <div>
+            <p className="eyebrow">LET&apos;S TALK</p>
+            <h2>
+              Your community.
+              <br />
+              More possibilities.
+            </h2>
+          </div>
+          <Link className="button button-secondary" href="/contact">
+            Get in touch <span aria-hidden="true">↗</span>
           </Link>
         </section>
         <p className="independent-note shell">
-          An independent application. Not an official Minecraft product; not
-          approved by or associated with Mojang or Microsoft. TikTok does not
-          own or operate this app.
+          An independent app. Not an official Minecraft product or associated
+          with Mojang or Microsoft. TikTok does not own or operate this app.
         </p>
       </main>
       <SiteFooter />

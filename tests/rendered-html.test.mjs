@@ -24,14 +24,18 @@ test("exports the product home with visible policy links", async () => {
   const footer = html.match(/<footer[\s\S]*?<\/footer>/i)?.[0];
   assert.ok(footer);
   assert.match(footer, /© 2026 LionDubai Interactive/);
-  assert.doesNotMatch(footer, /<nav|href=/i);
+  assert.match(footer, /aria-label="Legal"/);
+  for (const route of ["privacy", "terms", "refunds"])
+    assert.match(footer, new RegExp(`href="/${route}/"`));
 });
 
 test("exports every compliance route", async () => {
   const pages = [
     ["privacy/index.html", /Privacy Policy/, "privacy"],
     ["terms/index.html", /Terms of Use/, "terms"],
-    ["contact/index.html", /How can we help\?/, "contact"],
+    ["contact/index.html", /How can(?:<br\s*\/?>)we help\?/, "contact"],
+    ["pricing/index.html", /Your way to play/, "pricing"],
+    ["refunds/index.html", /Refunds &amp; cancellation/, "refunds"],
   ];
 
   for (const [relativePath, expected, route] of pages) {

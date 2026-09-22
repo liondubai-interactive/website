@@ -18,7 +18,7 @@ export function PolicyPage({
   return (
     <div className="site-frame">
       <SiteHeader />
-      <main className="policy-shell shell">
+      <main id="main-content" className="policy-shell shell">
         <header className="policy-intro">
           <p className="eyebrow">{eyebrow}</p>
           <h1>{title}</h1>
