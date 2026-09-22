@@ -52,7 +52,8 @@ Provider verification files in `public/` are intentionally public proof files.
 ## Design
 
 Keep the header focused on integrations, pricing and contact; policy links live
-in the shared footer. `app/integrations.ts` owns the public product descriptions
+in the shared footer. The Next.js root layout owns the header and footer for
+all pages, including missing routes. `app/integrations.ts` owns the public product descriptions
 and planned prices used by both the home and pricing pages. The preset preview
 is a static illustration, not an interactive product demo. It adds no animation
 library, external font, tracker or image download.

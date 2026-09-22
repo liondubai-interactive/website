@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { SiteFooter } from "../components/SiteFooter";
-import { SiteHeader } from "../components/SiteHeader";
 import { pageMetadata } from "../site-metadata";
 import { integrations } from "../integrations";
 
@@ -11,71 +9,67 @@ export const metadata = pageMetadata(
 );
 export default function PricingPage() {
   return (
-    <div className="site-frame">
-      <SiteHeader />
-      <main id="main-content" className="pricing-shell shell">
-        <header className="pricing-intro">
-          <p className="eyebrow">PRICING &middot; COMING SOON</p>
-          <h1>
-            Your game.
-            <br />
-            Your way to play.
-          </h1>
-          <p>One subscription per integration. Try each free for 24 hours.</p>
-        </header>
-        <div className="pricing-list">
-          {integrations.map(({ id, name, price, description }) => (
-            <section
-              id={id}
-              className="pricing-item"
-              key={id}
-              aria-label={name}
-            >
-              <div>
-                <span className="small-label">MINECRAFT</span>
-                <h2>{name}</h2>
-                <p>{description}</p>
-              </div>
-              <p className="pricing-amount">
-                <strong>${price}</strong>
-                <span>USD / month</span>
-              </p>
-            </section>
-          ))}
-        </div>
-        <div className="pricing-essentials">
-          <section>
-            <h2>Try it first.</h2>
-            <p>
-              One 24-hour trial per plugin, started when you choose. No card
-              required. No automatic charge.
+    <main id="main-content" className="pricing-shell shell">
+      <header className="pricing-intro">
+        <p className="eyebrow">PRICING &middot; COMING SOON</p>
+        <h1>
+          Your game.
+          <br />
+          Your way to play.
+        </h1>
+        <p>One subscription per integration. Try each free for 24 hours.</p>
+      </header>
+      <div className="pricing-list">
+        {integrations.map(({ id, name, price, description }) => (
+          <section
+            id={id}
+            className="pricing-item"
+            key={id}
+            aria-label={name}
+          >
+            <div>
+              <span className="small-label">MINECRAFT</span>
+              <h2>{name}</h2>
+              <p>{description}</p>
+            </div>
+            <p className="pricing-amount">
+              <strong>${price}</strong>
+              <span>USD / month</span>
             </p>
           </section>
-          <section>
-            <h2>Keep it flexible.</h2>
-            <p>
-              Subscriptions renew monthly. Cancel future renewals anytime;
-              access lasts until the paid period ends.
-            </p>
-          </section>
-        </div>
-        <div className="pricing-notes">
+        ))}
+      </div>
+      <div className="pricing-essentials">
+        <section>
+          <h2>Try it first.</h2>
           <p>
-            Planned launch prices. The app is in limited testing; purchases and
-            public downloads are not available yet.
+            One 24-hour trial per plugin, started when you choose. No card
+            required. No automatic charge.
           </p>
+        </section>
+        <section>
+          <h2>Keep it flexible.</h2>
           <p>
-            Taxes are additional and shown at checkout. Requires Windows and
-            Minecraft Java Edition, sold separately.
+            Subscriptions renew monthly. Cancel future renewals anytime;
+            access lasts until the paid period ends.
           </p>
-          <p>
-            Read the <Link href="/terms">Terms</Link> and{" "}
-            <Link href="/refunds">refund policy</Link>, or{" "}
-            <Link href="/contact">get in touch</Link>.
-          </p>
-        </div>
-      </main>
-      <SiteFooter />
-    </div>
+        </section>
+      </div>
+      <div className="pricing-notes">
+        <p>
+          Planned launch prices. The app is in limited testing; purchases and
+          public downloads are not available yet.
+        </p>
+        <p>
+          Taxes are additional and shown at checkout. Requires Windows and
+          Minecraft Java Edition, sold separately.
+        </p>
+        <p>
+          Read the <Link href="/terms">Terms</Link> and{" "}
+          <Link href="/refunds">refund policy</Link>, or{" "}
+          <Link href="/contact">get in touch</Link>.
+        </p>
+      </div>
+    </main>
   );
 }

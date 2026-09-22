@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SiteHeader } from "./components/SiteHeader";
+import { SiteFooter } from "./components/SiteFooter";
 import { siteOrigin } from "./site-config";
 import { socialImages } from "./site-metadata";
 import "./globals.css";
@@ -43,7 +45,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="site-frame">
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </div>
+      </body>
     </html>
   );
 }

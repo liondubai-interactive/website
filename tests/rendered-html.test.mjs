@@ -97,3 +97,20 @@ test("retains the shared social image on every page with its own metadata", asyn
     );
   }
 });
+
+test("every exported page has one shared navigation and a working skip target", async () => {
+  for (const route of [
+    "index.html",
+    "pricing/index.html",
+    "contact/index.html",
+    "privacy/index.html",
+    "terms/index.html",
+    "refunds/index.html",
+    "404.html",
+  ]) {
+    const html = await readPage(route);
+    assert.equal((html.match(/<header class="site-header"/g) ?? []).length, 1, route);
+    assert.equal((html.match(/<footer /g) ?? []).length, 1, route);
+    assert.equal((html.match(/<main id="main-content"/g) ?? []).length, 1, route);
+  }
+});

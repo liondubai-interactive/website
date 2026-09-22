@@ -1,6 +1,4 @@
 import type { ReactNode } from "react";
-import { SiteFooter } from "./SiteFooter";
-import { SiteHeader } from "./SiteHeader";
 
 type PolicyPageProps = {
   eyebrow: string;
@@ -16,18 +14,14 @@ export function PolicyPage({
   children,
 }: PolicyPageProps) {
   return (
-    <div className="site-frame">
-      <SiteHeader />
-      <main id="main-content" className="policy-shell shell">
-        <header className="policy-intro">
-          <p className="eyebrow">{eyebrow}</p>
-          <h1>{title}</h1>
-          <p>{summary}</p>
-          <span>Effective September 21, 2026</span>
-        </header>
-        <article className="policy-card">{children}</article>
-      </main>
-      <SiteFooter />
-    </div>
+    <main id="main-content" className="policy-shell shell">
+      <header className="policy-intro">
+        <p className="eyebrow">{eyebrow}</p>
+        <h1>{title}</h1>
+        <p>{summary}</p>
+        <span>Effective September 21, 2026</span>
+      </header>
+      <article className="policy-card">{children}</article>
+    </main>
   );
 }
