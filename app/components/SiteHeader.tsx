@@ -1,6 +1,5 @@
-/* eslint-disable @next/next/no-img-element -- Static icon is pre-sized for GitHub Pages. */
+/* eslint-disable @next/next/no-img-element -- Static icon is pre-sized for static hosting. */
 import Link from "next/link";
-import { publicAsset } from "../site-config";
 
 export function SiteHeader() {
   return (
@@ -16,7 +15,7 @@ export function SiteHeader() {
             aria-label="LionDubai Interactive home"
           >
             <img
-              src={publicAsset("/app-icon.png")}
+              src="/app-icon.png"
               alt=""
               width="32"
               height="32"

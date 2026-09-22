@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { publicAsset, siteOrigin } from "./site-config";
+import { siteOrigin } from "./site-config";
 
 export const socialImages = [
   {
-    url: publicAsset("/og.png"),
+    url: "/og.png",
     width: 1536,
     height: 1024,
     alt: "LionDubai Interactive — Your stream. Their next move.",
