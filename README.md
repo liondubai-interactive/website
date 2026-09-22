@@ -28,8 +28,11 @@ publishes the website through GitHub Pages.
 | Custom domains | `liondubai.net`, `www.liondubai.net` |
 
 Use the Pages project's Custom domains flow before pointing DNS at it. The
-`www` hostname redirects to the apex through `public/_redirects`, preserving
-the path. HTTPS certificates are managed by Cloudflare. Static hosting uses
+`www` hostname redirects to the apex through a Cloudflare Single Redirect rule,
+preserving the path and query string. Match only `www.liondubai.net`, redirect
+to `https://liondubai.net` plus the request path, use status 301 and preserve
+query strings. Pages `_redirects` source patterns cannot match hostnames.
+HTTPS certificates are managed by Cloudflare. Static hosting uses
 the Free plan; no Pages Functions or paid add-ons are needed.
 
 GitHub Actions checks pull requests independently. Production pushes run the
