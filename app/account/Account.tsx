@@ -1,0 +1,311 @@
+"use client";
+
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useWebSession } from "../components/WebSession";
+import { integrations } from "../integrations";
+import { api, ApiError, errorMessage, navigateTo, type Billing } from "../web-api";
+
+export function Account() {
+  const { session, loading, error: sessionError, clear } = useWebSession();
+  const [billing, setBilling] = useState<Billing | null>(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState("");
+  const [trial, setTrial] = useState<{ id: string; name: string } | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const cancel = useRef<HTMLButtonElement>(null);
+
+  const fail = useCallback(
+    (error: unknown) => {
+      if (error instanceof ApiError && error.status === 401) clear();
+      else setError(errorMessage(error));
+    },
+    [clear],
+  );
+
+  useEffect(() => {
+    if (!session) return;
+    if (
+      session.user.role === "admin" &&
+      session.adminUrl &&
+      new URLSearchParams(window.location.search).get("view") !== "customer"
+    ) {
+      // An invalid staff destination must leave the customer account usable.
+      try {
+        navigateTo(session.adminUrl, "admin");
+      } catch {}
+    }
+    let current = true;
+    api<Billing>("/billing").then(
+      (value) => {
+        if (current) setBilling(value);
+      },
+      (error) => {
+        if (current) fail(error);
+      },
+    );
+    return () => {
+      current = false;
+    };
+  }, [session, fail]);
+
+  useEffect(() => {
+    if (trial) {
+      dialog.current?.showModal();
+      cancel.current?.focus();
+    } else dialog.current?.close();
+  }, [trial]);
+
+  async function act(
+    action: "trial" | "checkout" | "portal" | "refresh" | "logout",
+    pluginId?: string,
+  ) {
+    if (!session || busy) return;
+    setBusy(`${action}:${pluginId ?? ""}`);
+    setError("");
+    setTrial(null);
+    try {
+      const result = await api<Billing | { url: string }>(
+        action === "logout" ? "/logout" : `/billing/${action}`,
+        {
+          body: pluginId ? { pluginId } : {},
+          csrf: session.csrfToken,
+        },
+      );
+      if (action === "logout") clear();
+      else if ("url" in result) navigateTo(result.url, "billing");
+      else setBilling(result);
+    } catch (error) {
+      fail(error);
+    } finally {
+      setBusy("");
+    }
+  }
+
+  if (loading)
+    return (
+      <p role="status" className="account-loading">
+        Loading your account…
+      </p>
+    );
+  if (!session)
+    return (
+      <section className="login-card">
+        <h1>Your account</h1>
+        <p>{sessionError || "Sign in to view your plugins and subscriptions."}</p>
+        <Link className="button button-primary" href="/login/">
+          Sign in with TikTok
+        </Link>
+      </section>
+    );
+
+  return (
+    <>
+      <header className="account-heading">
+        <div>
+          <p className="eyebrow">YOUR ACCOUNT</p>
+          <h1>{session.user.displayName || session.user.username}</h1>
+          <p className="account-username">@{session.user.username} · TikTok</p>
+        </div>
+        <div className="account-header-actions">
+          {session.user.role === "admin" && session.adminUrl && (
+            <button
+              className="button button-secondary"
+              onClick={() => {
+                try {
+                  navigateTo(session.adminUrl!, "admin");
+                } catch {
+                  setError("Admin access is unavailable.");
+                }
+              }}
+            >
+              Admin
+            </button>
+          )}
+          <button
+            className="button button-secondary"
+            disabled={Boolean(busy)}
+            onClick={() => void act("logout")}
+          >
+            Sign out
+          </button>
+        </div>
+      </header>
+      <section aria-labelledby="plugins-title">
+        <div className="account-section-heading">
+          <h2 id="plugins-title">Your plugins</h2>
+          <button
+            className="text-button"
+            disabled={Boolean(busy)}
+            onClick={() => void act("refresh")}
+          >
+            {busy.startsWith("refresh") ? "Refreshing…" : "Refresh"}
+          </button>
+        </div>
+        {error && (
+          <p role="alert" className="notice notice-error">
+            {error}
+          </p>
+        )}
+        {!billing && !error && <p role="status">Loading plugins…</p>}
+        {billing && (
+          <>
+            {billing.mode === "sandbox" && (
+              <p className="notice">Sandbox · Test payments only. No real charges.</p>
+            )}
+            <div className="account-plugins">
+              {integrations.map((plugin) => {
+                const id = `minecraft-${plugin.id}`;
+                const access = billing.plugins.find((entry) => entry.pluginId === id);
+                const active = Boolean(access && access.access !== "locked");
+                const available = Boolean(access?.price);
+                return (
+                  <article className="account-plugin" key={id}>
+                    <div className="account-plugin-info">
+                      <h3>
+                        <span
+                          className="access-symbol"
+                          data-active={active || undefined}
+                          role="img"
+                          aria-label={active ? "Active" : "Locked"}
+                        >
+                          {active ? (
+                            "✓"
+                          ) : (
+                            <svg
+                              aria-hidden="true"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.4"
+                            >
+                              <rect x="4.5" y="9" width="11" height="8" rx="2" />
+                              <path d="M7 9V6a3 3 0 0 1 6 0v3" />
+                            </svg>
+                          )}
+                        </span>
+                        {plugin.name}
+                      </h3>
+                      <p>{plugin.description}</p>
+                      <span className="plugin-state">{accessLabel(access)}</span>
+                    </div>
+                    <div className="account-plugin-billing">
+                      <strong>{priceLabel(access?.price)}</strong>
+                      <div className="account-plugin-actions">
+                        <button
+                          className="button button-secondary"
+                          disabled={
+                            !access ||
+                            !available ||
+                            active ||
+                            access.trialUsed ||
+                            access.subscribed ||
+                            Boolean(busy)
+                          }
+                          onClick={() => setTrial({ id, name: plugin.name })}
+                        >
+                          {access?.access === "trial"
+                            ? "Trial active"
+                            : access?.trialUsed
+                              ? "Trial used"
+                              : "24-hour free trial"}
+                        </button>
+                        <button
+                          className="button button-primary"
+                          disabled={!access || (!available && !access.subscribed) || Boolean(busy)}
+                          onClick={() => void act(access?.subscribed ? "portal" : "checkout", id)}
+                        >
+                          {busy.endsWith(`:${id}`)
+                            ? "Opening…"
+                            : access?.subscribed
+                              ? "Manage"
+                              : "Subscribe"}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            <p className="account-footnote">
+              One free 24-hour trial per plugin. No card required. Payments and billing details are
+              managed by Paddle.
+            </p>
+          </>
+        )}
+      </section>
+      <details className="account-details">
+        <summary>Account details</summary>
+        <p>Your permanent LionDubai ID</p>
+        <code>{session.user.id}</code>
+      </details>
+      <dialog
+        ref={dialog}
+        className="trial-dialog"
+        aria-labelledby="trial-title"
+        onCancel={() => setTrial(null)}
+        onClose={() => setTrial(null)}
+      >
+        <p className="eyebrow">FREE TRIAL</p>
+        <h2 id="trial-title">Start your free trial?</h2>
+        <p className="trial-plugin-name">{trial?.name}</p>
+        <p>24 hours, starting now. One free trial per plugin. No card required.</p>
+        <div className="dialog-actions">
+          <button
+            className="icon-button button-primary"
+            aria-label="Start free trial"
+            onClick={() => {
+              if (trial) void act("trial", trial.id);
+            }}
+          >
+            ✓
+          </button>
+          <button
+            ref={cancel}
+            className="icon-button button-secondary"
+            aria-label="Cancel"
+            onClick={() => setTrial(null)}
+          >
+            ×
+          </button>
+        </div>
+      </dialog>
+    </>
+  );
+}
+
+function until(value: string | null) {
+  return value
+    ? ` until ${new Date(value).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}`
+    : "";
+}
+
+function accessLabel(access: Billing["plugins"][number] | undefined) {
+  if (!access) return "Status unavailable";
+  if (access.access === "locked")
+    return access.subscribed ? "Subscription needs attention" : "Locked";
+  const labels = {
+    trial: "Trial",
+    paid: access.cancelScheduled ? "Access" : "Subscribed",
+    support: "Support access",
+  };
+  return `${labels[access.access]}${until(access.expiresAt)}`;
+}
+
+function priceLabel(price: Billing["plugins"][number]["price"] | undefined) {
+  if (!price) return "";
+  try {
+    const format = new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: price.currency,
+    });
+    const amount =
+      Number(price.amount) / 10 ** (format.resolvedOptions().maximumFractionDigits ?? 2);
+    if (!Number.isFinite(amount)) return "";
+    return `${format.format(amount)} / ${price.frequency === 1 ? price.interval : `${price.frequency} ${price.interval}s`}`;
+  } catch {
+    return "";
+  }
+}

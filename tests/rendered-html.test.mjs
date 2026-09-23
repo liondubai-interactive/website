@@ -106,11 +106,33 @@ test("every exported page has one shared navigation and a working skip target", 
     "privacy/index.html",
     "terms/index.html",
     "refunds/index.html",
+    "download/index.html",
+    "login/index.html",
+    "account/index.html",
     "404.html",
   ]) {
     const html = await readPage(route);
     assert.equal((html.match(/<header class="site-header"/g) ?? []).length, 1, route);
     assert.equal((html.match(/<footer /g) ?? []).length, 1, route);
     assert.equal((html.match(/<main id="main-content"/g) ?? []).length, 1, route);
+  }
+});
+
+test("exports a real download destination only when a release is configured", async () => {
+  const html = await readPage("download/index.html");
+  assert.match(html, /Download for Windows/);
+  if (!process.env.NEXT_PUBLIC_WINDOWS_DOWNLOAD_URL) {
+    assert.match(html, /Public download coming soon/);
+    assert.match(html, /<button[^>]*disabled/);
+    assert.doesNotMatch(html, /href="[^"]+\.(exe|msi)/);
+  }
+  assert.doesNotMatch(html, /github\.com\/liondubai-interactive\/desktop-app\/releases/);
+});
+
+test("private pages export no account records and are not indexed", async () => {
+  for (const route of ["login", "account"]) {
+    const html = await readPage(`${route}/index.html`);
+    assert.match(html, /name="robots" content="noindex, nofollow"/);
+    assert.doesNotMatch(html, /session-csrf|Test Streamer|client_secret|DATABASE_URL/);
   }
 });

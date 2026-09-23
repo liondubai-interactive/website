@@ -51,8 +51,8 @@ Provider verification files in `public/` are intentionally public proof files.
 
 ## Design
 
-Keep the header focused on integrations, pricing and contact; policy links live
-in the shared footer. The Next.js root layout owns the header and footer for
+Keep the header focused on download, pricing and account access; contact and policy
+links live in the shared footer. The Next.js root layout owns the header and footer for
 all pages, including missing routes. `app/integrations.ts` owns the public product descriptions
 and planned prices used by both the home and pricing pages. The preset preview
 is a static illustration, not an interactive product demo. It adds no animation
@@ -61,3 +61,31 @@ library, external font, tracker or image download.
 The layout supports narrow screens, visible keyboard focus, a skip link and
 reduced motion. When changing it, check home, pricing, contact and policy pages
 at mobile and desktop widths. Preserve launch-status and billing-policy notices.
+
+## Website accounts and releases
+
+The public home now leads with Download for Windows. `/download/` explains installation;
+`/login/` uses TikTok and `/account/` displays the authenticated user's plugins and billing.
+The website remains a static export: authentication, sessions, prices and access come
+from `https://api.liondubai.net/api/liondubai/web`. No secrets or private admin source
+belong in this repository. Administrators use their existing website sign-in at `https://api.liondubai.net/admin/`; the backend checks their current role.
+
+One browser session lookup is shared by navigation and account pages. Requests include
+credentials; mutations send the session's CSRF token. No periodic polling is used.
+Trials require confirmation. Backend prices (including Sandbox prices) drive account
+billing, while public pricing remains clearly labeled planned launch pricing. Website
+login readiness comes from `/web/config`; do not enable public sign-in before the backend
+and approved TikTok web callback are ready. `?view=customer` keeps an administrator on
+the ordinary account page instead of redirecting to staff verification.
+
+The download button stays disabled until all three public build variables in
+`.env.example` are configured: release URL, version and SHA-256. Configure only an actual
+tested, code-signed Windows x64 installer over HTTPS. Those variables are public, and
+changing them requires a new Pages build. Do not use a private repository's release URL.
+Validate the binary and supported Windows versions before advertising requirements or
+publishing the release. An installer download is never proxied through the API.
+
+`npm test` builds and checks the static export. `npm run test:browser` runs isolated
+headless browser fixtures for login, trial confirmation, billing navigation, logout and
+responsive layout, with no real sign-in or payment. Locally it uses installed Chrome;
+CI installs Playwright Chromium. Screenshots stay ignored under `.artifacts/browser/`.

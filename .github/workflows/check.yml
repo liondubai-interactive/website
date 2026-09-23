@@ -27,3 +27,7 @@ jobs:
         run: npm run lint
       - name: Build and verify
         run: npm test
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: Verify account flows
+        run: npm run test:browser

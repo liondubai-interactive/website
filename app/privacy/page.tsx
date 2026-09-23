@@ -73,9 +73,11 @@ export default function PrivacyPage() {
           country.
         </p>
         <p>
-          This website has no analytics, advertising or account sign-in. Its
-          hosting provider may process ordinary request logs to deliver the
-          site.
+          This website has no analytics or advertising. Optional TikTok sign-in
+          lets you view your LionDubai account and manage plugin access. An
+          essential, secure session cookie keeps your browser signed in; our
+          backend stores a hash of its credential. The hosting provider may
+          process ordinary request logs to deliver the site.
         </p>
       </section>
       <section>
@@ -86,6 +88,14 @@ export default function PrivacyPage() {
           rather than the original credential. Logging out ends that app
           session; it does not automatically delete your account or revoke
           permissions in TikTok.
+        </p>
+        <p>
+          Website and desktop sessions are separate. Signing out of the website
+          ends that browser session without interrupting your desktop broadcast.
+          Authorized staff can access account and subscription information for
+          support; administrative changes are recorded for security and accountability.
+          Paddle processes payment and billing information. We do not receive
+          your full payment card details.
         </p>
       </section>
       <section>
