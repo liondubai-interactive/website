@@ -499,11 +499,11 @@ h3 {
   display: flex;
   gap: 20px;
 }
-.footer-inner .footer-contact { grid-column: 3; grid-row: 1; gap: 4px; padding-left: 14px; border-left: 1px solid var(--line); }
+.footer-inner .footer-contact { grid-column: 2; grid-row: 1; gap: 4px; }
 .footer-contact a { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 7px; }
 .footer-contact a:hover { background: var(--soft); }
 .footer-contact img { width: 18px; height: 18px; object-fit: contain; }
-.footer-legal { grid-column: 2; grid-row: 1; }
+.footer-legal { grid-column: 3; grid-row: 1; }
 .policy-shell,
 .pricing-shell,
 .contact-shell {
@@ -899,7 +899,7 @@ summary { cursor: pointer; }
 }
 @media (max-width: 600px) {
   .footer-inner { grid-template-columns: auto auto; justify-content: center; gap: 4px 14px; }
-  .footer-legal { grid-column: 1; }
-  .footer-inner .footer-contact { grid-column: 2; padding-left: 10px; }
+  .footer-legal { grid-column: 2; }
+  .footer-inner .footer-contact { grid-column: 1; }
   .footer-inner p { grid-column: 1 / -1; grid-row: 2; text-align: center; font-size: 10px; }
 }
