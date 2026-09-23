@@ -483,7 +483,7 @@ h3 {
 }
 .footer-inner {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 8px 18px;
   padding-block: 12px;
@@ -503,7 +503,7 @@ h3 {
 .footer-contact a { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 7px; }
 .footer-contact a:hover { background: var(--soft); }
 .footer-contact img { width: 18px; height: 18px; object-fit: contain; }
-.footer-legal { grid-column: 3; grid-row: 1; }
+.footer-legal { grid-column: 3; grid-row: 1; justify-self: end; }
 .policy-shell,
 .pricing-shell,
 .contact-shell {
