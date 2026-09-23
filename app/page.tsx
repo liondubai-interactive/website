@@ -26,20 +26,6 @@ export default function Home() {
         </div>
         <EventPreview />
       </section>
-      <section className="setup-strip shell" aria-label="How it works">
-        <p>Ready when you are.</p>
-        <ol>
-          <li>
-            <span>01</span>Download the app
-          </li>
-          <li>
-            <span>02</span>Sign in with TikTok
-          </li>
-          <li>
-            <span>03</span>Choose your plugin
-          </li>
-        </ol>
-      </section>
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
           <div>

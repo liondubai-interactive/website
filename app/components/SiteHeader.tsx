@@ -12,8 +12,9 @@ export function SiteHeader() {
         <div className="header-inner shell">
           <Link className="brand" href="/" aria-label="LionDubai Interactive home">
             <img src="/app-icon.png" alt="" width="32" height="32" />
-            <span>
-              LionDubai<span className="brand-detail"> Interactive</span>
+            <span className="brand-wordmark">
+              <span><span className="brand-lion">LION</span>DUBAI</span>
+              <span className="brand-detail">INTERACTIVE</span>
             </span>
           </Link>
           <nav className="site-nav" aria-label="Primary navigation">

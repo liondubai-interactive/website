@@ -85,15 +85,19 @@ h3 {
   align-items: center;
   gap: 10px;
   font-size: 16px;
-  font-weight: 650;
-  letter-spacing: -0.04em;
+  font-weight: 750;
+  letter-spacing: 0.035em;
   text-decoration: none;
 }
 .brand img {
   border-radius: 8px;
 }
+.brand-wordmark { display: flex; flex-direction: column; gap: 4px; line-height: 1; }
+.brand-lion { color: var(--accent); }
 .brand-detail {
-  font-weight: 400;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.23em;
   color: var(--muted);
 }
 .site-nav {
@@ -391,38 +395,6 @@ h3 {
   height: 1px;
   background: var(--accent);
 }
-.setup-strip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-block: 1px solid var(--line);
-  padding-block: 26px;
-  gap: 25px;
-}
-.setup-strip > p {
-  font-size: 14px;
-  font-weight: 600;
-  margin: 0;
-}
-.setup-strip ol {
-  display: flex;
-  gap: 40px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.setup-strip li {
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--muted);
-}
-.setup-strip li span {
-  font-size: 10px;
-  color: #8b8e96;
-  font-variant-numeric: tabular-nums;
-}
 .games {
   padding-block: 65px;
 }
@@ -697,12 +669,6 @@ h3 {
   .hero h1 {
     font-size: clamp(45px, 6.2vw, 65px);
   }
-  .brand-detail {
-    display: none;
-  }
-  .setup-strip ol {
-    gap: 25px;
-  }
   .event-row {
     grid-template-columns: 28px 1fr 14px 1.3fr;
     gap: 8px;
@@ -766,14 +732,6 @@ h3 {
   .event-source strong,
   .event-action {
     font-size: 12px;
-  }
-  .setup-strip {
-    align-items: flex-start;
-    gap: 20px;
-  }
-  .setup-strip ol {
-    flex-direction: column;
-    gap: 15px;
   }
   .games {
     padding-block: 60px;
