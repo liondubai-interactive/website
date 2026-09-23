@@ -5,6 +5,12 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="footer-inner shell">
+        <p>&copy; 2026 LionDubai Interactive</p>
+        <nav className="footer-legal" aria-label="Legal">
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
+          <Link href="/refunds">Refunds</Link>
+        </nav>
         <nav className="footer-contact" id="contact" aria-label="Contact">
           {[
             { id: "telegram", label: "Telegram: @Lion_Dubai", href: "https://t.me/Lion_Dubai" },
@@ -15,12 +21,6 @@ export function SiteFooter() {
               <Image src={`/brands/${id}.svg`} alt="" width={22} height={22} unoptimized />
             </a>
           ))}
-        </nav>
-        <p>&copy; 2026 LionDubai Interactive</p>
-        <nav className="footer-legal" aria-label="Legal">
-          <Link href="/privacy">Privacy</Link>
-          <Link href="/terms">Terms</Link>
-          <Link href="/refunds">Refunds</Link>
         </nav>
       </div>
     </footer>

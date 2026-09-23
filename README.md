@@ -51,8 +51,8 @@ Provider verification files in `public/` are intentionally public proof files.
 
 ## Design
 
-Keep the header focused on download, pricing and account access; contact logos sit above policy
-links in the shared footer, centered on mobile. The retired `/contact` URL redirects
+Keep the header focused on download, pricing and account access; contact logos sit beside policy
+links in a compact footer row, centered on mobile with copyright below. The retired `/contact` URL redirects
 to the footer; support and privacy requests also have direct email links in the policies.
 Logo artwork in `public/brands/` matches the desktop assets, sourced from
 https://github.com/gilbarbara/logos/tree/main/logos. The Next.js root layout owns the header and footer for

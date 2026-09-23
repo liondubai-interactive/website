@@ -483,26 +483,27 @@ h3 {
 }
 .footer-inner {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
-  gap: 10px 20px;
-  padding-block: 24px;
+  gap: 8px 18px;
+  padding-block: 12px;
   font-size: 11px;
   color: var(--muted);
 }
 .footer-inner p {
   margin: 0;
-  grid-row: 2;
+  grid-column: 1;
+  grid-row: 1;
 }
 .footer-inner nav {
   display: flex;
-  gap: 25px;
+  gap: 20px;
 }
-.footer-inner .footer-contact { grid-column: 2; justify-content: flex-end; gap: 8px; }
-.footer-contact a { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 7px; }
+.footer-inner .footer-contact { grid-column: 3; grid-row: 1; gap: 4px; padding-left: 14px; border-left: 1px solid var(--line); }
+.footer-contact a { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 7px; }
 .footer-contact a:hover { background: var(--soft); }
-.footer-contact img { object-fit: contain; }
-.footer-legal { grid-column: 2; grid-row: 2; }
+.footer-contact img { width: 18px; height: 18px; object-fit: contain; }
+.footer-legal { grid-column: 2; grid-row: 1; }
 .policy-shell,
 .pricing-shell,
 .contact-shell {
@@ -809,14 +810,6 @@ h3 {
     gap: 12px;
   }
 
-  .footer-inner {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    gap: 14px;
-  }
-  .footer-inner .footer-contact { grid-column: 1; grid-row: 1; }
-  .footer-legal { grid-column: 1; grid-row: 2; }
-  .footer-inner p { grid-row: 3; }
   .pricing-essentials {
     grid-template-columns: 1fr;
   }
@@ -903,5 +896,10 @@ summary { cursor: pointer; }
   .account-plugin { padding: 20px; }
   .login-card { padding: 25px; }
   .login-shell { padding-block: 40px; }
-  .footer-inner nav { flex-wrap: wrap; gap: 18px; }
+}
+@media (max-width: 600px) {
+  .footer-inner { grid-template-columns: auto auto; justify-content: center; gap: 4px 14px; }
+  .footer-legal { grid-column: 1; }
+  .footer-inner .footer-contact { grid-column: 2; padding-left: 10px; }
+  .footer-inner p { grid-column: 1 / -1; grid-row: 2; text-align: center; font-size: 10px; }
 }
