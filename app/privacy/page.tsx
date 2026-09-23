@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { PolicyPage } from "../components/PolicyPage";
 import { pageMetadata } from "../site-metadata";
 export const metadata = pageMetadata(
@@ -18,8 +17,8 @@ export default function PrivacyPage() {
         <p>
           LionDubai Interactive operates this application. TikTok does not own
           or operate it. The app is not approved by or associated with Mojang or
-          Microsoft. For questions about your information, use our{" "}
-          <Link href="/contact">contact page</Link>.
+          Microsoft. For questions about your information, email{" "}
+          <a href="mailto:liondubai.interactive@gmail.com">liondubai.interactive@gmail.com</a>.
         </p>
       </section>
       <section>
@@ -127,8 +126,8 @@ export default function PrivacyPage() {
       <section>
         <h2>Contact</h2>
         <p>
-          Send privacy requests through our{" "}
-          <Link href="/contact">contact page</Link>. Depending on your location,
+          Send privacy requests to{" "}
+          <a href="mailto:liondubai.interactive@gmail.com">liondubai.interactive@gmail.com</a>. Depending on your location,
           you may have additional rights under applicable data protection law.
         </p>
       </section>

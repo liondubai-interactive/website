@@ -16,7 +16,7 @@ test("exports the product home with visible policy links", async () => {
   assert.match(html, /Your stream\./);
   assert.match(html, new RegExp(`href="${basePath}/privacy/"`));
   assert.match(html, new RegExp(`href="${basePath}/terms/"`));
-  assert.match(html, new RegExp(`href="${basePath}/contact/"`));
+  assert.match(html, /aria-label="Contact"/);
   assert.match(html, /limited testing/i);
   assert.match(html, /TikTok does not own or operate (?:it|this app)/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
@@ -33,7 +33,6 @@ test("exports every compliance route", async () => {
   const pages = [
     ["privacy/index.html", /Privacy Policy/, "privacy"],
     ["terms/index.html", /Terms of Use/, "terms"],
-    ["contact/index.html", /How can(?:<br\s*\/?>)we help\?/, "contact"],
     ["pricing/index.html", /Your way to play/, "pricing"],
     ["refunds/index.html", /Refunds &amp; cancellation/, "refunds"],
   ];
@@ -42,14 +41,7 @@ test("exports every compliance route", async () => {
     const html = await readPage(relativePath);
     assert.match(html, expected);
     assert.match(html, /LionDubai Interactive/);
-    if (route === "contact") {
-      assert.match(html, /mailto:liondubai\.interactive@gmail\.com/);
-      assert.match(html, /https:\/\/t\.me\/Lion_Dubai/);
-      assert.match(html, /@Lion_Dubai/);
-    }
-    if (route === "privacy") {
-      assert.match(html, new RegExp(`href="${basePath}/contact/"`));
-    }
+    if (route === "privacy") assert.match(html, /mailto:liondubai\.interactive@gmail\.com/);
     if (route === "privacy" || route === "terms") {
       assert.match(html, /TikTok does not own or operate (?:it|this app)/);
     }
@@ -82,7 +74,7 @@ test("ships valid portal and social images", async () => {
 });
 
 test("retains the shared social image on every page with its own metadata", async () => {
-  for (const route of ["", "privacy/", "terms/", "contact/"]) {
+  for (const route of ["", "privacy/", "terms/"]) {
     const html = await readPage(`${route}index.html`);
     assert.match(
       html,
@@ -102,7 +94,6 @@ test("every exported page has one shared navigation and a working skip target", 
   for (const route of [
     "index.html",
     "pricing/index.html",
-    "contact/index.html",
     "privacy/index.html",
     "terms/index.html",
     "refunds/index.html",

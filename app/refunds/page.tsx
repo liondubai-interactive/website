@@ -56,7 +56,7 @@ export default function RefundsPage() {
         <h2>Problems and refund requests</h2>
         <p>
           For a technical problem,{" "}
-          <Link href="/contact">contact LionDubai</Link> so we can help. For a
+          <Link href="mailto:liondubai.interactive@gmail.com">contact LionDubai</Link> so we can help. For a
           billing issue or refund request, use the support link in your receipt
           or visit <a href="https://paddle.net">paddle.net</a>. Paddle assesses
           eligibility under its policy and applicable law. An approved full

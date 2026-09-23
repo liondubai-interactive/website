@@ -482,21 +482,27 @@ h3 {
   border-top: 1px solid var(--line);
 }
 .footer-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  min-height: 85px;
+  gap: 10px 20px;
+  padding-block: 24px;
   font-size: 11px;
   color: var(--muted);
 }
 .footer-inner p {
   margin: 0;
+  grid-row: 2;
 }
 .footer-inner nav {
   display: flex;
   gap: 25px;
 }
+.footer-inner .footer-contact { grid-column: 2; justify-content: flex-end; gap: 8px; }
+.footer-contact a { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 7px; }
+.footer-contact a:hover { background: var(--soft); }
+.footer-contact img { object-fit: contain; }
+.footer-legal { grid-column: 2; grid-row: 2; }
 .policy-shell,
 .pricing-shell,
 .contact-shell {
@@ -613,40 +619,6 @@ h3 {
 }
 .contact-shell {
   max-width: 800px;
-}
-.contact-lead {
-  max-width: 440px;
-  font-size: 17px;
-  color: var(--muted);
-}
-.contact-links {
-  border-top: 1px solid var(--line);
-  margin-block: 35px 24px;
-}
-.contact-links a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 24px 0;
-  border-bottom: 1px solid var(--line);
-  text-decoration: none;
-  overflow-wrap: anywhere;
-}
-.contact-links a:hover {
-  color: var(--accent);
-}
-.contact-links strong {
-  display: block;
-  font-weight: 500;
-  font-size: clamp(15px, 2.3vw, 22px);
-  letter-spacing: -0.03em;
-  margin-top: 7px;
-}
-.contact-note {
-  font-size: 12px;
-  color: var(--muted);
-  max-width: 600px;
 }
 @media (min-width: 1500px) {
   .hero {
@@ -838,12 +810,13 @@ h3 {
   }
 
   .footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
+    grid-template-columns: 1fr;
+    justify-items: center;
     gap: 14px;
-    padding-block: 24px;
   }
+  .footer-inner .footer-contact { grid-column: 1; grid-row: 1; }
+  .footer-legal { grid-column: 1; grid-row: 2; }
+  .footer-inner p { grid-row: 3; }
   .pricing-essentials {
     grid-template-columns: 1fr;
   }

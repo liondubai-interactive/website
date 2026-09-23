@@ -138,7 +138,7 @@ export default function TermsPage() {
         <h2>Contact</h2>
         <p>
           Questions, account issues, and legal requests can be sent privately
-          through the <Link href="/contact">contact page</Link>.
+          to <a href="mailto:liondubai.interactive@gmail.com">liondubai.interactive@gmail.com</a>.
         </p>
       </section>
     </PolicyPage>

@@ -71,7 +71,7 @@ export default function PricingPage() {
         <p>
           Read the <Link href="/terms">Terms</Link> and{" "}
           <Link href="/refunds">refund policy</Link>, or{" "}
-          <Link href="/contact">get in touch</Link>.
+          <Link href="mailto:liondubai.interactive@gmail.com">get in touch</Link>.
         </p>
       </div>
     </main>
