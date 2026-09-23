@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { pageMetadata } from "../site-metadata";
 import { integrations } from "../integrations";
+import { PluginImage } from "../components/PluginImage";
 
 export const metadata = pageMetadata(
   "Pricing",
@@ -27,10 +28,13 @@ export default function PricingPage() {
             key={id}
             aria-label={name}
           >
-            <div>
-              <span className="small-label">MINECRAFT</span>
-              <h2>{name}</h2>
-              <p>{description}</p>
+            <div className="plugin-summary">
+              <PluginImage id={id} />
+              <div>
+                <span className="small-label">MINECRAFT</span>
+                <h2>{name}</h2>
+                <p>{description}</p>
+              </div>
             </div>
             <p className="pricing-amount">
               <strong>${price}</strong>

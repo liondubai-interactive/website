@@ -160,7 +160,9 @@ test("trial requires confirmation, uses CSRF, updates once; logout clears accoun
   expect(calls.filter((call) => call.path === "/billing/trial")).toHaveLength(0);
   await survival.getByRole("button", { name: "24-hour free trial" }).click();
   await page.getByRole("button", { name: "Start free trial", exact: true }).click();
-  await expect(survival.getByRole("button", { name: "Trial active" })).toBeDisabled();
+  await expect(survival.getByRole("button", { name: "Free trial: 24 hours 0 minutes left" })).toBeDisabled();
+  await expect(survival).not.toContainText("Trial until");
+  await expect(survival.locator("img")).toHaveJSProperty("naturalWidth", 128);
   expect(calls.filter((call) => call.path === "/billing/trial")).toEqual([
     {
       path: "/billing/trial",
@@ -207,7 +209,30 @@ test("admin uses the existing sign-in for its dashboard while customer view rema
   await expect(page.getByRole("main").getByRole("button", { name: "Admin", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Account menu" }).click();
   await expect(page.getByRole("button", { name: "Admin", exact: true })).toBeVisible();
-  await expect(page.getByText(/^Support access until/)).toBeVisible();
+  await expect(page.getByRole("article").first().getByRole("img", { name: "Active", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Admin", exact: true }).click();
   await expect(page).toHaveURL("https://api.liondubai.net/admin/");
+});
+
+test("trial countdown uses server time, updates locally and expires without another request", async ({ page }) => {
+  await page.clock.install({ time: new Date("2030-01-01T00:00:00Z") });
+  const calls = await mock(page, { signedIn: true });
+  await page.goto("/account/");
+  const plugin = page.getByRole("article").first();
+  const trialButton = plugin.getByRole("button", { name: "24-hour free trial" });
+  const width = (await trialButton.boundingBox())!.width;
+  await trialButton.click();
+  await page.getByRole("button", { name: "Start free trial", exact: true }).click();
+  const countdown = plugin.getByRole("button", { name: /^Free trial:/ });
+  await expect(countdown).toHaveText("24:00 left");
+  expect((await countdown.boundingBox())!.width).toBe(width);
+  await page.clock.fastForward(60_000);
+  await expect(countdown).toHaveText("23:59 left");
+  await page.clock.setSystemTime(new Date("2020-01-01T00:00:00Z"));
+  await page.clock.fastForward(60_000);
+  await expect(countdown).toHaveText("23:58 left");
+  await page.clock.fastForward(24 * 60 * 60_000);
+  await expect(plugin.getByRole("button", { name: "Trial used" })).toBeDisabled();
+  await expect(plugin.getByRole("img", { name: "Locked", exact: true })).toBeVisible();
+  expect(calls.filter((call) => call.path === "/billing")).toHaveLength(1);
 });

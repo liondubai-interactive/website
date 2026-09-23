@@ -74,8 +74,11 @@ One browser session lookup is shared by navigation and account pages. Requests i
 credentials; mutations send the session's CSRF token. No periodic polling is used.
 The profile-picture dropdown owns account navigation, admin entry and sign-out on
 every page. It uses a native popover for keyboard and outside-click dismissal.
-Trials require confirmation. Backend prices (including Sandbox prices) drive account
-billing, while public pricing remains clearly labeled planned launch pricing. Website
+Trials require confirmation. Active trial buttons count down locally from server time and expiry using
+elapsed browser time, without polling. Public plugin portraits are optimized copies
+of the desktop artwork in `public/plugins/`, shared by home, pricing and account pages.
+Backend prices (including Sandbox prices) drive account billing, while public pricing
+remains clearly labeled planned launch pricing. Website
 login readiness comes from `/web/config`; do not enable public sign-in before the backend
 and approved TikTok web callback are ready. `?view=customer` keeps an administrator on
 the ordinary account page instead of redirecting to staff verification.

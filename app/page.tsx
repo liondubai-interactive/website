@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EventPreview } from "./components/EventPreview";
 import { integrations } from "./integrations";
+import { PluginImage } from "./components/PluginImage";
 import { DownloadButton } from "./components/DownloadButton";
 
 export default function Home() {
@@ -52,11 +53,9 @@ export default function Home() {
           </p>
         </div>
         <div className="game-list">
-          {integrations.map(({ id, name, description, price }, index) => (
+          {integrations.map(({ id, name, description, price }) => (
             <Link href={`/pricing#${id}`} className="game-item" key={id}>
-              <span className="game-number" aria-hidden="true">
-                0{index + 1}
-              </span>
+              <PluginImage id={id} />
               <div className="game-copy">
                 <h3>{name}</h3>
                 <p>{description}</p>

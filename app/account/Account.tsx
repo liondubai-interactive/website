@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useWebSession } from "../components/WebSession";
+import { PluginImage } from "../components/PluginImage";
 import { integrations } from "../integrations";
 import { api, ApiError, errorMessage, navigateTo, type Billing } from "../web-api";
 
 export function Account() {
   const { session, loading, error: sessionError, clear } = useWebSession();
-  const [billing, setBilling] = useState<Billing | null>(null);
+  const [billing, setBilling] = useState<(Billing & { receivedAt: number }) | null>(null);
+  const [tick, setTick] = useState(0);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState("");
   const [trial, setTrial] = useState<{ id: string; name: string } | null>(null);
@@ -38,7 +40,7 @@ export function Account() {
     let current = true;
     api<Billing>("/billing").then(
       (value) => {
-        if (current) setBilling(value);
+        if (current) setBilling({ ...value, receivedAt: performance.now() });
       },
       (error) => {
         if (current) fail(error);
@@ -48,6 +50,17 @@ export function Account() {
       current = false;
     };
   }, [session, fail]);
+
+  useEffect(() => {
+    if (!billing) return;
+    const update = () => setTick(performance.now());
+    const timer = window.setInterval(update, 1_000);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [billing]);
 
   useEffect(() => {
     if (trial) {
@@ -73,7 +86,7 @@ export function Account() {
         },
       );
       if ("url" in result) navigateTo(result.url, "billing");
-      else setBilling(result);
+      else setBilling({ ...result, receivedAt: performance.now() });
     } catch (error) {
       fail(error);
     } finally {
@@ -126,45 +139,54 @@ export function Account() {
               {integrations.map((plugin) => {
                 const id = `minecraft-${plugin.id}`;
                 const access = billing.plugins.find((entry) => entry.pluginId === id);
-                const active = Boolean(access && access.access !== "locked");
+                // Server time anchors the display; device clock changes cannot extend it.
+                const now = Date.parse(billing.serverTime) + Math.max(0, tick - billing.receivedAt);
+                const remaining = access?.expiresAt ? Math.max(0, Date.parse(access.expiresAt) - now) : 0;
+                const active = Boolean(access && access.access !== "locked" && remaining > 0);
+                const trialActive = active && access?.access === "trial";
+                const minutes = Math.ceil(remaining / 60_000);
                 const available = Boolean(access?.price);
                 return (
                   <article className="account-plugin" key={id}>
-                    <div className="account-plugin-info">
-                      <h3>
-                        <span
-                          className="access-symbol"
-                          data-active={active || undefined}
-                          role="img"
-                          aria-label={active ? "Active" : "Locked"}
-                        >
-                          {active ? (
-                            "✓"
-                          ) : (
-                            <svg
-                              aria-hidden="true"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.4"
-                            >
-                              <rect x="4.5" y="9" width="11" height="8" rx="2" />
-                              <path d="M7 9V6a3 3 0 0 1 6 0v3" />
-                            </svg>
-                          )}
-                        </span>
-                        {plugin.name}
-                      </h3>
-                      <p>{plugin.description}</p>
-                      <span className="plugin-state">{accessLabel(access)}</span>
+                    <div className="plugin-summary">
+                      <PluginImage id={plugin.id} />
+                      <div className="account-plugin-info">
+                        <h3>
+                          <span
+                            className="access-symbol"
+                            data-active={active || undefined}
+                            role="img"
+                            aria-label={active ? "Active" : "Locked"}
+                          >
+                            {active ? (
+                              "✓"
+                            ) : (
+                              <svg
+                                aria-hidden="true"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.4"
+                              >
+                                <rect x="4.5" y="9" width="11" height="8" rx="2" />
+                                <path d="M7 9V6a3 3 0 0 1 6 0v3" />
+                              </svg>
+                            )}
+                          </span>
+                          {plugin.name}
+                        </h3>
+                        <p>{plugin.description}</p>
+                      </div>
                     </div>
                     <div className="account-plugin-billing">
                       <strong>{priceLabel(access?.price)}</strong>
                       <div className="account-plugin-actions">
                         <button
                           className="button button-secondary"
+                          data-trial-active={trialActive || undefined}
+                          aria-label={trialActive ? `Free trial: ${Math.floor(minutes / 60)} hours ${minutes % 60} minutes left` : undefined}
                           disabled={
                             !access ||
                             !available ||
@@ -175,8 +197,14 @@ export function Account() {
                           }
                           onClick={() => setTrial({ id, name: plugin.name })}
                         >
-                          {access?.access === "trial"
-                            ? "Trial active"
+                          {trialActive
+                            ? <>
+                                <svg aria-hidden="true" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4">
+                                  <circle cx="10" cy="10" r="7.5" />
+                                  <path d="M10 5v5l3 2" />
+                                </svg>
+                                {Math.floor(minutes / 60)}:{String(minutes % 60).padStart(2, "0")} left
+                              </>
                             : access?.trialUsed
                               ? "Trial used"
                               : "24-hour free trial"}
@@ -243,24 +271,6 @@ export function Account() {
       </dialog>
     </>
   );
-}
-
-function until(value: string | null) {
-  return value
-    ? ` until ${new Date(value).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}`
-    : "";
-}
-
-function accessLabel(access: Billing["plugins"][number] | undefined) {
-  if (!access) return "Status unavailable";
-  if (access.access === "locked")
-    return access.subscribed ? "Subscription needs attention" : "Locked";
-  const labels = {
-    trial: "Trial",
-    paid: access.cancelScheduled ? "Access" : "Subscribed",
-    support: "Support access",
-  };
-  return `${labels[access.access]}${until(access.expiresAt)}`;
 }
 
 function priceLabel(price: Billing["plugins"][number]["price"] | undefined) {
