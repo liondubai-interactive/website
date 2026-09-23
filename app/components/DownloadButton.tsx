@@ -6,11 +6,11 @@ export function DownloadButton() {
     <div className="download-action">
       {windowsRelease ? (
         <a className="button button-primary" href={windowsRelease.url}>
-          <WindowsIcon /> Download for Windows <span aria-hidden="true">↓</span>
+          <WindowsIcon /> Download for Windows
         </a>
       ) : (
         <button className="button button-primary" disabled>
-          <WindowsIcon /> Download for Windows <span aria-hidden="true">↓</span>
+          <WindowsIcon /> Download for Windows
         </button>
       )}
       <p className="beta-note">
@@ -28,9 +28,10 @@ export function DownloadButton() {
 }
 
 function WindowsIcon() {
+  // Microsoft Windows mark: https://commons.wikimedia.org/wiki/File:Windows_logo_-_2012.svg
   return (
-    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-      <path d="M1 1h6v6H1zm8 0h6v6H9zM1 9h6v6H1zm8 0h6v6H9z" />
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 88 88" fill="currentColor">
+      <path d="M0 12.402l35.687-4.86.016 34.423-35.67.203zm35.67 33.529l.028 34.453L.028 75.48.026 45.7zm4.326-39.025L87.314 0v41.527l-47.318.376zm47.329 39.349l-.011 41.34-47.318-6.678-.066-34.739z" />
     </svg>
   );
 }
