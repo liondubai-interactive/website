@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- Static icon is pre-sized for static hosting. */
 import Link from "next/link";
-import { AccountLink } from "./WebSession";
+import { AccountMenu } from "./WebSession";
 
 export function SiteHeader() {
   return (
@@ -19,7 +19,7 @@ export function SiteHeader() {
           <nav className="site-nav" aria-label="Primary navigation">
             <Link href="/download/">Download</Link>
             <Link href="/pricing">Pricing</Link>
-            <AccountLink />
+            <AccountMenu />
           </nav>
         </div>
       </header>

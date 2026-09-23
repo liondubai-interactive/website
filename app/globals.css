@@ -112,12 +112,12 @@ h3 {
 .text-link:hover {
   color: var(--accent);
 }
-.site-nav a:last-child {
+.site-nav .sign-in {
   padding: 10px 15px;
   border: 1px solid var(--line);
   border-radius: 7px;
 }
-.site-nav a.account-avatar {
+.site-nav .account-avatar {
   position: relative;
   display: grid;
   place-items: center;
@@ -128,6 +128,8 @@ h3 {
   background: var(--soft);
   flex-shrink: 0;
   font-weight: 600;
+  border: 1px solid var(--line);
+  anchor-name: --account-avatar;
 }
 .account-avatar img {
   position: absolute;
@@ -136,6 +138,40 @@ h3 {
   border-radius: 50%;
   object-fit: cover;
 }
+.account-dropdown {
+  inset: 72px 24px auto auto;
+  margin: 0;
+  min-width: 170px;
+  max-width: min(260px, calc(100vw - 32px));
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 8px 28px #20212714;
+}
+@supports (top: anchor(bottom)) {
+  .account-dropdown {
+    position-anchor: --account-avatar;
+    top: anchor(bottom);
+    right: anchor(right);
+    margin-top: 8px;
+  }
+}
+.account-dropdown a, .account-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+}
+.account-dropdown a:hover, .account-dropdown button:hover { background: var(--soft); }
+.account-dropdown p { margin: 6px 12px; font-size: 12px; color: #a51d25; }
 .skip-link {
   position: fixed;
   top: 10px;
@@ -913,14 +949,9 @@ button:focus-visible, summary:focus-visible {
 .login-card .notice { margin-block: 18px 0; }
 .notice-error { color: #a51d25; border-color: #e8bdc0; background: #fff5f5; }
 .account-shell { max-width: 1050px; padding-block: 55px 90px; }
-.account-heading { display: flex; justify-content: space-between; align-items: center; gap: 25px; margin-bottom: 45px; }
-.account-heading h1 { font-size: clamp(32px, 4vw, 48px); margin-bottom: 10px; overflow-wrap: anywhere; }
-.account-heading .eyebrow { margin-bottom: 15px; }
-.account-username { font-size: 13px; color: var(--muted); margin: 0; }
-.account-header-actions, .account-plugin-actions { display: flex; gap: 10px; }
-.account-header-actions { flex-shrink: 0; }
+.account-plugin-actions { display: flex; gap: 10px; }
 .account-section-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.account-section-heading h2 { font-size: 24px; margin: 0; }
+.account-section-heading h1 { font-size: 24px; margin: 0; }
 .text-button { border: none; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; font-size: 13px; }
 .text-button:hover { color: var(--accent); }
 .account-plugins { display: grid; gap: 12px; }
@@ -951,7 +982,7 @@ summary { cursor: pointer; }
   .download-shell { padding-block: 45px 60px; }
   .download-shell h1 { font-size: 46px; }
   .account-shell { padding-block: 35px 60px; }
-  .account-heading, .account-plugin { align-items: flex-start; flex-direction: column; gap: 20px; }
+  .account-plugin { align-items: flex-start; flex-direction: column; gap: 20px; }
   .account-plugin-billing { width: 100%; text-align: left; }
   .account-plugin-actions { flex-wrap: wrap; }
   .account-plugin { padding: 20px; }

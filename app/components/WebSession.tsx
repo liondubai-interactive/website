@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { api, ApiError, errorMessage, type WebSession } from "../web-api";
+import { api, ApiError, errorMessage, navigateTo, type WebSession } from "../web-api";
 
 const SessionContext = createContext<{
   session: WebSession | null;
@@ -46,20 +46,53 @@ export function useWebSession() {
   return state;
 }
 
-export function AccountLink() {
-  const { session } = useWebSession();
+export function AccountMenu() {
+  const { session, clear } = useWebSession();
   const [failedAvatar, setFailedAvatar] = useState<string>();
-  if (!session) return <Link href="/login/">Sign in</Link>;
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const menu = useRef<HTMLDivElement>(null);
+  const menuId = useId();
+  if (!session) return <Link className="sign-in" href="/login/">Sign in</Link>;
   const { displayName, username, avatarUrl } = session.user;
   const name = displayName || username || "Account";
+
+  async function signOut() {
+    if (!session || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api("/logout", { body: {}, csrf: session.csrfToken });
+      clear();
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) clear();
+      else setError(errorMessage(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
-    <Link className="account-avatar" href="/account/?view=customer" aria-label="Account" title={name}>
-      <span aria-hidden="true">{Array.from(name)[0].toUpperCase()}</span>
-      {avatarUrl && avatarUrl !== failedAvatar && (
-        // Provider images are already sized; static hosting has no image optimizer.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={avatarUrl} alt="" width="36" height="36" referrerPolicy="no-referrer" onError={() => setFailedAvatar(avatarUrl)} />
-      )}
-    </Link>
+    <>
+      <button className="account-avatar" popoverTarget={menuId} aria-label="Account menu" title={name}>
+        <span aria-hidden="true">{Array.from(name)[0].toUpperCase()}</span>
+        {avatarUrl && avatarUrl !== failedAvatar && (
+          // Provider images are already sized; static hosting has no image optimizer.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={avatarUrl} alt="" width="36" height="36" referrerPolicy="no-referrer" onError={() => setFailedAvatar(avatarUrl)} />
+        )}
+      </button>
+      <div ref={menu} id={menuId} popover="auto" className="account-dropdown">
+        <Link href="/account/?view=customer" onClick={() => menu.current?.hidePopover()}>My plugins</Link>
+        {session.user.role === "admin" && session.adminUrl && (
+          <button onClick={() => {
+            try { navigateTo(session.adminUrl!, "admin"); }
+            catch { setError("Admin access is unavailable."); }
+          }}>Admin</button>
+        )}
+        <button disabled={busy} onClick={() => void signOut()}>{busy ? "Signing out…" : "Sign out"}</button>
+        {error && <p role="alert">{error}</p>}
+      </div>
+    </>
   );
 }

@@ -147,7 +147,8 @@ test("trial requires confirmation, uses CSRF, updates once; logout clears accoun
 }, testInfo) => {
   const calls = await mock(page, { signedIn: true });
   await page.goto("/account/");
-  await expect(page.getByRole("heading", { name: "Test Streamer" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your plugins", level: 1 })).toBeVisible();
+  await expect(page.getByRole("main")).not.toContainText("Test Streamer");
   const survival = page
     .getByRole("article")
     .filter({ has: page.getByRole("heading", { name: /Survival$/ }) });
@@ -174,6 +175,18 @@ test("trial requires confirmation, uses CSRF, updates once; logout clears accoun
     true,
   );
   await page.screenshot({ path: testInfo.outputPath("account-mobile.png"), fullPage: true });
+  const menu = page.getByRole("button", { name: "Account menu" });
+  await expect(page.getByRole("button", { name: "Sign out" })).not.toBeVisible();
+  await menu.click();
+  await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Admin", exact: true })).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "Sign out" })).not.toBeVisible();
+  await menu.click();
+  await page.getByRole("heading", { name: "Your plugins", level: 1 }).click();
+  await expect(page.getByRole("button", { name: "Sign out" })).not.toBeVisible();
+  await menu.click();
+  await page.screenshot({ path: testInfo.outputPath("account-menu-mobile.png") });
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page.getByRole("heading", { name: "Your account", exact: true })).toBeVisible();
   expect(calls.filter((call) => call.path === "/billing")).toHaveLength(1);
@@ -190,7 +203,11 @@ test("admin uses the existing sign-in for its dashboard while customer view rema
   await page.goto("/account/");
   await expect(page).toHaveURL("https://api.liondubai.net/admin/");
   await page.goto("/account/?view=customer");
-  await expect(page.getByRole("heading", { name: "Test Streamer" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your plugins", level: 1 })).toBeVisible();
+  await expect(page.getByRole("main").getByRole("button", { name: "Admin", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Account menu" }).click();
   await expect(page.getByRole("button", { name: "Admin", exact: true })).toBeVisible();
   await expect(page.getByText(/^Support access until/)).toBeVisible();
+  await page.getByRole("button", { name: "Admin", exact: true }).click();
+  await expect(page).toHaveURL("https://api.liondubai.net/admin/");
 });

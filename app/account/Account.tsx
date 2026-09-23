@@ -57,7 +57,7 @@ export function Account() {
   }, [trial]);
 
   async function act(
-    action: "trial" | "checkout" | "portal" | "refresh" | "logout",
+    action: "trial" | "checkout" | "portal" | "refresh",
     pluginId?: string,
   ) {
     if (!session || busy) return;
@@ -66,14 +66,13 @@ export function Account() {
     setTrial(null);
     try {
       const result = await api<Billing | { url: string }>(
-        action === "logout" ? "/logout" : `/billing/${action}`,
+        `/billing/${action}`,
         {
           body: pluginId ? { pluginId } : {},
           csrf: session.csrfToken,
         },
       );
-      if (action === "logout") clear();
-      else if ("url" in result) navigateTo(result.url, "billing");
+      if ("url" in result) navigateTo(result.url, "billing");
       else setBilling(result);
     } catch (error) {
       fail(error);
@@ -101,39 +100,9 @@ export function Account() {
 
   return (
     <>
-      <header className="account-heading">
-        <div>
-          <p className="eyebrow">YOUR ACCOUNT</p>
-          <h1>{session.user.displayName || session.user.username}</h1>
-          <p className="account-username">@{session.user.username} · TikTok</p>
-        </div>
-        <div className="account-header-actions">
-          {session.user.role === "admin" && session.adminUrl && (
-            <button
-              className="button button-secondary"
-              onClick={() => {
-                try {
-                  navigateTo(session.adminUrl!, "admin");
-                } catch {
-                  setError("Admin access is unavailable.");
-                }
-              }}
-            >
-              Admin
-            </button>
-          )}
-          <button
-            className="button button-secondary"
-            disabled={Boolean(busy)}
-            onClick={() => void act("logout")}
-          >
-            Sign out
-          </button>
-        </div>
-      </header>
       <section aria-labelledby="plugins-title">
         <div className="account-section-heading">
-          <h2 id="plugins-title">Your plugins</h2>
+          <h1 id="plugins-title">Your plugins</h1>
           <button
             className="text-button"
             disabled={Boolean(busy)}
