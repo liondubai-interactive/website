@@ -411,11 +411,6 @@ h3 {
 .section-heading .eyebrow {
   margin-bottom: 16px;
 }
-.section-heading > p {
-  font-size: 14px;
-  color: var(--muted);
-  margin: 0;
-}
 .game-list {
   border-top: 1px solid var(--line);
 }
@@ -740,9 +735,6 @@ h3 {
     align-items: flex-start;
     gap: 18px;
   }
-  .section-heading > p {
-    font-size: 12px;
-  }
   .section-heading h2 {
     font-size: 32px;
   }
@@ -825,12 +817,6 @@ h3 {
   }
   .section-heading {
     display: block;
-  }
-  .section-heading > p {
-    margin-top: 18px;
-  }
-  .section-heading > p br {
-    display: none;
   }
   .game-item {
     grid-template-columns: 48px 1fr auto;

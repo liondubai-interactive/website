@@ -32,11 +32,6 @@ export default function Home() {
             <p className="eyebrow">PLUGINS</p>
             <h2 id="games-heading">Pick your way to play.</h2>
           </div>
-          <p>
-            Built for Minecraft.
-            <br />
-            Made for your community.
-          </p>
         </div>
         <div className="game-list">
           {integrations.map(({ id, name, description, price }) => (
