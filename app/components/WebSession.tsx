@@ -48,9 +48,18 @@ export function useWebSession() {
 
 export function AccountLink() {
   const { session } = useWebSession();
+  const [failedAvatar, setFailedAvatar] = useState<string>();
+  if (!session) return <Link href="/login/">Sign in</Link>;
+  const { displayName, username, avatarUrl } = session.user;
+  const name = displayName || username || "Account";
   return (
-    <Link href={session ? "/account/?view=customer" : "/login/"}>
-      {session ? "Account" : "Sign in"}
+    <Link className="account-avatar" href="/account/?view=customer" aria-label="Account" title={name}>
+      <span aria-hidden="true">{Array.from(name)[0].toUpperCase()}</span>
+      {avatarUrl && avatarUrl !== failedAvatar && (
+        // Provider images are already sized; static hosting has no image optimizer.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={avatarUrl} alt="" width="36" height="36" referrerPolicy="no-referrer" onError={() => setFailedAvatar(avatarUrl)} />
+      )}
     </Link>
   );
 }
