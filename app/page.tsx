@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { EventPreview } from "./components/EventPreview";
 import { integrations } from "./integrations";
 import { PluginImage } from "./components/PluginImage";
 import { DownloadButton } from "./components/DownloadButton";
@@ -11,28 +10,31 @@ export default function Home() {
         <div className="hero-copy">
           <p className="eyebrow">
             <span className="status-dot" />
-            LIONDUBAI FOR WINDOWS
+            MINECRAFT × TIKTOK LIVE
           </p>
           <h1>
             Your stream.
             <br />
-            <span>Your game.</span>
+            <span>In their hands.</span>
           </h1>
           <p className="hero-lead">
-            Turn TikTok LIVE gifts, likes and comments into Minecraft moments. Connect your account.
-            Choose a plugin. Make every interaction count.
+            Let your viewers shape what happens in Minecraft. Turn gifts, likes and comments
+            into creatures, battles and unexpected moments.
           </p>
           <DownloadButton />
         </div>
-        <EventPreview />
+        <div className="hero-visual" aria-hidden="true" />
       </section>
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">PLUGINS · PLANNED LAUNCH PRICES</p>
+            <p className="eyebrow">MINECRAFT PLUGINS · PLANNED LAUNCH PRICES</p>
             <h2 id="games-heading">Pick your way to play.</h2>
-            <p className="trial-note">24-hour free trial · No card required</p>
           </div>
+          <p className="trial-note">
+            <strong>24-hour free trial</strong>
+            <span>No card required · One trial per plugin</span>
+          </p>
         </div>
         <div className="game-list">
           {integrations.map(({ id, name, description, price }) => (

@@ -93,6 +93,11 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`home-${width}.png`), fullPage: true });
+    await page.getByRole("link", { name: "Games", exact: true }).click();
+    await expect(page).toHaveURL(/\/games\/$/);
+    await expect(page.getByRole("heading", { name: "Minecraft", exact: true })).toBeVisible();
+    await page.getByRole("link", { name: "Explore Minecraft plugins" }).click();
+    await expect(page).toHaveURL(/\/#games$/);
   }
   expect(calls.filter((call) => call.method === "POST")).toHaveLength(0);
 });

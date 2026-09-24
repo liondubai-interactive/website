@@ -51,17 +51,20 @@ Provider verification files in `public/` are intentionally public proof files.
 
 ## Design
 
-Keep the header focused on download, plugins and account access; contact logos sit beside policy
+Keep the header focused on download, games and account access; contact logos sit beside policy
 links in a compact footer row, centered on mobile with copyright below. The retired `/contact` URL redirects
 to the footer; support and privacy requests also have direct email links in the policies.
 Logo artwork in `public/brands/` matches the desktop assets, sourced from
 https://github.com/gilbarbara/logos/tree/main/logos. The Next.js root layout owns the header and footer for
 all pages, including missing routes. `app/integrations.ts` owns the public product descriptions
 and planned prices displayed on the home plugin cards. `/pricing` redirects to this section.
+`/games/` lists Minecraft as the current supported game and links to those plugins;
+add other games only when their integrations are ready.
 The home plugin cards use a responsive three-column grid with a small image zoom
 and highlight on hover or keyboard focus; reduced motion disables transitions.
-The preset preview is a static illustration, not an interactive product demo. It adds no animation
-library, external font, tracker or image download.
+Shared type, color and surface styles keep public and account pages consistent.
+The hero reserves a blank desktop area for a future 3D scene; this space collapses on mobile.
+No 3D runtime, animation library, external font or tracker is loaded.
 
 The layout supports narrow screens, visible keyboard focus, a skip link and
 reduced motion. When changing it, check home, download and policy pages
