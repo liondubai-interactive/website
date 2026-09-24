@@ -1,14 +1,15 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { ModelViewerElement } from "@google/model-viewer";
 
-test("solid header symbol completes a continuous turn and resumes after hidden tabs", async ({ page }) => {
+test("solid header symbol turns in reverse and resumes after hidden tabs", async ({ page }) => {
   await page.goto("/games/");
   const symbol = page.locator(".brand-symbol");
   const model = symbol.locator("model-viewer");
   await expect(symbol).toHaveAttribute("data-ready", "true");
   expect(await model.evaluate(el => (el as ModelViewerElement).duration)).toBeCloseTo(28, 1);
+  await expect.poll(() => model.evaluate(el => (el as ModelViewerElement).currentTime)).toBeGreaterThan(0);
   const initial = await model.evaluate(el => (el as ModelViewerElement).currentTime);
-  await expect.poll(() => model.evaluate(el => (el as ModelViewerElement).currentTime)).toBeGreaterThan(initial);
+  await expect.poll(() => model.evaluate(el => (el as ModelViewerElement).currentTime)).toBeLessThan(initial);
   await page.evaluate(() => {
     Object.defineProperty(document, "hidden", { configurable: true, value: true });
     document.dispatchEvent(new Event("visibilitychange"));

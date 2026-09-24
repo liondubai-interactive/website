@@ -38,7 +38,7 @@ export function BrandSymbol() {
       lastTime = time;
       const interval = 1000 / 30;
       if (time >= nextPaint) {
-        viewer.currentTime = elapsed % viewer.duration;
+        viewer.currentTime = viewer.duration - (elapsed % viewer.duration);
         nextPaint = time + interval - (nextPaint ? (time - nextPaint) % interval : 0);
       }
       frame = requestAnimationFrame(tick);
