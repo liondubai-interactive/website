@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "LionDubai Interactive",
     description,
-    images: ["/og.png"],
+    images: socialImages,
   },
 };
 

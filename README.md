@@ -78,6 +78,13 @@ Shared type, color and surface styles keep public and account pages consistent.
 The sticky header uses centered pill navigation, with account and download actions on the right.
 It blends into the page at the top and gains a subtle divider when scrolled. The opening section
 fills the available viewport; the plugin cards follow below it.
+The home hero and header use burgundy with warm white text and a pale rose accent.
+A CSS radial glow separates the 3D scene from the background without adding a
+texture or affecting drag controls. The catalogue and other pages remain light.
+Shared links use a versioned image of this hero. Regenerate it against the local
+preview with `node scripts/render-social-card.mjs`; update its versioned filename
+and shared metadata when replacing it. Keep older published image URLs available
+for cached cards. Open Graph and Twitter metadata use the same image definition.
 On mobile, the hero places the headline above the scene, followed by the short
 description, actions and trial facts. The featured-plugin section uses a compact
 heading row, with the trial note stacked beneath it on narrow screens.
@@ -106,7 +113,11 @@ Model provenance is in `public/models/LICENSE.txt`. The phone is original geomet
 with a continuous back; the earlier royalty-free reference phone is not distributed.
 Its height is about 47% of the laptop width, matching a 16 cm phone beside a
 roughly 34 cm laptop. The floating symbols keep their approved scale and positions.
-Screens retain separate materials for future media. Keep the Blender authoring
+Screens retain separate materials for future media. Shallow beveled lion/Burj
+emblems share one polished chrome material on the laptop lid and phone back.
+The lid's flat face has uniform normals to prevent a diagonal reflection seam;
+its rounded edges retain their original shading. Device geometry, media UVs and
+animation are preserved. Keep the Blender authoring
 files outside this public website repository. To optimize a new GLB export, run:
 
 ```sh

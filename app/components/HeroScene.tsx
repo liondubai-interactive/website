@@ -48,7 +48,7 @@ export function HeroScene() {
         panTarget.hidden = true;
         scene.append(panTarget);
         viewer = scene;
-        viewer.src = "/models/hero-v22.glb";
+        viewer.src = "/models/hero-v28.glb";
         viewer.alt = "Floating laptop, phone, TikTok coin, Twitch crystal, gift box and subscription star, KICKs gem and YouTube Jewel. Drag or use arrow keys to rotate.";
         viewer.cameraControls = true;
         viewer.disableZoom = true;
@@ -99,7 +99,7 @@ export function HeroScene() {
 
   return (
     <div className="hero-visual" ref={host} data-ready={status === "ready"}>
-      {status === "failed" && <Image className="hero-poster" src="/models/hero-v22.webp" alt="A floating laptop and phone with TikTok, Twitch, Kick and YouTube symbols" width={800} height={726} unoptimized />}
+      {status === "failed" && <Image className="hero-poster" src="/models/hero-v28.webp" alt="A floating laptop and phone with TikTok, Twitch, Kick and YouTube symbols" width={800} height={726} unoptimized />}
     </div>
   );
 }

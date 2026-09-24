@@ -226,6 +226,39 @@ h3 {
 .hero h1 span {
   color: var(--accent);
 }
+/* Home hero theme; the catalogue and other routes retain their light surfaces. */
+.hero-band {
+  overflow: clip;
+  --accent: #f3b1b4;
+  --muted: #dec6cb;
+  --line: #ffffff24;
+  color: #fff5ef;
+  background: radial-gradient(ellipse at 76% 42%, #712335 0%, #521522 46%, #41101b 100%);
+}
+.hero-band .button-primary { background: #fff5ef; color: #521522; }
+.hero-band .button-primary:hover:not(:disabled) { background: #fff; }
+.hero-band .button-primary:disabled { background: #c5a8ae; color: #41101b; opacity: .8; }
+.hero-band .button-secondary { border-color: #ffffff40; }
+.hero-band .button-secondary:hover { background: #ffffff12; }
+.hero-band .hero-visual::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  background: radial-gradient(ellipse closest-side, #fffaf5 0%, #fffaf5ed 35%, #fffaf5a6 58%, #fffaf540 78%, #fffaf500 100%);
+}
+.site-frame:has(.hero-band) .site-header {
+  --paper: #41101b;
+  --muted: #dec6cb;
+  --soft: #ffffff0d;
+  --line: #ffffff24;
+  --accent: #f3b1b4;
+  color: #fff5ef;
+}
+.site-frame:has(.hero-band) :is(.site-nav > a[aria-current="page"], .header-download) { color: #41101b; }
+.site-frame:has(.hero-band) .header-download:hover { background: #ffd5d3; }
+.site-frame:has(.hero-band) .account-avatar { color: inherit; }
+.site-frame:has(.hero-band) .account-dropdown { --soft: #f0f1f3; --line: #e4e5e8; }
 .eyebrow {
   display: flex;
   align-items: center;

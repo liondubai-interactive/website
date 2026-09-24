@@ -6,7 +6,7 @@ const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
 
 test("hero stays small, self-contained and keeps all eight animated objects", async () => {
-  const data = await readFile(new URL("models/hero-v22.glb", outputRoot));
+  const data = await readFile(new URL("models/hero-v28.glb", outputRoot));
   assert.ok(data.length < 500_000, "Keep the complete model below 500 KB");
   const gltf = JSON.parse(data.subarray(20, 20 + data.readUInt32LE(12)).toString());
   assert.equal(gltf.animations.length, 1);
@@ -39,7 +39,7 @@ test("hero stays small, self-contained and keeps all eight animated objects", as
   assert.equal(gltf.images?.length ?? 0, 0);
   assert.ok(gltf.buffers.every((buffer) => !buffer.uri));
   assert.ok(!(gltf.extensionsRequired ?? []).some((name) => /draco|meshopt/i.test(name)));
-  const poster = await readFile(new URL("models/hero-v22.webp", outputRoot));
+  const poster = await readFile(new URL("models/hero-v28.webp", outputRoot));
   assert.ok(poster.length < 30_000);
   assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /max-age=31536000, immutable/);
 });
@@ -52,7 +52,7 @@ test("exports the product home with visible policy links", async () => {
   const html = await readPage("index.html");
 
   assert.match(html, /<title>LionDubai Interactive<\/title>/i);
-  assert.match(html, /<span>Interactive<\/span><br\s*\/>Multi-platform/);
+  assert.match(html, /Interactive<br\s*\/><span>Multi<\/span>-platform/);
   assert.match(html, new RegExp(`href="${basePath}/privacy/"`));
   assert.match(html, new RegExp(`href="${basePath}/terms/"`));
   assert.match(html, /aria-label="Contact"/);
@@ -96,20 +96,20 @@ test("uses the custom domain for links, metadata, and images", async () => {
   const html = await readPage("index.html");
   const origin = "https://liondubai.net";
 
-  assert.match(html, new RegExp(`${origin}${basePath}/og\\.png`));
+  assert.match(html, new RegExp(`${origin}${basePath}/og-v2\\.png`));
   assert.match(html, new RegExp(`src="${basePath}/app-icon\\.png"`));
   assert.doesNotMatch(html, /localhost/);
 });
 
 test("ships valid portal and social images", async () => {
   const appIcon = await readFile(new URL("app-icon.png", outputRoot));
-  const socialCard = await readFile(new URL("og.png", outputRoot));
+  const socialCard = await readFile(new URL("og-v2.png", outputRoot));
 
   assert.equal(appIcon.readUInt32BE(16), 192);
   assert.equal(appIcon.readUInt32BE(20), 192);
   assert.ok(appIcon.length < 50_000, "Shared browser/header icon should stay small");
-  assert.equal(socialCard.readUInt32BE(16), 1536);
-  assert.equal(socialCard.readUInt32BE(20), 1024);
+  assert.equal(socialCard.readUInt32BE(16), 1200);
+  assert.equal(socialCard.readUInt32BE(20), 800);
 });
 
 test("retains the shared social image on every page with its own metadata", async () => {
@@ -117,7 +117,7 @@ test("retains the shared social image on every page with its own metadata", asyn
     const html = await readPage(`${route}index.html`);
     assert.match(
       html,
-      /property="og:image" content="https:\/\/liondubai\.net\/og\.png"/,
+      /property="og:image" content="https:\/\/liondubai\.net\/og-v2\.png"/,
       route || "home",
     );
     assert.match(

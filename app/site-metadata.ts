@@ -3,9 +3,9 @@ import { siteOrigin } from "./site-config";
 
 export const socialImages = [
   {
-    url: "/og.png",
-    width: 1536,
-    height: 1024,
+    url: "/og-v2.png",
+    width: 1200,
+    height: 800,
     alt: "LionDubai Interactive — Interactive — Multi-platform",
   },
 ];

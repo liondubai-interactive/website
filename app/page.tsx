@@ -7,26 +7,28 @@ import { HeroScene } from "./components/HeroScene";
 export default function Home() {
   return (
     <main id="main-content">
-      <section className="hero shell">
-        <div className="hero-copy">
-          <h1>
-            <span>Interactive</span>
-            <br />
-            Multi-platform
-          </h1>
-          <div className="hero-details">
-            <p className="hero-lead">
-              Turn live interactions into in-game actions.
-            </p>
-            <DownloadButton browseGames />
-            <dl className="hero-facts">
-              <div><dt>Plugins</dt><dd>{integrations.length}</dd></div>
-              <div><dt>Free trial per plugin</dt><dd>24h</dd></div>
-            </dl>
+      <div className="hero-band">
+        <section className="hero shell">
+          <div className="hero-copy">
+            <h1>
+              Interactive
+              <br />
+              <span>Multi</span>-platform
+            </h1>
+            <div className="hero-details">
+              <p className="hero-lead">
+                Turn live interactions into in-game actions.
+              </p>
+              <DownloadButton browseGames />
+              <dl className="hero-facts">
+                <div><dt>Plugins</dt><dd>{integrations.length}</dd></div>
+                <div><dt>Free trial per plugin</dt><dd>24h</dd></div>
+              </dl>
+            </div>
           </div>
-        </div>
-        <HeroScene />
-      </section>
+          <HeroScene />
+        </section>
+      </div>
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
           <h2 id="games-heading" className="eyebrow">FEATURED PLUGINS</h2>
