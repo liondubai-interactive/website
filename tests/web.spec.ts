@@ -182,6 +182,8 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
     await page.screenshot({ path: testInfo.outputPath(`games-${width}.png`), fullPage: true });
     await page.getByRole("link", { name: "Explore Minecraft plugins" }).click();
     await expect(page).toHaveURL(/\/#games$/);
+    await expect(page.locator("body")).toHaveCSS("background-color", "rgb(65, 16, 27)");
+    await expect(page.locator(".game-item").first()).toHaveCSS("background-color", "rgb(82, 27, 41)");
     await expect(header).toHaveAttribute("data-scrolled", "true");
     expect((await header.boundingBox())!.y).toBe(0);
     await page.screenshot({ path: testInfo.outputPath(`header-scrolled-${width}.png`) });
@@ -209,6 +211,8 @@ test("public pages and signed-out account fit narrow and desktop screens", async
     for (const path of ["/games/", "/download/", "/login/", "/account/", "/privacy/", "/terms/", "/refunds/", "/missing-page/"]) {
       await page.goto(path);
       await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(page.locator("body")).toHaveCSS("background-color", "rgb(65, 16, 27)");
+      await expect(page.locator(".site-header")).toHaveCSS("background-color", "rgb(65, 16, 27)");
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), { message: `${path} at ${width}px` }).toBe(true);
     }
   }
@@ -275,6 +279,7 @@ test("trial requires confirmation, uses CSRF, updates once; logout clears accoun
     .filter({ has: page.getByRole("heading", { name: /Survival$/ }) });
   await survival.getByRole("button", { name: "24-hour free trial" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCSS("background-color", "rgb(82, 27, 41)");
   await expect(page.getByRole("button", { name: "Cancel", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).not.toBeVisible();

@@ -78,9 +78,11 @@ Shared type, color and surface styles keep public and account pages consistent.
 The sticky header uses centered pill navigation, with account and download actions on the right.
 It blends into the page at the top and gains a subtle divider when scrolled. The opening section
 fills the available viewport; the plugin cards follow below it.
-The home hero and header use burgundy with warm white text and a pale rose accent.
+Every page uses burgundy with warm white text and a pale rose accent.
 A CSS radial glow separates the 3D scene from the background without adding a
-texture or affecting drag controls. The catalogue and other pages remain light.
+texture or affecting drag controls. The hero fades into the shared page color;
+catalogue cards, account panels, menus and dialogs use a lighter burgundy surface.
+Success and error states use colors with contrast against these dark surfaces.
 Shared links use a versioned image of this hero. Regenerate it against the local
 preview with `node scripts/render-social-card.mjs`; update its versioned filename
 and shared metadata when replacing it. Keep older published image URLs available
