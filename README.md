@@ -96,7 +96,7 @@ objects, the loop boundary, the initial camera framing and a rotated view after 
 
 The layout supports narrow screens, visible keyboard focus, a skip link and
 reduced motion. When changing it, check home, download and policy pages
-at mobile and desktop widths. Preserve launch-status and billing-policy notices.
+at mobile and desktop widths. Keep availability and payment information accurate.
 
 ## Website accounts and releases
 
@@ -113,11 +113,12 @@ every page. It uses a native popover for keyboard and outside-click dismissal.
 Trials require confirmation. Active trial buttons count down locally from server time and expiry using
 elapsed browser time, without polling. Public plugin portraits are optimized copies
 of the desktop artwork in `public/plugins/`, shared by home and account pages.
-Backend prices (including Sandbox prices) drive account billing, while public pricing
-remains clearly labeled planned launch pricing. Website
+Backend prices (including Sandbox prices) drive account billing. Public product copy
+is platform-neutral and avoids development-stage labels; provider-specific sign-in,
+privacy disclosures and accurate payment notices remain explicit. Website
 login readiness comes from `/web/config`; do not enable public sign-in before the backend
 and approved TikTok web callback are ready. `?view=customer` keeps an administrator on
-the ordinary account page instead of redirecting to staff verification.
+the ordinary account page instead of redirecting to the admin dashboard.
 
 The download button stays disabled until all three public build variables in
 `.env.example` are configured: release URL, version and SHA-256. Configure only an actual

@@ -15,8 +15,7 @@ export default function Home() {
             <span>In their hands.</span>
           </h1>
           <p className="hero-lead">
-            Turn TikTok LIVE gifts, likes and comments into in-game actions.
-            Let your viewers shape what happens next.
+            Turn live interactions into in-game actions.
           </p>
           <DownloadButton browseGames />
           <dl className="hero-facts">

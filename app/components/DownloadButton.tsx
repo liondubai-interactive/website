@@ -10,14 +10,14 @@ export function DownloadButton({ browseGames = false }: { browseGames?: boolean 
             <WindowsIcon /> Download for Windows
           </a>
         ) : (
-          <button className="button button-primary" disabled title="Public download is not available yet">
+          <button className="button button-primary" disabled title="Download unavailable">
             <WindowsIcon /> Download for Windows
           </button>
         )}
         {browseGames && <Link className="button button-secondary" href="/games/">Explore games</Link>}
       </div>
       {windowsRelease && (
-        <p className="beta-note">
+        <p className="release-note">
           Version {windowsRelease.version} · Windows x64 ·{" "}
           <Link href="/download/">Installation details</Link>
         </p>

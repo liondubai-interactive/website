@@ -7,7 +7,7 @@ import { socialImages } from "./site-metadata";
 import "./globals.css";
 
 const description =
-  "Turn TikTok LIVE interactions into in-game actions with LionDubai Interactive.";
+  "Turn live interactions into in-game actions with LionDubai Interactive.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),

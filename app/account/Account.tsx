@@ -16,6 +16,11 @@ export function Account() {
   const [trial, setTrial] = useState<{ id: string; name: string } | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
+  // Server time anchors the display; device clock changes cannot extend access.
+  const now = billing ? Date.parse(billing.serverTime) + Math.max(0, tick - billing.receivedAt) : 0;
+  const hasTimedAccess = billing?.plugins.some(
+    (plugin) => plugin.access !== "locked" && plugin.expiresAt && Date.parse(plugin.expiresAt) > now,
+  );
 
   const fail = useCallback(
     (error: unknown) => {
@@ -52,7 +57,7 @@ export function Account() {
   }, [session, fail]);
 
   useEffect(() => {
-    if (!billing) return;
+    if (!session || !hasTimedAccess) return;
     const update = () => setTick(performance.now());
     const timer = window.setInterval(update, 1_000);
     document.addEventListener("visibilitychange", update);
@@ -60,7 +65,7 @@ export function Account() {
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", update);
     };
-  }, [billing]);
+  }, [session, hasTimedAccess]);
 
   useEffect(() => {
     if (trial) {
@@ -118,7 +123,7 @@ export function Account() {
           <h1 id="plugins-title">Your plugins</h1>
           <button
             className="text-button"
-            disabled={Boolean(busy)}
+            disabled={Boolean(busy) || (!billing && !error)}
             onClick={() => void act("refresh")}
           >
             {busy.startsWith("refresh") ? "Refreshing…" : "Refresh"}
@@ -133,14 +138,12 @@ export function Account() {
         {billing && (
           <>
             {billing.mode === "sandbox" && (
-              <p className="notice">Sandbox · Test payments only. No real charges.</p>
+              <p className="notice">No payment will be collected.</p>
             )}
             <div className="account-plugins">
               {integrations.map((plugin) => {
                 const id = `minecraft-${plugin.id}`;
                 const access = billing.plugins.find((entry) => entry.pluginId === id);
-                // Server time anchors the display; device clock changes cannot extend it.
-                const now = Date.parse(billing.serverTime) + Math.max(0, tick - billing.receivedAt);
                 const remaining = access?.expiresAt ? Math.max(0, Date.parse(access.expiresAt) - now) : 0;
                 const active = Boolean(access && access.access !== "locked" && remaining > 0);
                 const trialActive = active && access?.access === "trial";

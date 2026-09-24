@@ -68,13 +68,6 @@ export default function RefundsPage() {
           disputes.
         </p>
       </section>
-      <section>
-        <h2>Current availability</h2>
-        <p>
-          Public purchases are not available yet. Payment testing uses Paddle
-          Sandbox and does not charge real money.
-        </p>
-      </section>
     </PolicyPage>
   );
 }

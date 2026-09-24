@@ -117,8 +117,8 @@ export default function PrivacyPage() {
         <h2>Security and updates</h2>
         <p>
           We use access controls, encrypted public connections and protected
-          session credentials. No service can guarantee absolute security. The
-          app is in limited testing; this policy will be updated as features and
+          session credentials. No service can guarantee absolute security. This
+          policy will be updated as features and
           data processing change. Use requires meeting the eligibility rules of
           the platforms and games you connect.
         </p>

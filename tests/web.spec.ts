@@ -202,11 +202,38 @@ test("sign-in calls backend once and navigates to TikTok", async ({ page }) => {
   expect(calls.filter((call) => call.path === "/auth/tiktok/start")).toHaveLength(1);
 });
 
+test("public pages and signed-out account fit narrow and desktop screens", async ({ page }) => {
+  await mock(page);
+  for (const width of [320, 1366]) {
+    await page.setViewportSize({ width, height: 850 });
+    for (const path of ["/games/", "/download/", "/login/", "/account/", "/privacy/", "/terms/", "/refunds/", "/missing-page/"]) {
+      await page.goto(path);
+      await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), { message: `${path} at ${width}px` }).toBe(true);
+    }
+  }
+});
+
+test("account waits for initial billing before enabling refresh", async ({ page }) => {
+  await mock(page, { signedIn: true });
+  let releaseBilling!: () => void;
+  const gate = new Promise<void>((resolve) => { releaseBilling = resolve; });
+  await page.route("**/web/billing", async (route) => {
+    await gate;
+    await route.fallback();
+  });
+  await page.goto("/account/");
+  await expect(page.getByText("Loading plugins…")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Refresh", exact: true })).toBeDisabled();
+  releaseBilling();
+  await expect(page.getByRole("button", { name: "Refresh", exact: true })).toBeEnabled();
+});
+
 test("disabled config exposes a useful state", async ({ page }) => {
   await mock(page, { loginEnabled: false });
   await page.goto("/login/");
   await expect(page.getByRole("button", { name: "Continue with TikTok" })).toBeDisabled();
-  await expect(page.getByRole("status")).toContainText("Website sign-in is not available yet");
+  await expect(page.getByRole("status")).toContainText("Website sign-in is unavailable");
 });
 
 test("callback failure is concise and unsafe payment redirects are rejected", async ({ page }) => {

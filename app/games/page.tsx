@@ -5,7 +5,7 @@ import { pageMetadata } from "../site-metadata";
 
 export const metadata = pageMetadata(
   "Games",
-  "Explore games and plugins for interactive TikTok LIVE streams.",
+  "Explore games and plugins for interactive live streams.",
   "games",
 );
 

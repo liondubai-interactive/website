@@ -6,7 +6,7 @@ export const socialImages = [
     url: "/og.png",
     width: 1536,
     height: 1024,
-    alt: "LionDubai Interactive — Your stream. Their next move.",
+    alt: "LionDubai Interactive — Your stream. In their hands.",
   },
 ];
 

@@ -60,7 +60,7 @@ export function LoginForm() {
       </button>
       {enabled === false && (
         <p className="notice" role="status">
-          Website sign-in is not available yet. You can still sign in from the desktop app.
+          Website sign-in is unavailable. You can still sign in from the desktop app.
         </p>
       )}
       {error && (

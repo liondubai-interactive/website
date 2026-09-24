@@ -18,14 +18,14 @@ export default function DownloadPage() {
         into the game.
       </h1>
       <p className="hero-lead">
-        LionDubai Interactive for Windows. Sign in with TikTok inside the app to get started.
+        LionDubai Interactive for Windows. Bring your viewers into the game.
       </p>
       <DownloadButton />
       <section className="download-details">
         <h2>Getting started</h2>
         <ol>
           <li>Download and install the Windows app.</li>
-          <li>Sign in with your TikTok account.</li>
+          <li>Sign in to your account.</li>
           <li>Choose a plugin and start its free trial when you&apos;re ready.</li>
         </ol>
         <p>

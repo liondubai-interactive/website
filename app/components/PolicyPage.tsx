@@ -19,7 +19,7 @@ export function PolicyPage({
         <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         <p>{summary}</p>
-        <span>Effective September 21, 2026</span>
+        <span>Effective September 24, 2026</span>
       </header>
       <article className="policy-card">{children}</article>
     </main>

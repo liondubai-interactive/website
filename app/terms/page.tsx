@@ -4,7 +4,7 @@ import { pageMetadata } from "../site-metadata";
 
 export const metadata = pageMetadata(
   "Terms",
-  "Terms for the LionDubai Interactive sandbox desktop app.",
+  "Terms for the LionDubai Interactive desktop app.",
   "terms",
 );
 
@@ -13,32 +13,22 @@ export default function TermsPage() {
     <PolicyPage
       eyebrow="TERMS"
       title="Terms of Use"
-      summary="These terms govern access to the LionDubai Interactive desktop app and its limited developer sandbox."
+      summary="These terms govern access to LionDubai Interactive."
     >
       <section>
         <h2>Accepting these terms</h2>
         <p>
           By using LionDubai Interactive, you agree to these terms and the
           <Link href="/privacy"> Privacy Policy</Link>. If you do not agree, do
-          not use the app. You must be legally able to use TikTok and Minecraft
+          not use the app. You must be legally able to use the platforms and games you connect
           in your location; minors must have any consent required by law.
-        </p>
-      </section>
-
-      <section>
-        <h2>Sandbox service</h2>
-        <p>
-          The app is currently a limited beta and developer sandbox. Features,
-          availability, saved data, and access may change, pause, or end while
-          testing continues. The service is not represented as production-ready
-          or approved for unrestricted public TikTok access.
         </p>
       </section>
 
       <section>
         <h2>Subscriptions and trials</h2>
         <p>
-          When purchases become available, subscriptions unlock the selected
+          Subscriptions unlock the selected
           plugin at the <Link href="/#games">published price</Link>. Each
           subscription renews monthly until cancelled. Applicable taxes and the
           full payable amount are shown at checkout. Cancellation stops future
@@ -50,8 +40,7 @@ export default function TermsPage() {
           <a href="https://www.paddle.com/legal/buyer-terms">buyer terms</a>.
           Payments are generally non-refundable, subject to applicable law and
           Paddle&apos;s policy. See our{" "}
-          <Link href="/refunds">refund policy</Link> for details. Public
-          purchases are not available during the current limited testing phase.
+          <Link href="/refunds">refund policy</Link> for details.
         </p>
       </section>
 
@@ -69,7 +58,7 @@ export default function TermsPage() {
         <h2>Fair and permitted use</h2>
         <p>You must not:</p>
         <ul>
-          <li>forge TikTok events, scores, identities, or match outcomes;</li>
+          <li>forge stream events, scores, identities, or match outcomes;</li>
           <li>
             cheat, automate abuse, exploit vulnerabilities, or evade controls;
           </li>
@@ -115,9 +104,9 @@ export default function TermsPage() {
       <section>
         <h2>Availability and disclaimers</h2>
         <p>
-          The sandbox is provided on an “as available” basis. To the maximum
+          The service is provided on an “as available” basis. To the maximum
           extent permitted by law, we do not guarantee uninterrupted access,
-          compatibility, error-free operation, preservation of beta data, or a
+          compatibility, error-free operation, or a
           particular competitive result. Nothing here limits rights that cannot
           legally be excluded.
         </p>
@@ -127,7 +116,7 @@ export default function TermsPage() {
         <h2>Liability and changes</h2>
         <p>
           To the maximum extent permitted by law, the operator is not liable for
-          indirect or consequential loss arising from use of the sandbox. We may
+          indirect or consequential loss arising from use of the service. We may
           update these terms as the product develops. Continued use after an
           updated effective date means you accept the revised terms. Mandatory
           consumer protections and the laws applicable to you remain unaffected.

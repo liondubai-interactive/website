@@ -128,7 +128,7 @@ test("exports a real download destination only when a release is configured", as
   const html = await readPage("download/index.html");
   assert.match(html, /Download for Windows/);
   if (!process.env.NEXT_PUBLIC_WINDOWS_DOWNLOAD_URL) {
-    assert.match(html, /Public download is not available yet/);
+    assert.match(html, /Download unavailable/);
     assert.match(html, /<button[^>]*disabled/);
     assert.doesNotMatch(html, /href="[^"]+\.(exe|msi)/);
   }
