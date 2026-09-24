@@ -17,7 +17,11 @@ export default function Home() {
             Turn TikTok LIVE gifts, likes and comments into in-game actions.
             Let your viewers shape what happens next.
           </p>
-          <DownloadButton />
+          <DownloadButton browseGames />
+          <dl className="hero-facts">
+            <div><dt>Plugins</dt><dd>{integrations.length}</dd></div>
+            <div><dt>Free trial per plugin</dt><dd>24h</dd></div>
+          </dl>
         </div>
         <div className="hero-visual" aria-hidden="true" />
       </section>

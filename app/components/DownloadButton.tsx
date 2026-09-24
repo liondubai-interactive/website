@@ -1,18 +1,21 @@
 import Link from "next/link";
 import { windowsRelease } from "../site-config";
 
-export function DownloadButton() {
+export function DownloadButton({ browseGames = false }: { browseGames?: boolean }) {
   return (
     <div className="download-action">
-      {windowsRelease ? (
-        <a className="button button-primary" href={windowsRelease.url}>
-          <WindowsIcon /> Download for Windows
-        </a>
-      ) : (
-        <button className="button button-primary" disabled title="Public download is not available yet">
-          <WindowsIcon /> Download for Windows
-        </button>
-      )}
+      <div className="download-buttons">
+        {windowsRelease ? (
+          <a className="button button-primary" href={windowsRelease.url}>
+            <WindowsIcon /> Download for Windows
+          </a>
+        ) : (
+          <button className="button button-primary" disabled title="Public download is not available yet">
+            <WindowsIcon /> Download for Windows
+          </button>
+        )}
+        {browseGames && <Link className="button button-secondary" href="/games/">Explore games</Link>}
+      </div>
       {windowsRelease && (
         <p className="beta-note">
           Version {windowsRelease.version} · Windows x64 ·{" "}

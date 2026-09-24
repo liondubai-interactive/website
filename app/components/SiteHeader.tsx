@@ -2,10 +2,12 @@
 
 /* eslint-disable @next/next/no-img-element -- Static icon is pre-sized for static hosting. */
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AccountMenu } from "./WebSession";
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const topMarker = useRef<HTMLSpanElement>(null);
   const [scrolled, setScrolled] = useState(false);
 
@@ -31,10 +33,13 @@ export function SiteHeader() {
             </span>
           </Link>
           <nav className="site-nav" aria-label="Primary navigation">
-            <Link href="/download/">Download</Link>
-            <Link href="/games/">Games</Link>
-            <AccountMenu />
+            <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>Home</Link>
+            <Link href="/games/" aria-current={pathname.startsWith("/games") ? "page" : undefined}>Games</Link>
           </nav>
+          <div className="header-actions">
+            <AccountMenu />
+            <Link href="/download/" className="header-download" aria-current={pathname.startsWith("/download") ? "page" : undefined}>Download</Link>
+          </div>
         </div>
       </header>
     </>

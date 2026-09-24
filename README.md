@@ -63,7 +63,9 @@ add other games only when their integrations are ready.
 The home plugin cards use a responsive three-column grid with a small image zoom
 and highlight on hover or keyboard focus; reduced motion disables transitions.
 Shared type, color and surface styles keep public and account pages consistent.
-The sticky header blends into the page at the top and gains a subtle divider when scrolled.
+The sticky header uses centered pill navigation, with account and download actions on the right.
+It blends into the page at the top and gains a subtle divider when scrolled. The opening section
+fills the available viewport; the plugin cards follow below it.
 The hero reserves a blank desktop area for a future 3D scene; this space collapses on mobile.
 No 3D runtime, animation library, external font or tracker is loaded.
 
