@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { observeScrolling, prefersEconomyRendering } from "../rendering";
+import { observePageVisibility, observeScrolling, prefersEconomyRendering } from "../rendering";
 
 type Particle = {
   x: number; y: number;
@@ -170,9 +170,6 @@ export function BackgroundParticles() {
       wake();
     }
 
-    function suspend() { paused = true; reset(); }
-    function resume() { paused = false; reset(); wake(); }
-    function visibility() { if (document.hidden) suspend(); else resume(); }
     function preference() { reset(); wake(); }
 
     const resizeObserver = new ResizeObserver(resize);
@@ -185,10 +182,12 @@ export function BackgroundParticles() {
     });
     window.addEventListener("pointermove", move, { passive: true, capture: true });
     document.documentElement.addEventListener("pointerleave", leave);
-    window.addEventListener("blur", suspend);
-    window.addEventListener("focus", resume);
+    const stopObservingVisibility = observePageVisibility(visible => {
+      paused = !visible;
+      reset();
+      wake();
+    });
     window.addEventListener("resize", resize);
-    document.addEventListener("visibilitychange", visibility);
     motion.addEventListener("change", preference);
     hover.addEventListener("change", preference);
     return () => {
@@ -197,10 +196,8 @@ export function BackgroundParticles() {
       resizeObserver.disconnect();
       window.removeEventListener("pointermove", move, true);
       document.documentElement.removeEventListener("pointerleave", leave);
-      window.removeEventListener("blur", suspend);
-      window.removeEventListener("focus", resume);
+      stopObservingVisibility();
       window.removeEventListener("resize", resize);
-      document.removeEventListener("visibilitychange", visibility);
       motion.removeEventListener("change", preference);
       hover.removeEventListener("change", preference);
     };

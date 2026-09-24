@@ -122,7 +122,7 @@ hits, caps its pixel ratio at 1.5 (1 on reported limited hardware) and contains 
 110 particles. Two tiny in-memory sprites are drawn in sync with the display,
 with elapsed-time motion
 and cached pointer bounds to avoid layout reads on mouse movement. Animation
-pauses in hidden or unfocused tabs, and remains
+pauses in hidden tabs, and remains
 static for reduced-motion preferences. Touch devices retain drift without cursor repulsion. No extra asset or library
 is downloaded for the effect.
 
@@ -132,6 +132,9 @@ pause. One shared passive listener coordinates them without React state updates.
 New model initialization waits until scrolling stops. The particle canvas uses
 the stable large viewport height so mobile address-bar movement does not repeatedly
 reallocate its bitmap; other size changes are applied after the scroll settles.
+Animation visibility follows the page lifecycle, including history restoration.
+Visible pages resume without a click; input focus (for example the address bar or
+an enclosing preview frame) cannot latch an animation in its paused state.
 Success and error states use colors with contrast against these dark surfaces.
 Shared links use a versioned image of this hero. Regenerate it against the local
 preview with `node scripts/render-social-card.mjs`; update its versioned filename
@@ -149,10 +152,14 @@ heading row, with the trial note stacked beneath it on narrow screens.
 The home hero uses a locally bundled, lazy-loaded `@google/model-viewer` for the
 interactive scene. Drag or arrow keys rotate it; zoom/pan are disabled so page
 scrolling stays normal. Independent floating animation plays automatically while
-visible, pausing offscreen and in hidden or unfocused tabs. Reduced motion stays static.
+visible, pausing offscreen and in hidden tabs. Reduced motion stays static.
 There is no visible control row. The scene fades in after loading with its camera settled,
 so there is no mismatched poster-to-model jump. A small WebP downloads only if 3D fails.
-The GLB stays below 500 KB and contains the complete scene and eight-second animation.
+The complete scene and eight-second animation transfer in less than 250 KB.
+`hero-v31.glb` batches compatible static siblings under their existing animated
+parents, reducing scene draw calls from 56 to 32. No triangles are removed and no
+new quantization is applied; materials, screen UVs, camera framing and animation
+tracks are retained. The previous `hero-v30.glb` remains available as the original.
 It needs no textures, external decoder, environment download, API requests or server rendering.
 The built-in studio environment supplies reflections for metal and glass finishes.
 Standard-density desktops retain 1.25x supersampling for smoother diagonal edges.
@@ -162,7 +169,14 @@ logical processors or 4 GB reported memory) select the conservative mode; unknow
 hardware retains normal settings. Render scaling preserves the scene's visible
 size and camera framing, without changing model assets. The viewer can
 still reduce render resolution under load, and pauses when hidden or offscreen.
-Cloudflare serves static files only. Versioned `/models/` assets are cached for one
+Cloudflare serves static files only. Both models use precompressed HTTP gzip at
+`/models/encoded/`, with `Content-Encoding: gzip` configured in `public/_headers`
+and the development server. Browser-native decompression restores the exact GLB
+bytes without adding a JavaScript decoder. Keep raw GLBs at `/models/` for tools;
+run `node scripts/compress-models.mjs` after updating them. Export tests check that
+the encoded copies match. Each model is fetched once through the viewer; fetch
+preloads are deliberately avoided because WebKit can download them twice.
+Versioned `/models/` assets are cached for one
 year; change their filenames and component references whenever their contents change.
 The viewer runtime is one shared browser chunk, loaded when a 3D element becomes
 visible. Other routes load only the small header emblem, never the hero model.

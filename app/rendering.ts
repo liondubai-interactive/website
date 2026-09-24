@@ -27,16 +27,44 @@ function onScroll() {
   scrollTimer = window.setTimeout(() => notifyScroll(false), 150);
 }
 
+function settleRestoredScroll() {
+  if (document.hidden) return;
+  window.clearTimeout(scrollTimer);
+  notifyScroll(false);
+}
+
 export function observeScrolling(listener: (scrolling: boolean) => void) {
-  if (!scrollListeners.size) window.addEventListener("scroll", onScroll, { passive: true });
+  if (!scrollListeners.size) {
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pageshow", settleRestoredScroll);
+    document.addEventListener("visibilitychange", settleRestoredScroll);
+  }
   scrollListeners.add(listener);
   listener(scrolling);
   return () => {
     scrollListeners.delete(listener);
     if (!scrollListeners.size) {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pageshow", settleRestoredScroll);
+      document.removeEventListener("visibilitychange", settleRestoredScroll);
       window.clearTimeout(scrollTimer);
       scrolling = false;
     }
+  };
+}
+
+// Visibility, not input focus: switching from browser chrome or an embedded preview
+// does not reliably send a focus event. A visible page must not wait for a click.
+export function observePageVisibility(listener: (visible: boolean) => void) {
+  const sync = () => listener(!document.hidden);
+  const hide = () => listener(false);
+  document.addEventListener("visibilitychange", sync);
+  window.addEventListener("pageshow", sync);
+  window.addEventListener("pagehide", hide);
+  sync();
+  return () => {
+    document.removeEventListener("visibilitychange", sync);
+    window.removeEventListener("pageshow", sync);
+    window.removeEventListener("pagehide", hide);
   };
 }

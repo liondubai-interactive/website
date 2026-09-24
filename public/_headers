@@ -1,2 +1,6 @@
 /models/*
   Cache-Control: public, max-age=31536000, immutable
+
+/models/encoded/*
+  Content-Type: model/gltf-binary
+  Content-Encoding: gzip

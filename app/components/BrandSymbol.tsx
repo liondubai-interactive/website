@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Crisp vector fallback for the small 3D emblem. */
 import { useEffect, useRef } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
-import { observeScrolling, prefersEconomyRendering } from "../rendering";
+import { observePageVisibility, observeScrolling, prefersEconomyRendering } from "../rendering";
 
 export function BrandSymbol() {
   const host = useRef<HTMLSpanElement>(null);
@@ -19,6 +19,7 @@ export function BrandSymbol() {
     let visible = false;
     let scrolling = false;
     let disposed = false;
+    let pageVisible = !document.hidden;
 
     function stop() {
       viewer?.pause();
@@ -34,7 +35,7 @@ export function BrandSymbol() {
     }
     function syncPlayback() {
       if (disposed) return;
-      if (!visible || scrolling || document.hidden || motion.matches) {
+      if (!visible || scrolling || !pageVisible || motion.matches) {
         stop();
         if (motion.matches) container.removeAttribute("data-ready");
         return;
@@ -58,10 +59,10 @@ export function BrandSymbol() {
         // Shared with HeroScene: the package is loaded once, not once per model.
         await import("@google/model-viewer");
         if (disposed) return;
-        if (!visible || scrolling || document.hidden || motion.matches) { started = false; return; }
+        if (!visible || scrolling || !pageVisible || motion.matches) { started = false; return; }
         const scene = document.createElement("model-viewer");
         viewer = scene;
-        scene.src = "/models/brand-symbol-v1.glb";
+        scene.src = "/models/encoded/brand-symbol-v1.glb";
         scene.setAttribute("aria-hidden", "true");
         scene.tabIndex = -1;
         scene.loading = "eager";
@@ -95,18 +96,14 @@ export function BrandSymbol() {
     });
     observer.observe(container);
     const stopObservingScroll = observeScrolling(active => { scrolling = active; syncPlayback(); });
-    document.addEventListener("visibilitychange", syncPlayback);
-    window.addEventListener("pageshow", syncPlayback);
-    window.addEventListener("focus", syncPlayback);
+    const stopObservingVisibility = observePageVisibility(active => { pageVisible = active; syncPlayback(); });
     window.addEventListener("resize", quality);
     motion.addEventListener("change", syncPlayback);
     return () => {
       disposed = true;
       stopObservingScroll();
       observer.disconnect();
-      document.removeEventListener("visibilitychange", syncPlayback);
-      window.removeEventListener("pageshow", syncPlayback);
-      window.removeEventListener("focus", syncPlayback);
+      stopObservingVisibility();
       window.removeEventListener("resize", quality);
       motion.removeEventListener("change", syncPlayback);
       fallback();

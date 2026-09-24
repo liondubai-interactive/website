@@ -1,6 +1,47 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { ModelViewerElement } from "@google/model-viewer";
 
+test("animations resume on page return without a focus event or click", async ({ page }) => {
+  await mock(page);
+  await page.goto("/");
+  const hero = page.locator(".hero-visual model-viewer");
+  const logo = page.locator(".brand-symbol model-viewer");
+  const pixels = () => page.locator(".background-particles").evaluate(el => (el as HTMLCanvasElement).toDataURL());
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true", { timeout: 30_000 });
+  await expect(page.locator(".brand-symbol")).toHaveAttribute("data-moving", "true");
+  for (const lifecycle of ["visibility", "history"]) {
+    await page.evaluate(kind => {
+      // Reproduce the old stale-focus path, plus a scroll timer suspended by the browser.
+      window.dispatchEvent(new Event("scroll"));
+      window.dispatchEvent(new Event("blur"));
+      if (kind === "visibility") {
+        Object.defineProperty(document, "hidden", { configurable: true, value: true });
+        document.dispatchEvent(new Event("visibilitychange"));
+      } else window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true }));
+    }, lifecycle);
+    await expect(hero).toHaveJSProperty("paused", true);
+    await expect(logo).toHaveJSProperty("paused", true);
+    const pausedPixels = await pixels();
+    await page.waitForTimeout(180);
+    expect(await pixels()).toBe(pausedPixels);
+    await page.evaluate(kind => {
+      if (kind === "visibility") {
+        Object.defineProperty(document, "hidden", { configurable: true, value: false });
+        document.dispatchEvent(new Event("visibilitychange"));
+      } else window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
+    }, lifecycle);
+    await expect(hero).toHaveJSProperty("paused", false);
+    await expect(logo).toHaveJSProperty("paused", false);
+    const time = await hero.evaluate(el => (el as ModelViewerElement).currentTime);
+    await expect.poll(() => hero.evaluate(el => (el as ModelViewerElement).currentTime)).not.toBe(time);
+    await expect.poll(pixels).not.toBe(pausedPixels);
+  }
+  // Focusing browser chrome / another window while this page stays visible cannot latch a pause.
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  const time = await hero.evaluate(el => (el as ModelViewerElement).currentTime);
+  await expect.poll(() => hero.evaluate(el => (el as ModelViewerElement).currentTime)).not.toBe(time);
+});
+
 test("solid header symbol turns in reverse and resumes after hidden tabs", async ({ page }) => {
   await page.goto("/games/");
   const symbol = page.locator(".brand-symbol");
@@ -48,7 +89,7 @@ test("header renders at zoom resolution and its solid model has a vector fallbac
       pixels: el.shadowRoot!.querySelector("canvas")!.width,
     }));
     expect(resolution.pixels).toBeGreaterThanOrEqual(resolution.displayWidth * 5);
-    await page.route("**/models/brand-symbol-v1.glb", route => route.abort());
+    await page.route("**/models/encoded/brand-symbol-v1.glb", route => route.abort());
     await page.reload();
     await expect(symbol.locator("img")).toBeVisible();
     await expect(symbol.locator("model-viewer")).toHaveCount(0);
@@ -104,7 +145,7 @@ test("local mobile URLs work directly and follow navigation inside the phone fra
   await page.screenshot({ path: testInfo.outputPath("local-phone-preview.png") });
 });
 
-test("page particles drift independently and pause for reduced motion or lost focus", async ({ page }) => {
+test("page particles drift independently and pause for reduced motion or hidden pages", async ({ page }) => {
   await page.goto("/games/");
   const canvas = page.locator(".background-particles");
   await expect(canvas).toHaveCount(1);
@@ -123,11 +164,17 @@ test("page particles drift independently and pause for reduced motion or lost fo
 
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await expect.poll(pixels).not.toBe(still);
-  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
   const paused = await pixels();
   await page.waitForTimeout(250);
   expect(await pixels()).toBe(paused);
-  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: false });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
   await expect.poll(pixels).not.toBe(paused);
   await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Home", exact: true }).click();
   await expect(canvas).toHaveCount(1);
@@ -175,11 +222,11 @@ test("hero floats automatically with drag, reduced motion and offscreen suspensi
   const modelRequests: string[] = [];
   let releaseModel!: () => void;
   const modelGate = new Promise<void>((resolve) => { releaseModel = resolve; });
-  await page.route("**/models/*.glb", async (route) => {
+  await page.route("**/models/encoded/*.glb", async (route) => {
     await modelGate;
     await route.continue();
   });
-  page.on("request", (request) => { if (request.url().endsWith("hero-v30.glb")) modelRequests.push(request.url()); });
+  page.on("request", (request) => { if (request.url().endsWith("hero-v31.glb")) modelRequests.push(request.url()); });
   await page.goto("/");
   const viewer = page.locator(".hero-visual model-viewer");
   await expect(viewer).toHaveCSS("opacity", "0");
@@ -192,9 +239,9 @@ test("hero floats automatically with drag, reduced motion and offscreen suspensi
   await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true");
   const initialTime = await viewer.evaluate(el => (el as ModelViewerElement).currentTime);
   await expect.poll(() => viewer.evaluate(el => (el as ModelViewerElement).currentTime)).not.toBe(initialTime);
-  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pagehide")));
   await expect(page.locator(".hero-visual")).not.toHaveAttribute("data-moving", "true");
-  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
   await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true");
   const orbit = await viewer.evaluate((el) => (el as ModelViewerElement).getCameraOrbit().theta);
   const box = (await viewer.boundingBox())!;
@@ -226,7 +273,7 @@ test("mobile hero is static for reduced motion and survives model failure", asyn
   await expect.poll(() => page.locator(".hero-visual model-viewer").evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("hero-mobile.png") });
-  await page.route("**/models/*.glb", (route) => route.abort());
+  await page.route("**/models/encoded/*.glb", (route) => route.abort());
   await page.reload();
   await page.locator(".hero-visual").scrollIntoViewIfNeeded();
   await expect(page.locator(".hero-poster")).toBeVisible();
@@ -239,7 +286,7 @@ test("scrolling holds decorative frames and resumes them without a jump", async 
   await page.goto("/");
   const hero = page.locator(".hero-visual model-viewer");
   const brand = page.locator(".brand-symbol");
-  await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true");
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
   await expect(brand).toHaveAttribute("data-moving", "true");
   const held = await page.evaluate(async () => {
     const model = document.querySelector(".hero-visual model-viewer") as ModelViewerElement;

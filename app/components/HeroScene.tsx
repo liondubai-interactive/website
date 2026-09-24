@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
-import { observeScrolling, prefersEconomyRendering } from "../rendering";
+import { observePageVisibility, observeScrolling, prefersEconomyRendering } from "../rendering";
 
 export function HeroScene() {
   const host = useRef<HTMLDivElement>(null);
@@ -18,7 +18,7 @@ export function HeroScene() {
     let visible = false;
     let started = false;
     let disposed = false;
-    let focused = true;
+    let pageVisible = !document.hidden;
     let scrolling = false;
 
     function syncQuality() {
@@ -32,9 +32,9 @@ export function HeroScene() {
     }
 
     function syncPlayback() {
-      if (!started && visible && !scrolling && !document.hidden) void load();
+      if (!started && visible && !scrolling && pageVisible) void load();
       if (!viewer?.loaded) return;
-      const play = visible && focused && !scrolling && !document.hidden && !motion.matches;
+      const play = visible && pageVisible && !scrolling && !motion.matches;
       if (play) {
         container.setAttribute("data-moving", "true");
         if (viewer.paused) viewer.play();
@@ -59,7 +59,7 @@ export function HeroScene() {
         // Hero model loads only on Home; the renderer is shared with the header emblem.
         await import("@google/model-viewer");
         if (disposed) return;
-        if (!visible || scrolling || document.hidden) { started = false; return; }
+        if (!visible || scrolling || !pageVisible) { started = false; return; }
         const scene = document.createElement("model-viewer");
         // The viewer's keyboard control lives inside its shadow root.
         const focusStyle = document.createElement("style");
@@ -72,7 +72,8 @@ export function HeroScene() {
         scene.append(panTarget);
         viewer = scene;
         syncQuality();
-        viewer.src = "/models/hero-v30.glb";
+        viewer.src = "/models/encoded/hero-v31.glb";
+        viewer.loading = "eager";
         viewer.alt = "Floating laptop, phone, TikTok coin, Twitch crystal, gift box and subscription star, KICKs gem and YouTube Jewel. Drag or use arrow keys to rotate.";
         viewer.cameraControls = true;
         viewer.disableZoom = true;
@@ -113,23 +114,17 @@ export function HeroScene() {
     });
     observer.observe(container);
     const stopObservingScroll = observeScrolling(active => { scrolling = active; syncPlayback(); });
-    function blur() { focused = false; syncPlayback(); }
-    function focus() { focused = true; syncPlayback(); }
-    window.addEventListener("blur", blur);
-    window.addEventListener("focus", focus);
+    const stopObservingVisibility = observePageVisibility(active => { pageVisible = active; syncPlayback(); });
     window.addEventListener("resize", syncQuality);
     hover.addEventListener("change", syncQuality);
-    document.addEventListener("visibilitychange", syncPlayback);
     motion.addEventListener("change", syncPlayback);
     return () => {
       disposed = true;
       stopObservingScroll();
       observer.disconnect();
-      window.removeEventListener("blur", blur);
-      window.removeEventListener("focus", focus);
+      stopObservingVisibility();
       window.removeEventListener("resize", syncQuality);
       hover.removeEventListener("change", syncQuality);
-      document.removeEventListener("visibilitychange", syncPlayback);
       motion.removeEventListener("change", syncPlayback);
       viewer?.pause();
       viewer?.remove();

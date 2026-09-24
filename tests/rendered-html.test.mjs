@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
+import { gunzipSync } from "node:zlib";
 
 const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
@@ -25,8 +26,10 @@ test("local phone preview is excluded from the production export", async () => {
 });
 
 test("hero stays small, self-contained and keeps all eight animated objects", async () => {
-  const data = await readFile(new URL("models/hero-v30.glb", outputRoot));
-  assert.ok(data.length < 500_000, "Keep the complete model below 500 KB");
+  const compressed = await readFile(new URL("models/encoded/hero-v31.glb", outputRoot));
+  assert.ok(compressed.length < 250_000, "Keep the complete model transfer below 250 KB");
+  const data = gunzipSync(compressed);
+  assert.deepEqual(data, await readFile(new URL("models/hero-v31.glb", outputRoot)));
   const gltf = JSON.parse(data.subarray(20, 20 + data.readUInt32LE(12)).toString());
   assert.equal(gltf.animations.length, 1);
   const names = new Set(gltf.animations[0].channels.map((channel) => gltf.nodes[channel.target.node].name));
@@ -56,11 +59,34 @@ test("hero stays small, self-contained and keeps all eight animated objects", as
       "Every animated object must return to its starting pose");
   }
   assert.equal(gltf.images?.length ?? 0, 0);
+  const draws = gltf.nodes.reduce((sum, node) => sum + (node.mesh === undefined ? 0 : gltf.meshes[node.mesh].primitives.length), 0);
+  assert.ok(draws <= 32, "Keep compatible parts batched without simplifying their geometry");
+  const originalData = await readFile(new URL("models/hero-v30.glb", outputRoot));
+  const original = JSON.parse(originalData.subarray(20, 20 + originalData.readUInt32LE(12)).toString());
+  assert.deepEqual(gltf.materials, original.materials, "Keep the approved materials unchanged");
+  const triangles = model => {
+    const counts = {};
+    for (const node of model.nodes) {
+      if (node.mesh === undefined) continue;
+      for (const primitive of model.meshes[node.mesh].primitives) {
+        const name = model.materials[primitive.material].name;
+        counts[name] = (counts[name] ?? 0) + model.accessors[primitive.indices ?? primitive.attributes.POSITION].count / 3;
+      }
+    }
+    return counts;
+  };
+  assert.deepEqual(triangles(gltf), triangles(original), "Batching must preserve every triangle and its material");
+  for (const name of ["Laptop.Screen", "Phone.Screen"]) {
+    assert.ok(gltf.nodes.some(node => node.name === name && node.mesh !== undefined));
+  }
   assert.ok(gltf.buffers.every((buffer) => !buffer.uri));
   assert.ok(!(gltf.extensionsRequired ?? []).some((name) => /draco|meshopt/i.test(name)));
   const poster = await readFile(new URL("models/hero-v30.webp", outputRoot));
   assert.ok(poster.length < 30_000);
   assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /max-age=31536000, immutable/);
+  assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /\/models\/encoded\/\*\s+Content-Type: model\/gltf-binary\s+Content-Encoding: gzip/);
+  assert.deepEqual(gunzipSync(await readFile(new URL("models/encoded/brand-symbol-v1.glb", outputRoot))),
+    await readFile(new URL("models/brand-symbol-v1.glb", outputRoot)));
 });
 
 async function readPage(relativePath) {
