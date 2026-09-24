@@ -8,18 +8,14 @@ export default function Home() {
     <main id="main-content">
       <section className="hero shell">
         <div className="hero-copy">
-          <p className="eyebrow">
-            <span className="status-dot" />
-            MINECRAFT × TIKTOK LIVE
-          </p>
           <h1>
             Your stream.
             <br />
             <span>In their hands.</span>
           </h1>
           <p className="hero-lead">
-            Let your viewers shape what happens in Minecraft. Turn gifts, likes and comments
-            into creatures, battles and unexpected moments.
+            Turn TikTok LIVE gifts, likes and comments into in-game actions.
+            Let your viewers shape what happens next.
           </p>
           <DownloadButton />
         </div>
