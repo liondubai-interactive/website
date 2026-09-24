@@ -62,7 +62,7 @@ export function BrandSymbol() {
         if (!visible || scrolling || !pageVisible || motion.matches) { started = false; return; }
         const scene = document.createElement("model-viewer");
         viewer = scene;
-        scene.src = "/models/encoded/brand-symbol-v1.glb";
+        scene.src = "/models/brand-symbol-v1.glb";
         scene.setAttribute("aria-hidden", "true");
         scene.tabIndex = -1;
         scene.loading = "eager";

@@ -169,13 +169,17 @@ logical processors or 4 GB reported memory) select the conservative mode; unknow
 hardware retains normal settings. Render scaling preserves the scene's visible
 size and camera framing, without changing model assets. The viewer can
 still reduce render resolution under load, and pauses when hidden or offscreen.
-Cloudflare serves static files only. Both models use precompressed HTTP gzip at
-`/models/encoded/`, with `Content-Encoding: gzip` configured in `public/_headers`
-and the development server. Browser-native decompression restores the exact GLB
-bytes without adding a JavaScript decoder. Keep raw GLBs at `/models/` for tools;
-run `node scripts/compress-models.mjs` after updating them. Export tests check that
-the encoded copies match. Each model is fetched once through the viewer; fetch
-preloads are deliberately avoided because WebKit can download them twice.
+Cloudflare serves static files only. The domain's **Website: compress 3D models**
+Compression Rule enables Brotli with Gzip fallback for this expression:
+`(http.host eq "liondubai.net" and starts_with(http.request.uri.path, "/models/") and ends_with(http.request.uri.path, ".glb"))`.
+The rule is required because GLB's MIME type is not compressed by default.
+Deploy raw GLBs; do not set `Content-Encoding` in `_headers` or ship precompressed
+copies. Browser-native decompression restores the exact bytes without a JavaScript
+decoder. Export tests enforce the model's gzip size budget; verify actual encoding
+and decoded hashes on the custom domain after deployment. Pages preview domains
+serve the raw models because the domain rule does not apply there.
+Each model is fetched once through the viewer; fetch preloads are deliberately
+avoided because WebKit can download them twice.
 Versioned `/models/` assets are cached for one
 year; change their filenames and component references whenever their contents change.
 The viewer runtime is one shared browser chunk, loaded when a 3D element becomes

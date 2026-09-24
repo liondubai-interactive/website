@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
-import { gunzipSync } from "node:zlib";
+import { gzipSync } from "node:zlib";
 
 const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
@@ -26,10 +26,9 @@ test("local phone preview is excluded from the production export", async () => {
 });
 
 test("hero stays small, self-contained and keeps all eight animated objects", async () => {
-  const compressed = await readFile(new URL("models/encoded/hero-v31.glb", outputRoot));
-  assert.ok(compressed.length < 250_000, "Keep the complete model transfer below 250 KB");
-  const data = gunzipSync(compressed);
-  assert.deepEqual(data, await readFile(new URL("models/hero-v31.glb", outputRoot)));
+  const data = await readFile(new URL("models/hero-v31.glb", outputRoot));
+  assert.ok(data.length < 700_000, "Keep the uncompressed model below 700 KB");
+  assert.ok(gzipSync(data).length < 250_000, "Keep the gzip transfer budget below 250 KB");
   const gltf = JSON.parse(data.subarray(20, 20 + data.readUInt32LE(12)).toString());
   assert.equal(gltf.animations.length, 1);
   const names = new Set(gltf.animations[0].channels.map((channel) => gltf.nodes[channel.target.node].name));
@@ -84,9 +83,6 @@ test("hero stays small, self-contained and keeps all eight animated objects", as
   const poster = await readFile(new URL("models/hero-v30.webp", outputRoot));
   assert.ok(poster.length < 30_000);
   assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /max-age=31536000, immutable/);
-  assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /\/models\/encoded\/\*\s+Content-Type: model\/gltf-binary\s+Content-Encoding: gzip/);
-  assert.deepEqual(gunzipSync(await readFile(new URL("models/encoded/brand-symbol-v1.glb", outputRoot))),
-    await readFile(new URL("models/brand-symbol-v1.glb", outputRoot)));
 });
 
 async function readPage(relativePath) {

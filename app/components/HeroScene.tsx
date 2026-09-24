@@ -72,7 +72,7 @@ export function HeroScene() {
         scene.append(panTarget);
         viewer = scene;
         syncQuality();
-        viewer.src = "/models/encoded/hero-v31.glb";
+        viewer.src = "/models/hero-v31.glb";
         viewer.loading = "eager";
         viewer.alt = "Floating laptop, phone, TikTok coin, Twitch crystal, gift box and subscription star, KICKs gem and YouTube Jewel. Drag or use arrow keys to rotate.";
         viewer.cameraControls = true;

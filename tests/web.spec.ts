@@ -89,7 +89,7 @@ test("header renders at zoom resolution and its solid model has a vector fallbac
       pixels: el.shadowRoot!.querySelector("canvas")!.width,
     }));
     expect(resolution.pixels).toBeGreaterThanOrEqual(resolution.displayWidth * 5);
-    await page.route("**/models/encoded/brand-symbol-v1.glb", route => route.abort());
+    await page.route("**/models/brand-symbol-v1.glb", route => route.abort());
     await page.reload();
     await expect(symbol.locator("img")).toBeVisible();
     await expect(symbol.locator("model-viewer")).toHaveCount(0);
@@ -222,7 +222,7 @@ test("hero floats automatically with drag, reduced motion and offscreen suspensi
   const modelRequests: string[] = [];
   let releaseModel!: () => void;
   const modelGate = new Promise<void>((resolve) => { releaseModel = resolve; });
-  await page.route("**/models/encoded/*.glb", async (route) => {
+  await page.route("**/models/*.glb", async (route) => {
     await modelGate;
     await route.continue();
   });
@@ -273,7 +273,7 @@ test("mobile hero is static for reduced motion and survives model failure", asyn
   await expect.poll(() => page.locator(".hero-visual model-viewer").evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("hero-mobile.png") });
-  await page.route("**/models/encoded/*.glb", (route) => route.abort());
+  await page.route("**/models/*.glb", (route) => route.abort());
   await page.reload();
   await page.locator(".hero-visual").scrollIntoViewIfNeeded();
   await expect(page.locator(".hero-poster")).toBeVisible();
