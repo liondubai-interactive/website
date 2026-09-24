@@ -291,6 +291,18 @@ h3 {
 .hero-visual model-viewer { opacity: 0; pointer-events: none; transition: opacity 240ms ease-out; }
 .hero-visual[data-ready="true"] model-viewer { opacity: 1; pointer-events: auto; }
 .hero-visual model-viewer::part(default-progress-bar) { display: none; }
+/* Modest supersampling for standard-density desktop screens; high-DPI and
+   mobile screens keep their native resolution and the viewer stays adaptive. */
+@media (min-width: 800px) and (max-resolution: 1.5dppx) {
+  .hero-visual model-viewer {
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--preview-size) * 1.25);
+    height: calc(var(--preview-size) * 1.25);
+    transform: translate(-50%, -50%) scale(.8);
+  }
+}
 .catalog-shell { padding-block: 64px 80px; }
 .catalog-shell > .hero-lead { max-width: none; margin-bottom: 40px; }
 .games {

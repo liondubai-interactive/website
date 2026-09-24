@@ -6,7 +6,7 @@ const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
 
 test("hero stays small, self-contained and keeps all eight animated objects", async () => {
-  const data = await readFile(new URL("models/hero-v19.glb", outputRoot));
+  const data = await readFile(new URL("models/hero-v22.glb", outputRoot));
   assert.ok(data.length < 500_000, "Keep the complete model below 500 KB");
   const gltf = JSON.parse(data.subarray(20, 20 + data.readUInt32LE(12)).toString());
   assert.equal(gltf.animations.length, 1);
@@ -39,7 +39,7 @@ test("hero stays small, self-contained and keeps all eight animated objects", as
   assert.equal(gltf.images?.length ?? 0, 0);
   assert.ok(gltf.buffers.every((buffer) => !buffer.uri));
   assert.ok(!(gltf.extensionsRequired ?? []).some((name) => /draco|meshopt/i.test(name)));
-  const poster = await readFile(new URL("models/hero-v19.webp", outputRoot));
+  const poster = await readFile(new URL("models/hero-v22.webp", outputRoot));
   assert.ok(poster.length < 30_000);
   assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /max-age=31536000, immutable/);
 });

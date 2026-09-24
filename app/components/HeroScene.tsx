@@ -42,8 +42,13 @@ export function HeroScene() {
         const focusStyle = document.createElement("style");
         focusStyle.textContent = ":focus { outline: none; }";
         scene.shadowRoot?.append(focusStyle);
+        // Panning is disabled; its default invisible marker can intercept drags.
+        const panTarget = document.createElement("span");
+        panTarget.slot = "pan-target";
+        panTarget.hidden = true;
+        scene.append(panTarget);
         viewer = scene;
-        viewer.src = "/models/hero-v19.glb";
+        viewer.src = "/models/hero-v22.glb";
         viewer.alt = "Floating laptop, phone, TikTok coin, Twitch crystal, gift box and subscription star, KICKs gem and YouTube Jewel. Drag or use arrow keys to rotate.";
         viewer.cameraControls = true;
         viewer.disableZoom = true;
@@ -56,6 +61,7 @@ export function HeroScene() {
         viewer.fieldOfView = "25deg";
         viewer.interactionPrompt = "none";
         viewer.shadowIntensity = 0;
+        viewer.environmentImage = "legacy";
         viewer.exposure = 1.15;
         viewer.addEventListener("load", async () => {
           // Settle the camera before revealing the first rendered frame.
@@ -93,7 +99,7 @@ export function HeroScene() {
 
   return (
     <div className="hero-visual" ref={host} data-ready={status === "ready"}>
-      {status === "failed" && <Image className="hero-poster" src="/models/hero-v19.webp" alt="A floating laptop and phone with TikTok, Twitch, Kick and YouTube symbols" width={800} height={726} unoptimized />}
+      {status === "failed" && <Image className="hero-poster" src="/models/hero-v22.webp" alt="A floating laptop and phone with TikTok, Twitch, Kick and YouTube symbols" width={800} height={726} unoptimized />}
     </div>
   );
 }

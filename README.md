@@ -76,6 +76,10 @@ There is no visible control row. The scene fades in after loading with its camer
 so there is no mismatched poster-to-model jump. A small WebP downloads only if 3D fails.
 The GLB stays below 500 KB and contains the complete scene and eight-second animation.
 It needs no textures, external decoder, environment download, API requests or server rendering.
+The built-in studio environment supplies reflections for metal and glass finishes.
+Standard-density desktop displays use 1.25x supersampling for smoother diagonal
+edges; mobile and high-density screens retain native rendering. The viewer can
+still reduce render resolution under load, and pauses when hidden or offscreen.
 Cloudflare serves static files only. Versioned `/models/` assets are cached for one
 year; change their filenames and component references whenever their contents change.
 The viewer runtime is a separate browser chunk, loaded only when the home scene is
@@ -87,6 +91,8 @@ the laptop and phone. The symbols retain the original coin motion, staggered in
 depth and height with clearance from devices and one another throughout the loop.
 Model provenance is in `public/models/LICENSE.txt`. The phone is original geometry
 with a continuous back; the earlier royalty-free reference phone is not distributed.
+Its height is about 47% of the laptop width, matching a 16 cm phone beside a
+roughly 34 cm laptop. The floating symbols keep their approved scale and positions.
 Screens retain separate materials for future media. Keep the Blender authoring
 files outside this public website repository. To optimize a new GLB export, run:
 
