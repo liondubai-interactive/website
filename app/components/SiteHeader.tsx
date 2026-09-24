@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AccountMenu } from "./WebSession";
+import { LanguageMenu } from "./LanguageMenu";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -37,8 +38,8 @@ export function SiteHeader() {
             <Link href="/games/" aria-current={pathname.startsWith("/games") ? "page" : undefined}>Games</Link>
           </nav>
           <div className="header-actions">
+            <LanguageMenu />
             <AccountMenu />
-            <Link href="/download/" className="header-download" aria-current={pathname.startsWith("/download") ? "page" : undefined}>Download</Link>
           </div>
         </div>
       </header>

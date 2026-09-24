@@ -11,15 +11,15 @@ export default function Home() {
         <section className="hero shell">
           <div className="hero-copy">
             <h1>
-              Interactive
+              Inter<span>active</span>
               <br />
-              <span>Multi</span>-platform
+              Streaming
             </h1>
             <div className="hero-details">
               <p className="hero-lead">
-                Turn live interactions into in-game actions.
+                Go live on any streaming platform and bind any type of donation to in-game events.
               </p>
-              <DownloadButton browseGames />
+              <DownloadButton />
               <dl className="hero-facts">
                 <div><dt>Plugins</dt><dd>{integrations.length}</dd></div>
                 <div><dt>Free trial per plugin</dt><dd>24h</dd></div>

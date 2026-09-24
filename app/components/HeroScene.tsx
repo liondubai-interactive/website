@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
+import { prefersEconomyRendering } from "../rendering";
 
 export function HeroScene() {
   const host = useRef<HTMLDivElement>(null);
@@ -11,14 +12,27 @@ export function HeroScene() {
   useEffect(() => {
     const container = host.current!;
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    const hover = matchMedia("(any-hover: hover) and (any-pointer: fine)");
+    const economy = prefersEconomyRendering();
     let viewer: ModelViewerElement | undefined;
     let visible = false;
     let started = false;
     let disposed = false;
+    let focused = true;
+
+    function syncQuality() {
+      if (!viewer) return;
+      const dpr = devicePixelRatio || 1;
+      const pixelLimit = economy ? 1.5 : !hover.matches ? 2 : dpr;
+      const scale = !economy && hover.matches && innerWidth >= 800 && dpr <= 1.5
+        ? 1.25 : Math.min(1, pixelLimit / dpr);
+      viewer.style.setProperty("--render-scale", String(scale));
+      viewer.style.setProperty("--render-inverse", String(1 / scale));
+    }
 
     function syncPlayback() {
       if (!viewer?.loaded) return;
-      const play = visible && !document.hidden && !motion.matches;
+      const play = visible && focused && !document.hidden && !motion.matches;
       if (play) viewer.play();
       else viewer.pause();
     }
@@ -48,14 +62,17 @@ export function HeroScene() {
         panTarget.hidden = true;
         scene.append(panTarget);
         viewer = scene;
-        viewer.src = "/models/hero-v28.glb";
+        syncQuality();
+        viewer.src = "/models/hero-v30.glb";
         viewer.alt = "Floating laptop, phone, TikTok coin, Twitch crystal, gift box and subscription star, KICKs gem and YouTube Jewel. Drag or use arrow keys to rotate.";
         viewer.cameraControls = true;
         viewer.disableZoom = true;
         viewer.disablePan = true;
         viewer.disableTap = true;
         viewer.touchAction = "pan-y";
-        viewer.cameraOrbit = "15deg 72deg 105%";
+        // Preserve the approved device framing when the floating symbols shrink.
+        viewer.cameraOrbit = "15deg 72deg 20.918126904156477m";
+        viewer.cameraTarget = "0.16429230370590275m 2.0815756965352126m 0.03334959517932479m";
         viewer.minCameraOrbit = "auto 45deg auto";
         viewer.maxCameraOrbit = "auto 105deg auto";
         viewer.fieldOfView = "25deg";
@@ -85,11 +102,21 @@ export function HeroScene() {
       syncPlayback();
     });
     observer.observe(container);
+    function blur() { focused = false; syncPlayback(); }
+    function focus() { focused = true; syncPlayback(); }
+    window.addEventListener("blur", blur);
+    window.addEventListener("focus", focus);
+    window.addEventListener("resize", syncQuality);
+    hover.addEventListener("change", syncQuality);
     document.addEventListener("visibilitychange", syncPlayback);
     motion.addEventListener("change", syncPlayback);
     return () => {
       disposed = true;
       observer.disconnect();
+      window.removeEventListener("blur", blur);
+      window.removeEventListener("focus", focus);
+      window.removeEventListener("resize", syncQuality);
+      hover.removeEventListener("change", syncQuality);
       document.removeEventListener("visibilitychange", syncPlayback);
       motion.removeEventListener("change", syncPlayback);
       viewer?.pause();
@@ -99,7 +126,7 @@ export function HeroScene() {
 
   return (
     <div className="hero-visual" ref={host} data-ready={status === "ready"}>
-      {status === "failed" && <Image className="hero-poster" src="/models/hero-v28.webp" alt="A floating laptop and phone with TikTok, Twitch, Kick and YouTube symbols" width={800} height={726} unoptimized />}
+      {status === "failed" && <Image className="hero-poster" src="/models/hero-v30.webp" alt="A floating laptop and phone with TikTok, Twitch, Kick and YouTube symbols" width={800} height={760} unoptimized />}
     </div>
   );
 }

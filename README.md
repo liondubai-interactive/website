@@ -51,7 +51,7 @@ build. A failed build leaves the last successful deployment available. To undo
 a bad release, restore a known-good commit or use Pages' production rollback;
 then fix/revert the source so the next push does not reintroduce it.
 
-After publishing, check the home, download and policy pages, the TikTok
+After publishing, check the home, Games and policy pages, the TikTok
 verification file, image assets, unknown-route 404s and the `www` redirect over
 HTTPS. The public site does not host the API or database.
 
@@ -61,7 +61,7 @@ Provider verification files in `public/` are intentionally public proof files.
 
 ## Design
 
-Keep the header focused on download, games and account access; contact logos sit beside policy
+Keep the header focused on Home, Games and account access; contact logos sit beside policy
 links in a compact footer row, centered on mobile with copyright below. The retired `/contact` URL redirects
 to the footer; support and privacy requests also have direct email links in the policies.
 Logo artwork in `public/brands/` matches the desktop assets, sourced from
@@ -72,16 +72,40 @@ and planned prices displayed on the home plugin cards. `/pricing` redirects to t
 add other games only when their integrations are ready.
 The home plugin cards use a responsive three-column grid with a small image zoom
 and highlight on hover or keyboard focus; reduced motion disables transitions.
-The Games catalog uses those same cards. Scrollbar space stays reserved so navigation does not shift between pages.
+The Games catalog starts with a search field that filters game names and editions,
+followed by compact landscape cards in an auto-filling grid, with a
+260px maximum card width. Minecraft artwork is sourced from the official
+[key art update](https://www.minecraft.net/en-us/article/key-art-update)
+(`NewKeyArt_Header.jpg`), optimized locally as `public/games/minecraft-cover.webp`.
+Artwork remains copyright Mojang/Microsoft. Scrollbar space stays reserved so navigation does not shift between pages.
 Footer logos retain their original brand colors, with compact 40px click targets.
 Shared type, color and surface styles keep public and account pages consistent.
-The sticky header uses centered pill navigation, with account and download actions on the right.
+The sticky header uses centered pill navigation, with account access on the right.
+The language selector is a catalogue preview: English is the default, and choosing
+another language updates only the selector, never page text, direction or locale.
+Its searchable list loads on first opening and renders in batches. The local
+`app/data/languages.json` catalogue uses ISO 639-3 codes and reference names from
+[SIL's official registry](https://iso639-3.sil.org/code_tables/download_tables)
+(retrieved September 24, 2026), excluding special non-language codes. Two-letter
+codes are used where available; native names for those entries are supplemental
+labels generated with `Intl.DisplayNames`, not part of the ISO dataset.
 It blends into the page at the top and gains a subtle divider when scrolled. The opening section
 fills the available viewport; the plugin cards follow below it.
 Every page uses burgundy with warm white text and a pale rose accent.
 A CSS radial glow separates the 3D scene from the background without adding a
 texture or affecting drag controls. The hero fades into the shared page color;
 catalogue cards, account panels, menus and dialogs use a lighter burgundy surface.
+Small warm particles drift slowly in independent, gently changing directions behind
+content across all website pages. The mouse nudges nearby particles onto new paths;
+they retain that direction and gradually slow to their usual drift speed without
+springing back. The decorative canvas ignores pointer
+hits, caps its pixel ratio at 1.5 (1 on reported limited hardware) and contains at most
+110 particles. Two tiny in-memory sprites are drawn in sync with the display,
+at up to 60 Hz for idle drift and 120 Hz during pointer interaction on capable devices, with elapsed-time motion
+and cached pointer bounds to avoid layout reads on mouse movement. Animation
+pauses in hidden or unfocused tabs, and remains
+static for reduced-motion preferences. Touch devices retain drift without cursor repulsion. No extra asset or library
+is downloaded for the effect.
 Success and error states use colors with contrast against these dark surfaces.
 Shared links use a versioned image of this hero. Regenerate it against the local
 preview with `node scripts/render-social-card.mjs`; update its versioned filename
@@ -93,14 +117,18 @@ heading row, with the trial note stacked beneath it on narrow screens.
 The home hero uses a locally bundled, lazy-loaded `@google/model-viewer` for the
 interactive scene. Drag or arrow keys rotate it; zoom/pan are disabled so page
 scrolling stays normal. Independent floating animation plays automatically while
-visible, pausing offscreen and in hidden tabs. Reduced motion stays static.
+visible, pausing offscreen and in hidden or unfocused tabs. Reduced motion stays static.
 There is no visible control row. The scene fades in after loading with its camera settled,
 so there is no mismatched poster-to-model jump. A small WebP downloads only if 3D fails.
 The GLB stays below 500 KB and contains the complete scene and eight-second animation.
 It needs no textures, external decoder, environment download, API requests or server rendering.
 The built-in studio environment supplies reflections for metal and glass finishes.
-Standard-density desktop displays use 1.25x supersampling for smoother diagonal
-edges; mobile and high-density screens retain native rendering. The viewer can
+Standard-density desktops retain 1.25x supersampling for smoother diagonal edges.
+Touch-only screens cap effective 3D pixel density at 2; reported limited hardware
+or Data Saver caps it at 1.5 and skips supersampling. Browser hints (at most four
+logical processors or 4 GB reported memory) select the conservative mode; unknown
+hardware retains normal settings. Render scaling preserves the scene's visible
+size and camera framing, without changing model assets. The viewer can
 still reduce render resolution under load, and pauses when hidden or offscreen.
 Cloudflare serves static files only. Versioned `/models/` assets are cached for one
 year; change their filenames and component references whenever their contents change.
@@ -114,7 +142,10 @@ depth and height with clearance from devices and one another throughout the loop
 Model provenance is in `public/models/LICENSE.txt`. The phone is original geometry
 with a continuous back; the earlier royalty-free reference phone is not distributed.
 Its height is about 47% of the laptop width, matching a 16 cm phone beside a
-roughly 34 cm laptop. The floating symbols keep their approved scale and positions.
+roughly 34 cm laptop. The six floating symbols use a 75% base scale. Visual balancing further trims
+the diamond by 15%, the gift by 10% and the KICKs gem by 8%; positions
+and animation remain unchanged. The camera target and distance preserve the approved
+laptop and phone framing independently of the smaller scene bounds.
 Screens retain separate materials for future media. Shallow beveled lion/Burj
 emblems share one polished chrome material on the laptop lid and phone back.
 The lid's flat face has uniform normals to prevent a diagonal reflection seam;
@@ -131,12 +162,13 @@ keyframes, and quantizes vertices without shipping a decoder. Check all animated
 objects, the loop boundary, the initial camera framing and a rotated view after updates.
 
 The layout supports narrow screens, keyboard controls, a skip link and
-reduced motion. When changing it, check home, download and policy pages
+reduced motion. When changing it, check home, Games and policy pages
 at mobile and desktop widths. Keep availability and payment information accurate.
 
 ## Website accounts and releases
 
-The public home now leads with Download for Windows. `/download/` explains installation;
+Downloads are offered only on Home through Download for Windows; there is no separate download page.
+Old `/download/` links redirect to Home.
 `/login/` uses TikTok and `/account/` displays the authenticated user's plugins and billing.
 The website remains a static export: authentication, sessions, prices and access come
 from `https://api.liondubai.net/api/liondubai/web`. No secrets or private admin source

@@ -3,10 +3,10 @@ import { siteOrigin } from "./site-config";
 
 export const socialImages = [
   {
-    url: "/og-v2.png",
+    url: "/og-v3.png",
     width: 1200,
     height: 800,
-    alt: "LionDubai Interactive — Interactive — Multi-platform",
+    alt: "LionDubai Interactive — Interactive Streaming",
   },
 ];
 

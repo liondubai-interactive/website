@@ -1,6 +1,71 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { ModelViewerElement } from "@google/model-viewer";
 
+test("page particles drift independently and pause for reduced motion or lost focus", async ({ page }) => {
+  await page.goto("/games/");
+  const canvas = page.locator(".background-particles");
+  await expect(canvas).toHaveCount(1);
+  await expect(canvas).toHaveCSS("pointer-events", "none");
+  await expect.poll(() => canvas.evaluate((el) => (el as HTMLCanvasElement).width)).toBeGreaterThan(300);
+  const pixels = () => canvas.evaluate((el) => (el as HTMLCanvasElement).toDataURL());
+  const initial = await pixels();
+  await expect.poll(pixels).not.toBe(initial);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.waitForTimeout(100);
+  const still = await pixels();
+  await page.mouse.move(300, 300);
+  await page.waitForTimeout(250);
+  expect(await pixels()).toBe(still);
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect.poll(pixels).not.toBe(still);
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  const paused = await pixels();
+  await page.waitForTimeout(250);
+  expect(await pixels()).toBe(paused);
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await expect.poll(pixels).not.toBe(paused);
+  await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Home", exact: true }).click();
+  await expect(canvas).toHaveCount(1);
+});
+
+test("pushed particles keep travelling after the pointer leaves", async ({ page }) => {
+  await page.clock.install();
+  await page.goto("/games/");
+  const canvas = page.locator(".background-particles");
+  await expect.poll(() => canvas.evaluate((el) => (el as HTMLCanvasElement).width)).toBeGreaterThan(300);
+  await page.clock.runFor(200);
+  const locate = (near: { x: number; y: number } | null = null) => canvas.evaluate((el, target) => {
+    const c = el as HTMLCanvasElement;
+    const { width, height } = c;
+    const ratio = width / c.getBoundingClientRect().width;
+    const data = c.getContext("2d")!.getImageData(0, 0, width, height).data;
+    let best = Infinity;
+    let point: { x: number; y: number } | null = null;
+    const margin = target ? 0 : 180;
+    for (let y = margin; y < height - margin; y++) {
+      for (let x = margin; x < width - margin; x++) {
+        const alpha = data[(y * width + x) * 4 + 3];
+        if (alpha < 60) continue;
+        const distance = target ? (x / ratio - target.x) ** 2 + (y / ratio - target.y) ** 2 : -alpha;
+        if (distance < best) { best = distance; point = { x: x / ratio, y: y / ratio }; }
+      }
+    }
+    return point;
+  }, near);
+  const start = (await locate())!;
+  expect(start).not.toBeNull();
+  await page.mouse.move(start.x - 20, start.y);
+  await page.clock.runFor(800);
+  const pushed = (await locate(start))!;
+  expect(pushed.x - start.x).toBeGreaterThan(5);
+  await page.evaluate(() => document.documentElement.dispatchEvent(new PointerEvent("pointerleave")));
+  await page.clock.runFor(500);
+  const continued = (await locate(pushed))!;
+  expect(continued.x - pushed.x).toBeGreaterThan(3);
+});
+
 test("hero floats automatically with drag, reduced motion and offscreen suspension", async ({ page }, testInfo) => {
   await mock(page);
   await page.setViewportSize({ width: 1366, height: 850 });
@@ -21,6 +86,10 @@ test("hero floats automatically with drag, reduced motion and offscreen suspensi
   await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
   await expect(viewer).toHaveCSS("opacity", "1");
   expect(await page.locator(".hero-visual").boundingBox()).toEqual(loadingBox);
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
   const orbit = await viewer.evaluate((el) => (el as ModelViewerElement).getCameraOrbit().theta);
   const box = (await viewer.boundingBox())!;
@@ -59,6 +128,32 @@ test("mobile hero is static for reduced motion and survives model failure", asyn
   await expect(page.locator("model-viewer")).toHaveCount(0);
 });
 
+test("mobile rendering limits pixel work without shrinking the scene", async ({ browser }, testInfo) => {
+  for (const economy of [false, true]) {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+    const page = await context.newPage();
+    try {
+      await page.addInitScript((limited) => {
+        Object.defineProperty(navigator, "hardwareConcurrency", { get: () => limited ? 2 : 8 });
+        Object.defineProperty(navigator, "deviceMemory", { get: () => limited ? 2 : 8 });
+      }, economy);
+      await mock(page);
+      await page.goto("http://127.0.0.1:3100/");
+      await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true");
+      const dimensions = await page.locator("model-viewer").evaluate((el) => {
+        const view = el as HTMLElement;
+        return { visible: view.getBoundingClientRect().width, host: view.parentElement!.getBoundingClientRect().width,
+          density: view.clientWidth * devicePixelRatio / view.getBoundingClientRect().width };
+      });
+      expect(dimensions.visible).toBeCloseTo(dimensions.host, 0);
+      expect(dimensions.density).toBeLessThanOrEqual(economy ? 1.51 : 2.01);
+      const particleDensity = await page.locator(".background-particles").evaluate((el) => (el as HTMLCanvasElement).width / el.getBoundingClientRect().width);
+      expect(particleDensity).toBeCloseTo(economy ? 1 : 1.5);
+      await page.screenshot({ path: testInfo.outputPath(`mobile-${economy ? "economy" : "normal"}.png`) });
+    } finally { await context.close(); }
+  }
+});
+
 test("hero fits tablet breakpoints and remounts cleanly after navigation", async ({ page }) => {
   await mock(page);
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -76,6 +171,47 @@ test("hero fits tablet breakpoints and remounts cleanly after navigation", async
     await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Games", exact: true }).click();
     await expect(page.locator("model-viewer")).toHaveCount(0);
   }
+});
+
+test("language catalogue stays compact and changes only its selected label", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("/");
+  const menu = page.getByRole("group", { name: "Language", exact: true });
+  await page.getByRole("button", { name: "Select language, English" }).click();
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole("button", { name: "Show more languages" })).toBeVisible();
+  expect(await menu.getByRole("button").count()).toBeLessThanOrEqual(81);
+  const box = (await menu.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(320);
+  const search = menu.getByRole("searchbox", { name: "Search languages" });
+  await search.fill("Arabic");
+  await menu.getByRole("button", { name: /^Arabic العربية$/ }).click();
+  await expect(menu).not.toBeVisible();
+  await expect(page.getByRole("button", { name: "Select language, Arabic" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("h1")).toHaveText("InteractiveStreaming");
+  await page.getByRole("button", { name: "Select language, Arabic" }).click();
+  await expect(search).toHaveValue("");
+  await search.fill("not-a-language-12345");
+  await expect(menu.getByRole("status")).toHaveText("No languages found");
+  await page.keyboard.press("Escape");
+  await expect(menu).not.toBeVisible();
+});
+
+test("game search filters compact cards and recovers from no matches", async ({ page }) => {
+  await page.goto("/games/");
+  const search = page.getByRole("searchbox", { name: "Search games" });
+  const card = page.getByRole("link", { name: "Explore Minecraft plugins" });
+  await search.fill("  MINECRAFT  ");
+  await expect(card).toBeVisible();
+  await expect(card.locator("img")).toHaveJSProperty("naturalWidth", 780);
+  await search.fill("unknown game");
+  await expect(card).toHaveCount(0);
+  await expect(page.getByRole("status")).toHaveText("No games found.");
+  await search.fill("");
+  await expect(card).toBeVisible();
+  await expect(card).toHaveAttribute("href", "/#games");
 });
 
 const user = {
@@ -166,8 +302,9 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
     await page.setViewportSize({ width, height: 850 });
     await page.goto("/");
     await expect(page.getByRole("button", { name: "Download for Windows" })).toBeDisabled();
-    await expect(page.getByText(/An independent app\./)).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("InteractiveStreaming");
     const header = page.locator(".site-header");
+    await expect(header.getByRole("link", { name: /download/i })).toHaveCount(0);
     await expect(header).not.toHaveAttribute("data-scrolled", "true");
     const homeNav = await page.getByRole("navigation", { name: "Primary navigation" }).boundingBox();
     expect(
@@ -208,7 +345,7 @@ test("public pages and signed-out account fit narrow and desktop screens", async
   await mock(page);
   for (const width of [320, 1366]) {
     await page.setViewportSize({ width, height: 850 });
-    for (const path of ["/games/", "/download/", "/login/", "/account/", "/privacy/", "/terms/", "/refunds/", "/missing-page/"]) {
+    for (const path of ["/games/", "/login/", "/account/", "/privacy/", "/terms/", "/refunds/", "/missing-page/"]) {
       await page.goto(path);
       await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
       await expect(page.locator("body")).toHaveCSS("background-color", "rgb(65, 16, 27)");

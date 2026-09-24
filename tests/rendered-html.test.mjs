@@ -6,7 +6,7 @@ const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
 
 test("hero stays small, self-contained and keeps all eight animated objects", async () => {
-  const data = await readFile(new URL("models/hero-v28.glb", outputRoot));
+  const data = await readFile(new URL("models/hero-v30.glb", outputRoot));
   assert.ok(data.length < 500_000, "Keep the complete model below 500 KB");
   const gltf = JSON.parse(data.subarray(20, 20 + data.readUInt32LE(12)).toString());
   assert.equal(gltf.animations.length, 1);
@@ -39,7 +39,7 @@ test("hero stays small, self-contained and keeps all eight animated objects", as
   assert.equal(gltf.images?.length ?? 0, 0);
   assert.ok(gltf.buffers.every((buffer) => !buffer.uri));
   assert.ok(!(gltf.extensionsRequired ?? []).some((name) => /draco|meshopt/i.test(name)));
-  const poster = await readFile(new URL("models/hero-v28.webp", outputRoot));
+  const poster = await readFile(new URL("models/hero-v30.webp", outputRoot));
   assert.ok(poster.length < 30_000);
   assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /max-age=31536000, immutable/);
 });
@@ -52,12 +52,13 @@ test("exports the product home with visible policy links", async () => {
   const html = await readPage("index.html");
 
   assert.match(html, /<title>LionDubai Interactive<\/title>/i);
-  assert.match(html, /Interactive<br\s*\/><span>Multi<\/span>-platform/);
+  assert.match(html, /<h1>Inter<span>active<\/span><br\s*\/>Streaming<\/h1>/);
   assert.match(html, new RegExp(`href="${basePath}/privacy/"`));
   assert.match(html, new RegExp(`href="${basePath}/terms/"`));
   assert.match(html, /aria-label="Contact"/);
   assert.match(html, /24-hour free trial/);
-  assert.match(html, /TikTok does not own or operate (?:it|this app)/);
+  assert.match(html, /Go live on any streaming platform and bind any type of donation to in-game events\./);
+  assert.doesNotMatch(html, /Turn live interactions into in-game actions\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 
   const footer = html.match(/<footer[\s\S]*?<\/footer>/i)?.[0];
@@ -96,14 +97,14 @@ test("uses the custom domain for links, metadata, and images", async () => {
   const html = await readPage("index.html");
   const origin = "https://liondubai.net";
 
-  assert.match(html, new RegExp(`${origin}${basePath}/og-v2\\.png`));
+  assert.match(html, new RegExp(`${origin}${basePath}/og-v3\\.png`));
   assert.match(html, new RegExp(`src="${basePath}/app-icon\\.png"`));
   assert.doesNotMatch(html, /localhost/);
 });
 
 test("ships valid portal and social images", async () => {
   const appIcon = await readFile(new URL("app-icon.png", outputRoot));
-  const socialCard = await readFile(new URL("og-v2.png", outputRoot));
+  const socialCard = await readFile(new URL("og-v3.png", outputRoot));
 
   assert.equal(appIcon.readUInt32BE(16), 192);
   assert.equal(appIcon.readUInt32BE(20), 192);
@@ -117,7 +118,7 @@ test("retains the shared social image on every page with its own metadata", asyn
     const html = await readPage(`${route}index.html`);
     assert.match(
       html,
-      /property="og:image" content="https:\/\/liondubai\.net\/og-v2\.png"/,
+      /property="og:image" content="https:\/\/liondubai\.net\/og-v3\.png"/,
       route || "home",
     );
     assert.match(
@@ -135,7 +136,6 @@ test("every exported page has one shared navigation and a working skip target", 
     "privacy/index.html",
     "terms/index.html",
     "refunds/index.html",
-    "download/index.html",
     "games/index.html",
     "login/index.html",
     "account/index.html",
@@ -148,8 +148,16 @@ test("every exported page has one shared navigation and a working skip target", 
   }
 });
 
-test("exports a real download destination only when a release is configured", async () => {
-  const html = await readPage("download/index.html");
+test("downloads are only offered on home when a release is configured", async () => {
+  await assert.rejects(readPage("download/index.html"), { code: "ENOENT" });
+  const redirects = await readFile(new URL("_redirects", outputRoot), "utf8");
+  assert.match(redirects, /^\/download \/ 301$/m);
+  assert.match(redirects, /^\/download\/ \/ 301$/m);
+  const html = await readPage("index.html");
+  assert.doesNotMatch(html, /href="\/download\/?"/);
+  const header = html.match(/<header[\s\S]*?<\/header>/)?.[0];
+  assert.ok(header);
+  assert.doesNotMatch(header, /Download/);
   assert.match(html, /Download for Windows/);
   if (!process.env.NEXT_PUBLIC_WINDOWS_DOWNLOAD_URL) {
     assert.match(html, /Download unavailable/);

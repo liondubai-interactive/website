@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "./components/SiteHeader";
 import { SiteFooter } from "./components/SiteFooter";
+import { BackgroundParticles } from "./components/BackgroundParticles";
 import { WebSessionProvider } from "./components/WebSession";
 import { siteOrigin } from "./site-config";
 import { socialImages } from "./site-metadata";
@@ -49,6 +50,7 @@ export default function RootLayout({
       <body>
         <WebSessionProvider>
           <div className="site-frame">
+            <BackgroundParticles />
             <SiteHeader />
             {children}
             <SiteFooter />

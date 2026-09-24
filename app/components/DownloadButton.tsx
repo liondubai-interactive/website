@@ -1,32 +1,39 @@
 import Link from "next/link";
 import { windowsRelease } from "../site-config";
 
-export function DownloadButton({ browseGames = false }: { browseGames?: boolean }) {
+export function DownloadButton() {
   return (
     <div className="download-action">
       <div className="download-buttons">
         {windowsRelease ? (
-          <a className="button button-primary" href={windowsRelease.url}>
-            <WindowsIcon /> Download for Windows
+          <a className="button button-primary windows-download" href={windowsRelease.url} aria-label="Download for Windows">
+            <DownloadLabel />
           </a>
         ) : (
-          <button className="button button-primary" disabled title="Download unavailable">
-            <WindowsIcon /> Download for Windows
+          <button className="button button-primary windows-download" disabled title="Download unavailable" aria-label="Download for Windows">
+            <DownloadLabel />
           </button>
         )}
-        {browseGames && <Link className="button button-secondary" href="/games/">Explore games</Link>}
+        <Link className="button button-secondary" href="/games/">Explore games</Link>
       </div>
       {windowsRelease && (
         <p className="release-note">
-          Version {windowsRelease.version} · Windows x64 ·{" "}
-          <Link href="/download/">Installation details</Link>
+          Version {windowsRelease.version} · Windows x64
         </p>
       )}
-      <p className="independent-note">
-        An independent app. Not an official Minecraft product or associated with Mojang or
-        Microsoft. TikTok does not own or operate this app.
-      </p>
     </div>
+  );
+}
+
+function DownloadLabel() {
+  return (
+    <>
+      <WindowsIcon />
+      <span className="windows-download-label">
+        <span>Download for</span>
+        <strong>Windows</strong>
+      </span>
+    </>
   );
 }
 
