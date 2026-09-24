@@ -48,7 +48,7 @@ export function HeroScene() {
     async function load() {
       started = true;
       try {
-        // Loaded only on Home, once the scene enters the viewport. No CDN scripts.
+        // Hero model loads only on Home; the renderer is shared with the header emblem.
         await import("@google/model-viewer");
         if (disposed) return;
         const scene = document.createElement("model-viewer");

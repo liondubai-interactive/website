@@ -3,7 +3,7 @@ import { siteOrigin } from "./site-config";
 
 export const socialImages = [
   {
-    url: "/og-v4.png",
+    url: "/og-v5.png",
     width: 1200,
     height: 800,
     alt: "LionDubai Interactive — Interactive Streaming",

@@ -93,9 +93,24 @@ h3 {
   text-decoration: none;
   justify-self: start;
 }
-.brand img {
-  border-radius: 8px;
+.brand-symbol {
+  display: block;
+  position: relative;
+  width: 40px;
+  aspect-ratio: 660 / 707;
+  flex-shrink: 0;
 }
+.brand-symbol img { display: block; width: 100%; height: auto; }
+.brand-symbol model-viewer {
+  position: absolute; left: 50%; top: 50%;
+  width: calc(100% * var(--brand-render-scale, 1));
+  height: calc(100% * var(--brand-render-scale, 1));
+  transform: translate(-50%, -50%) scale(var(--brand-render-inverse, 1));
+  opacity: 0; pointer-events: none;
+}
+.brand-symbol[data-ready] img { visibility: hidden; }
+.brand-symbol[data-ready] model-viewer { opacity: 1; }
+.brand-symbol model-viewer::part(default-progress-bar) { display: none; }
 .brand-wordmark { display: flex; flex-direction: column; gap: 4px; line-height: 1; }
 .brand-lion { color: var(--accent); }
 .brand-detail {
@@ -627,9 +642,8 @@ h3 {
     font-size: 14px;
     gap: 7px;
   }
-  .brand img {
-    width: 27px;
-    height: 27px;
+  .brand-symbol {
+    width: 32px;
   }
   .header-actions { gap: 10px; font-size: 11px; }
   .hero h1 {

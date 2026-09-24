@@ -5,6 +5,19 @@ import test from "node:test";
 const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
 
+test("solid header animation stays below its transfer budget", async () => {
+  const model = await readFile(new URL("models/brand-symbol-v1.glb", outputRoot));
+  assert.ok(model.length < 25_000, "Keep the texture-free header model below 25 KB");
+  const gltf = JSON.parse(model.subarray(20, 20 + model.readUInt32LE(12)).toString());
+  assert.equal(gltf.images?.length ?? 0, 0);
+  assert.equal(gltf.animations.length, 1);
+  assert.ok(gltf.buffers.every(buffer => !buffer.uri));
+  const sampler = gltf.animations[0].samplers[0];
+  assert.equal(sampler.interpolation, "LINEAR");
+  assert.deepEqual(gltf.accessors[sampler.input].min, [0]);
+  assert.deepEqual(gltf.accessors[sampler.input].max, [28]);
+});
+
 test("local phone preview is excluded from the production export", async () => {
   const files = await readdir(outputRoot, { recursive: true });
   assert.ok(!files.some(file => /(^|[\\/])mobile(?:[\\/]|\.html|$)/.test(file)));
@@ -103,14 +116,14 @@ test("uses the custom domain for links, metadata, and images", async () => {
   const html = await readPage("index.html");
   const origin = "https://liondubai.net";
 
-  assert.match(html, new RegExp(`${origin}${basePath}/og-v4\\.png`));
-  assert.match(html, new RegExp(`src="${basePath}/app-icon-v3\\.png"`));
+  assert.match(html, new RegExp(`${origin}${basePath}/og-v5\\.png`));
+  assert.match(html, new RegExp(`src="${basePath}/brands/liondubai-symbol-white\\.svg"`));
   assert.doesNotMatch(html, /localhost/);
 });
 
 test("ships valid portal and social images", async () => {
   const appIcon = await readFile(new URL("app-icon-v3.png", outputRoot));
-  const socialCard = await readFile(new URL("og-v4.png", outputRoot));
+  const socialCard = await readFile(new URL("og-v5.png", outputRoot));
 
   assert.equal(appIcon.readUInt32BE(16), 192);
   assert.equal(appIcon.readUInt32BE(20), 192);
@@ -124,7 +137,7 @@ test("retains the shared social image on every page with its own metadata", asyn
     const html = await readPage(`${route}index.html`);
     assert.match(
       html,
-      /property="og:image" content="https:\/\/liondubai\.net\/og-v4\.png"/,
+      /property="og:image" content="https:\/\/liondubai\.net\/og-v5\.png"/,
       route || "home",
     );
     assert.match(

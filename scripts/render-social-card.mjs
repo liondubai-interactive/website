@@ -13,7 +13,7 @@ try {
   await page.addStyleTag({ content: "nextjs-portal { display: none; } html { scrollbar-width: none; scrollbar-gutter: auto; } ::-webkit-scrollbar { display: none; }" });
   const screenshot = await page.screenshot({ animations: "disabled" });
   await sharp(screenshot).png({ compressionLevel: 9 }).toFile(
-    fileURLToPath(new URL("../public/og-v4.png", import.meta.url)),
+    fileURLToPath(new URL("../public/og-v5.png", import.meta.url)),
   );
 } finally {
   await browser.close();

@@ -1,6 +1,58 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { ModelViewerElement } from "@google/model-viewer";
 
+test("solid header symbol completes a continuous turn and resumes after hidden tabs", async ({ page }) => {
+  await page.goto("/games/");
+  const symbol = page.locator(".brand-symbol");
+  const model = symbol.locator("model-viewer");
+  await expect(symbol).toHaveAttribute("data-ready", "true");
+  expect(await model.evaluate(el => (el as ModelViewerElement).duration)).toBeCloseTo(28, 1);
+  const initial = await model.evaluate(el => (el as ModelViewerElement).currentTime);
+  await expect.poll(() => model.evaluate(el => (el as ModelViewerElement).currentTime)).toBeGreaterThan(initial);
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(symbol).not.toHaveAttribute("data-moving", "true");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: false });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(symbol).toHaveAttribute("data-moving", "true");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(symbol).not.toHaveAttribute("data-moving", "true");
+  await expect(symbol.locator("img")).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(symbol).toHaveAttribute("data-moving", "true");
+  await expect(symbol).toHaveAttribute("data-ready", "true");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const requests: string[] = [];
+  page.on("request", request => { if (request.url().endsWith("brand-symbol-v1.glb")) requests.push(request.url()); });
+  await page.reload();
+  await expect(symbol.locator("img")).toBeVisible();
+  await expect(symbol.locator("model-viewer")).toHaveCount(0);
+  expect(requests).toHaveLength(0);
+});
+
+test("header renders at zoom resolution and its solid model has a vector fallback", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 5 });
+  try {
+    const page = await context.newPage();
+    await page.goto("http://127.0.0.1:3100/games/");
+    const symbol = page.locator(".brand-symbol");
+    await expect(symbol).toHaveAttribute("data-ready", "true");
+    const resolution = await symbol.locator("model-viewer").evaluate(el => ({
+      displayWidth: el.getBoundingClientRect().width,
+      pixels: el.shadowRoot!.querySelector("canvas")!.width,
+    }));
+    expect(resolution.pixels).toBeGreaterThanOrEqual(resolution.displayWidth * 5);
+    await page.route("**/models/brand-symbol-v1.glb", route => route.abort());
+    await page.reload();
+    await expect(symbol.locator("img")).toBeVisible();
+    await expect(symbol.locator("model-viewer")).toHaveCount(0);
+  } finally { await context.close(); }
+});
+
 test("local mobile URLs work directly and follow navigation inside the phone frame", async ({ page }, testInfo) => {
   for (const host of ["localhost", "127.0.0.1"]) {
     for (const path of ["/mobile", "/mobile/", "/mobile/games/"]) {
@@ -125,9 +177,9 @@ test("hero floats automatically with drag, reduced motion and offscreen suspensi
     await modelGate;
     await route.continue();
   });
-  page.on("request", (request) => { if (request.url().endsWith(".glb")) modelRequests.push(request.url()); });
+  page.on("request", (request) => { if (request.url().endsWith("hero-v30.glb")) modelRequests.push(request.url()); });
   await page.goto("/");
-  const viewer = page.locator("model-viewer");
+  const viewer = page.locator(".hero-visual model-viewer");
   await expect(viewer).toHaveCSS("opacity", "0");
   await expect(page.locator(".hero-poster")).toHaveCount(0);
   const loadingBox = await page.locator(".hero-visual").boundingBox();
@@ -167,14 +219,14 @@ test("mobile hero is static for reduced motion and survives model failure", asyn
   await page.goto("/");
   await page.locator(".hero-visual").scrollIntoViewIfNeeded();
   await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
-  await expect.poll(() => page.locator("model-viewer").evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  await expect.poll(() => page.locator(".hero-visual model-viewer").evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("hero-mobile.png") });
   await page.route("**/models/*.glb", (route) => route.abort());
   await page.reload();
   await page.locator(".hero-visual").scrollIntoViewIfNeeded();
   await expect(page.locator(".hero-poster")).toBeVisible();
-  await expect(page.locator("model-viewer")).toHaveCount(0);
+  await expect(page.locator(".hero-visual model-viewer")).toHaveCount(0);
 });
 
 test("mobile rendering limits pixel work without shrinking the scene", async ({ browser }, testInfo) => {
@@ -189,7 +241,7 @@ test("mobile rendering limits pixel work without shrinking the scene", async ({ 
       await mock(page);
       await page.goto("http://127.0.0.1:3100/");
       await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true");
-      const dimensions = await page.locator("model-viewer").evaluate((el) => {
+      const dimensions = await page.locator(".hero-visual model-viewer").evaluate((el) => {
         const view = el as HTMLElement;
         return { visible: view.getBoundingClientRect().width, host: view.parentElement!.getBoundingClientRect().width,
           density: view.clientWidth * devicePixelRatio / view.getBoundingClientRect().width };
@@ -207,18 +259,18 @@ test("hero fits tablet breakpoints and remounts cleanly after navigation", async
   await mock(page);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/games/");
-  await expect(page.locator("model-viewer")).toHaveCount(0);
+  await expect(page.locator(".hero-visual model-viewer")).toHaveCount(0);
   for (let visit = 0; visit < 2; visit++) {
     await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Home", exact: true }).click();
     await page.locator(".hero-visual").scrollIntoViewIfNeeded();
     await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
-    await expect(page.locator("model-viewer")).toHaveCount(1);
+    await expect(page.locator(".hero-visual model-viewer")).toHaveCount(1);
     for (const width of [320, 760, 768, 1000, 1100, 1240, 1366]) {
       await page.setViewportSize({ width, height: 850 });
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
     await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Games", exact: true }).click();
-    await expect(page.locator("model-viewer")).toHaveCount(0);
+    await expect(page.locator(".hero-visual model-viewer")).toHaveCount(0);
   }
 });
 

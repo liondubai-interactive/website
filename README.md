@@ -65,10 +65,20 @@ Provider verification files in `public/` are intentionally public proof files.
 
 ## Design
 
-The header and browser icons use `public/app-icon-v3.png`, a 192px optimized
-copy of the approved white lion/Burj symbol on red (`1-symbol-padded.png`). The symbol
-retains the source artwork and colors, with roughly 17–20% surrounding space to
-match the legacy icon's framing. The existing header wordmark stays separate.
+The header uses `public/brands/liondubai-symbol-white.svg`: the lion/Burj outline
+shared with the device emblems, in white on transparency. Its viewBox fits the
+symbol exactly, with no background or padding. It renders at 40px wide on desktop
+and 32px on narrow mobile screens; the wordmark stays separate. Browser icons
+retain the padded red `public/app-icon-v3.png` app tile.
+The solid header symbol is authored in Blender, with white faces and filled rose
+edges. `public/models/brand-symbol-v1.glb` is a 16.7 KB texture-free model, with a
+continuous 360-degree turn every 28 seconds. It shares the existing model-viewer
+package with the hero and renders at the current display/zoom resolution. Small
+1x displays get supersampling; reported limited hardware uses native resolution.
+The small emblem updates at 30 fps independently of the hero and monitor refresh
+rate. Playback pauses when hidden or offscreen. Reduced motion, Save-Data, and loading
+failures keep the SVG fallback. There is no compressed logo video or custom
+canvas drawing code. Private Blender sources stay outside this repo.
 Keep the header focused on Home, Games and account access; contact logos sit beside policy
 links in a compact footer row, centered on mobile with copyright below. The retired `/contact` URL redirects
 to the footer; support and privacy requests also have direct email links in the policies.

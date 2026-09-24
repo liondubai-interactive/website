@@ -1,11 +1,11 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element -- Static icon is pre-sized for static hosting. */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AccountMenu } from "./WebSession";
 import { LanguageMenu } from "./LanguageMenu";
+import { BrandSymbol } from "./BrandSymbol";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -27,7 +27,7 @@ export function SiteHeader() {
       <header className="site-header" data-scrolled={scrolled || undefined}>
         <div className="header-inner shell">
           <Link className="brand" href="/" aria-label="LionDubai Interactive home">
-            <img src="/app-icon-v3.png" alt="" width="32" height="32" />
+            <BrandSymbol />
             <span className="brand-wordmark">
               <span><span className="brand-lion">LION</span>DUBAI</span>
               <span className="brand-detail">INTERACTIVE</span>
