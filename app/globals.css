@@ -270,7 +270,7 @@ h3 {
   z-index: -2;
   background: linear-gradient(transparent 75%, var(--paper)), radial-gradient(ellipse at 76% 42%, #712335 0%, #521522 46%, var(--paper) 100%);
 }
-.background-particles { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
+.background-particles { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; height: 100lvh; pointer-events: none; }
 .hero-band .hero-visual::before {
   content: "";
   position: absolute;

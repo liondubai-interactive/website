@@ -75,8 +75,9 @@ edges. `public/models/brand-symbol-v1.glb` is a 16.7 KB texture-free model, with
 continuous 360-degree turn every 28 seconds. It shares the existing model-viewer
 package with the hero and renders at the current display/zoom resolution. Small
 1x displays get supersampling; reported limited hardware uses native resolution.
-The small emblem updates at 30 fps independently of the hero and monitor refresh
-rate. Playback pauses when hidden or offscreen. Reduced motion, Save-Data, and loading
+The emblem and hero use the renderer's native display-synced animation loop,
+with no fixed frame-rate cap or extra JavaScript animation clock. The emblem
+plays its 28-second clip in reverse. Playback pauses when hidden or offscreen. Reduced motion, Save-Data, and loading
 failures keep the SVG fallback. There is no compressed logo video or custom
 canvas drawing code. Private Blender sources stay outside this repo.
 Keep the header focused on Home, Games and account access; contact logos sit beside policy
@@ -119,11 +120,18 @@ they retain that direction and gradually slow to their usual drift speed without
 springing back. The decorative canvas ignores pointer
 hits, caps its pixel ratio at 1.5 (1 on reported limited hardware) and contains at most
 110 particles. Two tiny in-memory sprites are drawn in sync with the display,
-at up to 60 Hz for idle drift and 120 Hz during pointer interaction on capable devices, with elapsed-time motion
+with elapsed-time motion
 and cached pointer bounds to avoid layout reads on mouse movement. Animation
 pauses in hidden or unfocused tabs, and remains
 static for reduced-motion preferences. Touch devices retain drift without cursor repulsion. No extra asset or library
 is downloaded for the effect.
+
+Scrolling temporarily holds the hero, emblem and particles at their current
+frames, resuming 150 ms after the last scroll event without advancing through the
+pause. One shared passive listener coordinates them without React state updates.
+New model initialization waits until scrolling stops. The particle canvas uses
+the stable large viewport height so mobile address-bar movement does not repeatedly
+reallocate its bitmap; other size changes are applied after the scroll settles.
 Success and error states use colors with contrast against these dark surfaces.
 Shared links use a versioned image of this hero. Regenerate it against the local
 preview with `node scripts/render-social-card.mjs`; update its versioned filename
@@ -152,8 +160,9 @@ size and camera framing, without changing model assets. The viewer can
 still reduce render resolution under load, and pauses when hidden or offscreen.
 Cloudflare serves static files only. Versioned `/models/` assets are cached for one
 year; change their filenames and component references whenever their contents change.
-The viewer runtime is a separate browser chunk, loaded only when the home scene is
-visible. Other routes do not initialize a 3D viewer. No external font or tracker is loaded.
+The viewer runtime is one shared browser chunk, loaded when a 3D element becomes
+visible. Other routes load only the small header emblem, never the hero model.
+No external font or tracker is loaded.
 
 The scene has one TikTok coin, a Twitch crystal, gift box and subscription star,
 one KICKs gem and one plain rainbow diamond representing YouTube Jewels, each floating independently alongside

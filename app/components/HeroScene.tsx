@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
-import { prefersEconomyRendering } from "../rendering";
+import { observeScrolling, prefersEconomyRendering } from "../rendering";
 
 export function HeroScene() {
   const host = useRef<HTMLDivElement>(null);
@@ -19,6 +19,7 @@ export function HeroScene() {
     let started = false;
     let disposed = false;
     let focused = true;
+    let scrolling = false;
 
     function syncQuality() {
       if (!viewer) return;
@@ -31,15 +32,22 @@ export function HeroScene() {
     }
 
     function syncPlayback() {
+      if (!started && visible && !scrolling && !document.hidden) void load();
       if (!viewer?.loaded) return;
-      const play = visible && focused && !document.hidden && !motion.matches;
-      if (play) viewer.play();
-      else viewer.pause();
+      const play = visible && focused && !scrolling && !document.hidden && !motion.matches;
+      if (play) {
+        container.setAttribute("data-moving", "true");
+        if (viewer.paused) viewer.play();
+      } else {
+        container.removeAttribute("data-moving");
+        viewer.pause();
+      }
     }
 
     function showFallback() {
       if (disposed) return;
       viewer?.pause();
+      container.removeAttribute("data-moving");
       viewer?.remove();
       viewer = undefined;
       setStatus("failed");
@@ -51,6 +59,7 @@ export function HeroScene() {
         // Hero model loads only on Home; the renderer is shared with the header emblem.
         await import("@google/model-viewer");
         if (disposed) return;
+        if (!visible || scrolling || document.hidden) { started = false; return; }
         const scene = document.createElement("model-viewer");
         // The viewer's keyboard control lives inside its shadow root.
         const focusStyle = document.createElement("style");
@@ -77,12 +86,14 @@ export function HeroScene() {
         viewer.maxCameraOrbit = "auto 105deg auto";
         viewer.fieldOfView = "25deg";
         viewer.interactionPrompt = "none";
+        viewer.animationCrossfadeDuration = 0;
         viewer.shadowIntensity = 0;
         viewer.environmentImage = "legacy";
         viewer.exposure = 1.15;
         viewer.addEventListener("load", async () => {
           // Settle the camera before revealing the first rendered frame.
           if (disposed || viewer !== scene) return;
+          scene.animationName = scene.availableAnimations[0];
           scene.jumpCameraToGoal();
           await scene.updateComplete;
           if (disposed || viewer !== scene) return;
@@ -98,10 +109,10 @@ export function HeroScene() {
 
     const observer = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      if (visible && !started) void load();
       syncPlayback();
     });
     observer.observe(container);
+    const stopObservingScroll = observeScrolling(active => { scrolling = active; syncPlayback(); });
     function blur() { focused = false; syncPlayback(); }
     function focus() { focused = true; syncPlayback(); }
     window.addEventListener("blur", blur);
@@ -112,6 +123,7 @@ export function HeroScene() {
     motion.addEventListener("change", syncPlayback);
     return () => {
       disposed = true;
+      stopObservingScroll();
       observer.disconnect();
       window.removeEventListener("blur", blur);
       window.removeEventListener("focus", focus);

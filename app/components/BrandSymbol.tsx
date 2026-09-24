@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Crisp vector fallback for the small 3D emblem. */
 import { useEffect, useRef } from "react";
 import type { ModelViewerElement } from "@google/model-viewer";
-import { prefersEconomyRendering } from "../rendering";
+import { observeScrolling, prefersEconomyRendering } from "../rendering";
 
 export function BrandSymbol() {
   const host = useRef<HTMLSpanElement>(null);
@@ -17,31 +17,12 @@ export function BrandSymbol() {
     let viewer: ModelViewerElement | undefined;
     let started = false;
     let visible = false;
+    let scrolling = false;
     let disposed = false;
-    let frame = 0;
-    let lastTime = 0;
-    let nextPaint = 0;
-    let elapsed = 0;
 
     function stop() {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      lastTime = 0;
-      nextPaint = 0;
+      viewer?.pause();
       container.removeAttribute("data-moving");
-    }
-    function tick(time: number) {
-      frame = 0;
-      if (disposed || !viewer?.loaded || !viewer.duration) return;
-      if (!visible || document.hidden || motion.matches) { syncPlayback(); return; }
-      if (lastTime) elapsed += (time - lastTime) / 1000;
-      lastTime = time;
-      const interval = 1000 / 30;
-      if (time >= nextPaint) {
-        viewer.currentTime = viewer.duration - (elapsed % viewer.duration);
-        nextPaint = time + interval - (nextPaint ? (time - nextPaint) % interval : 0);
-      }
-      frame = requestAnimationFrame(tick);
     }
 
     function quality() {
@@ -53,9 +34,8 @@ export function BrandSymbol() {
     }
     function syncPlayback() {
       if (disposed) return;
-      if (!visible || document.hidden || motion.matches) {
+      if (!visible || scrolling || document.hidden || motion.matches) {
         stop();
-        viewer?.pause();
         if (motion.matches) container.removeAttribute("data-ready");
         return;
       }
@@ -63,13 +43,11 @@ export function BrandSymbol() {
       else if (viewer?.loaded && viewer.duration > 0) {
         container.setAttribute("data-ready", "true");
         container.setAttribute("data-moving", "true");
-        // Seek the native renderer at 30 fps instead of animating at monitor refresh rate.
-        if (!frame) frame = requestAnimationFrame(tick);
+        if (viewer.paused) viewer.play();
       }
     }
     function fallback() {
       stop();
-      viewer?.pause();
       viewer?.remove();
       viewer = undefined;
       container.removeAttribute("data-ready");
@@ -80,6 +58,7 @@ export function BrandSymbol() {
         // Shared with HeroScene: the package is loaded once, not once per model.
         await import("@google/model-viewer");
         if (disposed) return;
+        if (!visible || scrolling || document.hidden || motion.matches) { started = false; return; }
         const scene = document.createElement("model-viewer");
         viewer = scene;
         scene.src = "/models/brand-symbol-v1.glb";
@@ -99,7 +78,11 @@ export function BrandSymbol() {
           scene.animationName = scene.availableAnimations[0];
           scene.jumpCameraToGoal();
           await scene.updateComplete;
-          if (!disposed && viewer === scene) syncPlayback();
+          if (disposed || viewer !== scene) return;
+          // Native reverse playback shares the renderer's display-synced loop.
+          scene.timeScale = -1;
+          scene.currentTime = scene.duration;
+          syncPlayback();
         });
         scene.addEventListener("error", fallback);
         container.append(scene);
@@ -111,6 +94,7 @@ export function BrandSymbol() {
       syncPlayback();
     });
     observer.observe(container);
+    const stopObservingScroll = observeScrolling(active => { scrolling = active; syncPlayback(); });
     document.addEventListener("visibilitychange", syncPlayback);
     window.addEventListener("pageshow", syncPlayback);
     window.addEventListener("focus", syncPlayback);
@@ -118,6 +102,7 @@ export function BrandSymbol() {
     motion.addEventListener("change", syncPlayback);
     return () => {
       disposed = true;
+      stopObservingScroll();
       observer.disconnect();
       document.removeEventListener("visibilitychange", syncPlayback);
       window.removeEventListener("pageshow", syncPlayback);

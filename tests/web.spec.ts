@@ -7,6 +7,7 @@ test("solid header symbol turns in reverse and resumes after hidden tabs", async
   const model = symbol.locator("model-viewer");
   await expect(symbol).toHaveAttribute("data-ready", "true");
   expect(await model.evaluate(el => (el as ModelViewerElement).duration)).toBeCloseTo(28, 1);
+  await expect(model).toHaveJSProperty("timeScale", -1);
   await expect.poll(() => model.evaluate(el => (el as ModelViewerElement).currentTime)).toBeGreaterThan(0);
   const initial = await model.evaluate(el => (el as ModelViewerElement).currentTime);
   await expect.poll(() => model.evaluate(el => (el as ModelViewerElement).currentTime)).toBeLessThan(initial);
@@ -188,11 +189,13 @@ test("hero floats automatically with drag, reduced motion and offscreen suspensi
   await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
   await expect(viewer).toHaveCSS("opacity", "1");
   expect(await page.locator(".hero-visual").boundingBox()).toEqual(loadingBox);
-  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true");
+  const initialTime = await viewer.evaluate(el => (el as ModelViewerElement).currentTime);
+  await expect.poll(() => viewer.evaluate(el => (el as ModelViewerElement).currentTime)).not.toBe(initialTime);
   await page.evaluate(() => window.dispatchEvent(new Event("blur")));
-  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  await expect(page.locator(".hero-visual")).not.toHaveAttribute("data-moving", "true");
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
-  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true");
   const orbit = await viewer.evaluate((el) => (el as ModelViewerElement).getCameraOrbit().theta);
   const box = (await viewer.boundingBox())!;
   await page.mouse.move(box.x + box.width * .5, box.y + box.height * .5);
@@ -202,13 +205,13 @@ test("hero floats automatically with drag, reduced motion and offscreen suspensi
   await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).getCameraOrbit().theta)).not.toBe(orbit);
   await expect(page.getByRole("button", { name: /floating animation/ })).toHaveCount(0);
   await expect(page.getByText("Drag to explore")).toHaveCount(0);
-  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true");
   await page.locator("footer").scrollIntoViewIfNeeded();
-  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  await expect(page.locator(".hero-visual")).not.toHaveAttribute("data-moving", "true");
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true");
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  await expect(page.locator(".hero-visual")).not.toHaveAttribute("data-moving", "true");
   expect(modelRequests).toHaveLength(1);
   await page.screenshot({ path: testInfo.outputPath("hero-interactive.png") });
 });
@@ -228,6 +231,51 @@ test("mobile hero is static for reduced motion and survives model failure", asyn
   await page.locator(".hero-visual").scrollIntoViewIfNeeded();
   await expect(page.locator(".hero-poster")).toBeVisible();
   await expect(page.locator(".hero-visual model-viewer")).toHaveCount(0);
+});
+
+test("scrolling holds decorative frames and resumes them without a jump", async ({ page }) => {
+  await mock(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const hero = page.locator(".hero-visual model-viewer");
+  const brand = page.locator(".brand-symbol");
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true");
+  await expect(brand).toHaveAttribute("data-moving", "true");
+  const held = await page.evaluate(async () => {
+    const model = document.querySelector(".hero-visual model-viewer") as ModelViewerElement;
+    const logo = document.querySelector(".brand-symbol model-viewer") as ModelViewerElement;
+    const particles = document.querySelector(".background-particles") as HTMLCanvasElement;
+    const timer = setInterval(() => window.scrollBy({ top: 1, behavior: "instant" }), 20);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 250));
+      const first = { hero: model.currentTime, logo: logo.currentTime, pixels: particles.toDataURL(), width: particles.width };
+      particles.style.width = "calc(100% - 10px)";
+      await new Promise(resolve => setTimeout(resolve, 250));
+      return {
+        paused: model.paused,
+        logoMoving: logo.parentElement!.hasAttribute("data-moving"),
+        heroHeld: first.hero === model.currentTime,
+        logoHeld: first.logo === logo.currentTime,
+        particlesHeld: first.pixels === particles.toDataURL(),
+        resizeDeferred: particles.width === first.width,
+        particleWidth: first.width,
+        heroTime: model.currentTime,
+        logoTime: logo.currentTime,
+      };
+    } finally { clearInterval(timer); }
+  });
+  expect(held).toMatchObject({ paused: true, logoMoving: false, heroHeld: true, logoHeld: true, particlesHeld: true, resizeDeferred: true });
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-moving", "true");
+  await expect(brand).toHaveAttribute("data-moving", "true");
+  const resumedTime = await hero.evaluate(el => (el as ModelViewerElement).currentTime);
+  expect(resumedTime - held.heroTime).toBeLessThan(.4);
+  const resumedLogo = await brand.locator("model-viewer").evaluate(el => (el as ModelViewerElement).currentTime);
+  expect(held.logoTime - resumedLogo).toBeLessThan(.4);
+  await expect.poll(() => page.locator(".background-particles").evaluate(el => (el as HTMLCanvasElement).width)).toBeLessThan(held.particleWidth);
+  await page.locator(".background-particles").evaluate(el => { (el as HTMLCanvasElement).style.width = ""; });
+  const pixels = () => page.locator(".background-particles").evaluate(el => (el as HTMLCanvasElement).toDataURL());
+  const initial = await pixels();
+  await expect.poll(pixels).not.toBe(initial);
 });
 
 test("mobile rendering limits pixel work without shrinking the scene", async ({ browser }, testInfo) => {

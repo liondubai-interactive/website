@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { prefersEconomyRendering } from "../rendering";
+import { observeScrolling, prefersEconomyRendering } from "../rendering";
 
 type Particle = {
   x: number; y: number;
@@ -51,10 +51,9 @@ export function BackgroundParticles() {
     let pointer: { x: number; y: number } | null = null;
     let frame = 0;
     let lastTime = 0;
-    let nextPaint = 0;
-    let interactingUntil = 0;
     let elapsed = 0;
     let paused = document.hidden;
+    let scrolling = false;
 
     function draw() {
       const ctx = context!;
@@ -69,11 +68,7 @@ export function BackgroundParticles() {
 
     function animate(time: number) {
       frame = 0;
-      // Idle drift needs 60 Hz; pointer nudges get up to 120 Hz on capable devices.
-      // Carry the remainder forward so refresh-rate rounding never slows the cadence.
-      const interval = 1000 / (!economy && time < interactingUntil ? 120 : 60);
-      if (time + .5 < nextPaint) { wake(); return; }
-      nextPaint = time + interval - (nextPaint ? Math.max(0, (time - nextPaint) % interval) : 0);
+      // requestAnimationFrame follows the display's refresh rate; speed uses elapsed time.
       const delta = lastTime ? Math.min(time - lastTime, 50) : 1000 / 60;
       lastTime = time;
       const seconds = delta / 1000;
@@ -114,7 +109,7 @@ export function BackgroundParticles() {
     }
 
     function wake() {
-      if (!frame && !paused && !document.hidden && !motion.matches) {
+      if (!frame && !paused && !scrolling && !document.hidden && !motion.matches) {
         frame = requestAnimationFrame(animate);
       }
     }
@@ -123,13 +118,13 @@ export function BackgroundParticles() {
       cancelAnimationFrame(frame);
       frame = 0;
       lastTime = 0;
-      nextPaint = 0;
-      interactingUntil = 0;
       pointer = null;
       draw();
     }
 
     function resize() {
+      // Mobile browser chrome can resize the viewport repeatedly during a swipe.
+      if (scrolling) return;
       const bounds = canvas.getBoundingClientRect();
       left = bounds.left;
       top = bounds.top;
@@ -171,7 +166,6 @@ export function BackgroundParticles() {
       if (x < 0 || x > width || y < 0 || y > height) { leave(); return; }
       if (pointer) { pointer.x = x; pointer.y = y; }
       else pointer = { x, y };
-      interactingUntil = performance.now() + 2000;
       if (!frame) lastTime = 0;
       wake();
     }
@@ -184,6 +178,11 @@ export function BackgroundParticles() {
     const resizeObserver = new ResizeObserver(resize);
     resize();
     resizeObserver.observe(canvas);
+    const stopObservingScroll = observeScrolling(active => {
+      scrolling = active;
+      if (active) reset();
+      else { resize(); wake(); }
+    });
     window.addEventListener("pointermove", move, { passive: true, capture: true });
     document.documentElement.addEventListener("pointerleave", leave);
     window.addEventListener("blur", suspend);
@@ -194,6 +193,7 @@ export function BackgroundParticles() {
     hover.addEventListener("change", preference);
     return () => {
       cancelAnimationFrame(frame);
+      stopObservingScroll();
       resizeObserver.disconnect();
       window.removeEventListener("pointermove", move, true);
       document.documentElement.removeEventListener("pointerleave", leave);
