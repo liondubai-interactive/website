@@ -91,13 +91,17 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
     await expect(page.getByText(/An independent app\./)).toBeVisible();
     const header = page.locator(".site-header");
     await expect(header).not.toHaveAttribute("data-scrolled", "true");
+    const homeNav = await page.getByRole("navigation", { name: "Primary navigation" }).boundingBox();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`home-${width}.png`), fullPage: true });
     await page.getByRole("link", { name: "Games", exact: true }).click();
     await expect(page).toHaveURL(/\/games\/$/);
+    await expect(page.getByRole("link", { name: "Games", exact: true })).toHaveAttribute("aria-current", "page");
+    expect((await page.getByRole("navigation", { name: "Primary navigation" }).boundingBox())!.x).toBe(homeNav!.x);
     await expect(page.getByRole("heading", { name: "Minecraft", exact: true })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath(`games-${width}.png`), fullPage: true });
     await page.getByRole("link", { name: "Explore Minecraft plugins" }).click();
     await expect(page).toHaveURL(/\/#games$/);
     await expect(header).toHaveAttribute("data-scrolled", "true");
@@ -184,6 +188,8 @@ test("trial requires confirmation, uses CSRF, updates once; logout clears accoun
     },
   ]);
   await page.screenshot({ path: testInfo.outputPath("account.png"), fullPage: true });
+  await page.setViewportSize({ width: 320, height: 850 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.setViewportSize({ width: 390, height: 850 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,

@@ -12,20 +12,21 @@ export const metadata = pageMetadata(
 export default function GamesPage() {
   return (
     <main id="main-content" className="catalog-shell shell">
-      <p className="eyebrow">PLAY WITH YOUR AUDIENCE</p>
-      <h1>Games.</h1>
+      <h1>Games</h1>
       <p className="hero-lead">Choose a game. Let your viewers join the action.</p>
-      <Link href="/#games" className="game-item catalog-game" aria-label="Explore Minecraft plugins">
-        <div className="catalog-art">
-          <Image className="plugin-image" src="/games/minecraft.webp" alt="" width={384} height={384} unoptimized />
-        </div>
-        <div className="catalog-copy">
-          <p className="eyebrow">JAVA EDITION</p>
-          <h2>Minecraft</h2>
-          <p>Change the adventure with Survival, bring armies into Battle Simulator, or take sides in Clash Royale.</p>
-          <span className="catalog-link">Explore {integrations.length} plugins <span aria-hidden="true">↗</span></span>
-        </div>
-      </Link>
+      <div className="game-list">
+        <Link href="/#games" className="game-item" aria-label="Explore Minecraft plugins">
+          <div className="game-artwork">
+            <Image className="plugin-image" src="/games/minecraft.webp" alt="" width={384} height={384} unoptimized />
+          </div>
+          <div className="game-copy">
+            <h2>Minecraft</h2>
+            <p>Java Edition. Explore Survival, Battle Simulator and Clash Royale.</p>
+          </div>
+          <span className="game-meta">{integrations.length}<span> plugins</span></span>
+          <span className="game-arrow" aria-hidden="true">↗</span>
+        </Link>
+      </div>
     </main>
   );
 }

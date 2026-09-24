@@ -43,7 +43,7 @@ export default function Home() {
                 <h3>{name}</h3>
                 <p>{description}</p>
               </div>
-              <span className="game-price">
+              <span className="game-meta">
                 ${price}
                 <span> USD / month</span>
               </span>
