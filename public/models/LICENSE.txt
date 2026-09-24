@@ -27,9 +27,18 @@ https://github.com/simple-icons/simple-icons/blob/develop/icons/twitch.svg
 https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md
 Brand rights remain with Twitch.
 
-The purple crystal, gift box, subscription star and red chat token are original
-visual interpretations of Twitch support options and YouTube Super Chat, not
-official 3D assets. Platform names and marks remain with their respective owners.
-No platform endorsement is implied.
+The purple crystal, gift box and subscription star are original visual
+interpretations of Twitch support options, not official 3D assets.
+
+The YouTube Jewel is original geometry based on YouTube's official currency
+artwork, not an official 3D asset:
+https://blog.youtube/news-and-events/made-on-youtube-2024/
+https://storage.googleapis.com/gweb-uniblog-publish-prod/original_images/Gifts_powered_by_Jewels_Title.png
+The current variant uses a classic diamond cut with the Jewel-inspired rainbow
+palette; it is an artistic interpretation of the currency.
+The reference bitmap is not included in the website or the GLB. Earlier cached
+scene versions use an original red chat token inspired by YouTube Super Chat.
+Platform names and marks remain with their respective owners. No platform
+endorsement is implied.
 
 The GLB is provided as part of the LionDubai website, not as an asset marketplace.

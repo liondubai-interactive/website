@@ -82,7 +82,7 @@ The viewer runtime is a separate browser chunk, loaded only when the home scene 
 visible. Other routes do not initialize a 3D viewer. No external font or tracker is loaded.
 
 The scene has one TikTok coin, a Twitch crystal, gift box and subscription star,
-one KICKs gem and one YouTube chat symbol, each floating independently alongside
+one KICKs gem and one plain rainbow diamond representing YouTube Jewels, each floating independently alongside
 the laptop and phone. The symbols retain the original coin motion, staggered in
 depth and height with clearance from devices and one another throughout the loop.
 Model provenance is in `public/models/LICENSE.txt`. The phone is original geometry
