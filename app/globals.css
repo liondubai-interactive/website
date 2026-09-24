@@ -104,7 +104,10 @@ h3 {
   color: var(--muted);
 }
 .site-nav {
-  display: flex;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 4px;
   align-items: center;
   font-size: 13px;
@@ -112,6 +115,20 @@ h3 {
   border-radius: 999px;
   background: var(--soft);
 }
+.site-nav::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 5px auto 5px 5px;
+  width: calc((100% - 14px) / 2);
+  border-radius: inherit;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 200ms ease, opacity 160ms ease;
+}
+.site-nav:has(> a[aria-current="page"])::before { opacity: 1; }
+.site-nav:has(> a:nth-child(2)[aria-current="page"])::before { transform: translateX(calc(100% + 4px)); }
 .site-nav a,
 .header-actions a,
 .footer-inner a,
@@ -123,8 +140,8 @@ h3 {
 .text-link:hover {
   color: var(--accent);
 }
-.site-nav > a { padding: 10px 20px; border-radius: 999px; font-weight: 600; }
-.site-nav > a[aria-current="page"] { background: var(--accent); color: var(--white); }
+.site-nav > a { padding: 10px 20px; border-radius: 999px; font-weight: 600; text-align: center; transition: color 200ms ease; }
+.site-nav > a[aria-current="page"] { color: var(--white); }
 .header-actions { display: flex; align-items: center; justify-self: end; gap: 18px; font-size: 13px; }
 .header-actions .sign-in { padding-block: 10px; }
 .header-actions .sign-in:hover { color: var(--accent); }
