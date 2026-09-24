@@ -1,0 +1,16 @@
+LionDubai interactive hero scene
+
+Laptop base geometry: Rohma Ansari, CC0.
+https://www.blendkit.com/asset-gallery-detail/b147eaa3-47f4-4882-82b4-e338d8d84bb1/
+https://creativecommons.org/publicdomain/zero/1.0/
+Modified proportions, materials, screen and trackpad for LionDubai.
+
+Phone geometry, coin geometry, composition and floating animation created for
+LionDubai Interactive. The phone uses original rounded shapes; it contains no
+geometry from the earlier royalty-free reference model.
+
+TikTok silhouette: third-party TikTok brand mark, sourced from
+https://github.com/gilbarbara/logos/blob/main/logos/tiktok-icon.svg
+Brand rights remain with TikTok. This scene does not imply endorsement.
+
+The GLB is provided as part of the LionDubai website, not as an asset marketplace.

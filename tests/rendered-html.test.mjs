@@ -5,6 +5,21 @@ import test from "node:test";
 const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
 
+test("hero stays small, self-contained and keeps all seven animated objects", async () => {
+  const data = await readFile(new URL("models/hero-v4.glb", outputRoot));
+  assert.ok(data.length < 500_000, "Keep the complete model below 500 KB");
+  const gltf = JSON.parse(data.subarray(20, 20 + data.readUInt32LE(12)).toString());
+  assert.equal(gltf.animations.length, 1);
+  const names = new Set(gltf.animations[0].channels.map((channel) => gltf.nodes[channel.target.node].name));
+  assert.deepEqual([...names].sort(), ["Coin.01", "Coin.02", "Coin.03", "Coin.04", "Coin.05", "Laptop", "Phone"]);
+  assert.equal(gltf.images?.length ?? 0, 0);
+  assert.ok(gltf.buffers.every((buffer) => !buffer.uri));
+  assert.ok(!(gltf.extensionsRequired ?? []).some((name) => /draco|meshopt/i.test(name)));
+  const poster = await readFile(new URL("models/hero-v4.webp", outputRoot));
+  assert.ok(poster.length < 30_000);
+  assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /max-age=31536000, immutable/);
+});
+
 async function readPage(relativePath) {
   return readFile(new URL(relativePath, outputRoot), "utf8");
 }

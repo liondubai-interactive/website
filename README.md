@@ -68,8 +68,31 @@ Shared type, color and surface styles keep public and account pages consistent.
 The sticky header uses centered pill navigation, with account and download actions on the right.
 It blends into the page at the top and gains a subtle divider when scrolled. The opening section
 fills the available viewport; the plugin cards follow below it.
-The hero reserves a blank desktop area for a future 3D scene; this space collapses on mobile.
-No 3D runtime, animation library, external font or tracker is loaded.
+The home hero uses a locally bundled, lazy-loaded `@google/model-viewer` for the
+interactive scene. Drag or arrow keys rotate it; zoom/pan are disabled so page
+scrolling stays normal. Independent floating animation plays automatically while
+visible, pausing offscreen and in hidden tabs. Reduced motion stays static.
+There is no visible control row. The scene fades in after loading with its camera settled,
+so there is no mismatched poster-to-model jump. A small WebP downloads only if 3D fails.
+The 402 KB GLB contains the complete scene and eight-second animation; it needs no
+textures, external decoder, environment download, API requests or server rendering.
+Cloudflare serves static files only. Versioned `/models/` assets are cached for one
+year; change their filenames and component references whenever their contents change.
+The viewer runtime is a separate browser chunk, loaded only when the home scene is
+visible. Other routes do not initialize a 3D viewer. No external font or tracker is loaded.
+
+Model provenance is in `public/models/LICENSE.txt`. The phone is original geometry
+with a continuous back; the earlier royalty-free reference phone is not distributed.
+Screens retain separate materials for future media. Keep the Blender authoring
+files outside this public website repository. To optimize a new GLB export, run:
+
+```sh
+npx @gltf-transform/cli@4.3.0 optimize INPUT.glb public/models/hero-vNEXT.glb --compress quantize --flatten false --join false --palette false --instance false --simplify-error 0.0001 --texture-compress false
+```
+
+This preserves animated roots and screen materials, reduces repeated geometry and
+keyframes, and quantizes vertices without shipping a decoder. Check all animated
+objects, the loop boundary, the initial camera framing and a rotated view after updates.
 
 The layout supports narrow screens, visible keyboard focus, a skip link and
 reduced motion. When changing it, check home, download and policy pages

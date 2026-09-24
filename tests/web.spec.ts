@@ -1,4 +1,82 @@
 import { expect, test, type Page } from "@playwright/test";
+import type { ModelViewerElement } from "@google/model-viewer";
+
+test("hero floats automatically with drag, reduced motion and offscreen suspension", async ({ page }, testInfo) => {
+  await mock(page);
+  await page.setViewportSize({ width: 1366, height: 850 });
+  const modelRequests: string[] = [];
+  let releaseModel!: () => void;
+  const modelGate = new Promise<void>((resolve) => { releaseModel = resolve; });
+  await page.route("**/models/*.glb", async (route) => {
+    await modelGate;
+    await route.continue();
+  });
+  page.on("request", (request) => { if (request.url().endsWith(".glb")) modelRequests.push(request.url()); });
+  await page.goto("/");
+  const viewer = page.locator("model-viewer");
+  await expect(viewer).toHaveCSS("opacity", "0");
+  await expect(page.locator(".hero-poster")).toHaveCount(0);
+  const loadingBox = await page.locator(".hero-visual").boundingBox();
+  releaseModel();
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
+  await expect(viewer).toHaveCSS("opacity", "1");
+  expect(await page.locator(".hero-visual").boundingBox()).toEqual(loadingBox);
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  const orbit = await viewer.evaluate((el) => (el as ModelViewerElement).getCameraOrbit().theta);
+  const box = (await viewer.boundingBox())!;
+  await page.mouse.move(box.x + box.width * .5, box.y + box.height * .5);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * .75, box.y + box.height * .5, { steps: 12 });
+  await page.mouse.up();
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).getCameraOrbit().theta)).not.toBe(orbit);
+  await expect(page.getByRole("button", { name: /floating animation/ })).toHaveCount(0);
+  await expect(page.getByText("Drag to explore")).toHaveCount(0);
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  await page.locator("footer").scrollIntoViewIfNeeded();
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(false);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect.poll(() => viewer.evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  expect(modelRequests).toHaveLength(1);
+  await page.screenshot({ path: testInfo.outputPath("hero-interactive.png") });
+});
+
+test("mobile hero is static for reduced motion and survives model failure", async ({ page }, testInfo) => {
+  await mock(page);
+  await page.setViewportSize({ width: 390, height: 850 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await page.locator(".hero-visual").scrollIntoViewIfNeeded();
+  await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
+  await expect.poll(() => page.locator("model-viewer").evaluate((el) => (el as ModelViewerElement).paused)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("hero-mobile.png") });
+  await page.route("**/models/*.glb", (route) => route.abort());
+  await page.reload();
+  await page.locator(".hero-visual").scrollIntoViewIfNeeded();
+  await expect(page.locator(".hero-poster")).toBeVisible();
+  await expect(page.locator("model-viewer")).toHaveCount(0);
+});
+
+test("hero fits tablet breakpoints and remounts cleanly after navigation", async ({ page }) => {
+  await mock(page);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/games/");
+  await expect(page.locator("model-viewer")).toHaveCount(0);
+  for (let visit = 0; visit < 2; visit++) {
+    await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Home", exact: true }).click();
+    await page.locator(".hero-visual").scrollIntoViewIfNeeded();
+    await expect(page.locator(".hero-visual")).toHaveAttribute("data-ready", "true", { timeout: 30_000 });
+    await expect(page.locator("model-viewer")).toHaveCount(1);
+    for (const width of [320, 760, 768, 1000, 1100, 1240, 1366]) {
+      await page.setViewportSize({ width, height: 850 });
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+    await page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Games", exact: true }).click();
+    await expect(page.locator("model-viewer")).toHaveCount(0);
+  }
+});
 
 const user = {
   id: "30000000-0000-4000-8000-000000000001",

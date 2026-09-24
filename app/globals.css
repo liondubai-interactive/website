@@ -286,7 +286,12 @@ h3 {
 .hero-facts > div { display: flex; flex-direction: column; gap: 5px; }
 .hero-facts dt { color: var(--muted); font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 .hero-facts dd { order: -1; margin: 0; font-size: 24px; font-weight: 650; line-height: 1; }
-.hero-visual { min-height: 480px; }
+.hero-visual { position: relative; width: 100%; aspect-ratio: 800 / 760; --preview-size: 120%; --preview-inset: -10%; }
+.hero-poster, .hero-visual model-viewer { position: absolute; inset: var(--preview-inset); width: var(--preview-size); height: var(--preview-size); }
+.hero-poster { object-fit: contain; }
+.hero-visual model-viewer { opacity: 0; pointer-events: none; transition: opacity 240ms ease-out; }
+.hero-visual[data-ready="true"] model-viewer { opacity: 1; pointer-events: auto; }
+.hero-visual model-viewer::part(default-progress-bar) { display: none; }
 .catalog-shell { padding-block: 64px 80px; }
 .catalog-shell > .hero-lead { max-width: none; margin-bottom: 40px; }
 .games {
@@ -473,6 +478,9 @@ h3 {
     padding-bottom: 120px;
   }
 }
+@media (max-width: 1240px) {
+  .hero-visual { --preview-size: 110%; --preview-inset: -5%; }
+}
 @media (max-width: 1000px) {
   .shell {
     width: calc(100% - 64px);
@@ -500,7 +508,7 @@ h3 {
     padding-block: 45px;
     gap: 0;
   }
-  .hero-visual { display: none; }
+  .hero-visual { max-width: 480px; justify-self: center; margin-top: 20px; }
   .hero-copy {
     max-width: 540px;
   }

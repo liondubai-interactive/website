@@ -2,6 +2,7 @@ import Link from "next/link";
 import { integrations } from "./integrations";
 import { PluginImage } from "./components/PluginImage";
 import { DownloadButton } from "./components/DownloadButton";
+import { HeroScene } from "./components/HeroScene";
 
 export default function Home() {
   return (
@@ -23,7 +24,7 @@ export default function Home() {
             <div><dt>Free trial per plugin</dt><dd>24h</dd></div>
           </dl>
         </div>
-        <div className="hero-visual" aria-hidden="true" />
+        <HeroScene />
       </section>
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
