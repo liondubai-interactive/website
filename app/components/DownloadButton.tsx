@@ -23,6 +23,10 @@ export function DownloadButton() {
           "Limited testing · Public download coming soon"
         )}
       </p>
+      <p className="independent-note">
+        An independent app. Not an official Minecraft product or associated with Mojang or
+        Microsoft. TikTok does not own or operate this app.
+      </p>
     </div>
   );
 }

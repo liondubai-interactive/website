@@ -507,9 +507,9 @@ h3 {
 .independent-note {
   font-size: 10px;
   color: var(--muted);
-  max-width: 730px;
-  text-align: center;
-  padding-bottom: 25px;
+  max-width: 440px;
+  line-height: 1.6;
+  margin: 12px 0 0;
 }
 .site-footer {
   border-top: 1px solid var(--line);

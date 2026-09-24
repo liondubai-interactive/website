@@ -58,10 +58,6 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      <p className="independent-note shell">
-        An independent app. Not an official Minecraft product or associated with Mojang or
-        Microsoft. TikTok does not own or operate this app.
-      </p>
     </main>
   );
 }
