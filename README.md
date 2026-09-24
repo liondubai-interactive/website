@@ -41,7 +41,7 @@ build. A failed build leaves the last successful deployment available. To undo
 a bad release, restore a known-good commit or use Pages' production rollback;
 then fix/revert the source so the next push does not reintroduce it.
 
-After publishing, check the home, pricing and policy pages, the TikTok
+After publishing, check the home, download and policy pages, the TikTok
 verification file, image assets, unknown-route 404s and the `www` redirect over
 HTTPS. The public site does not host the API or database.
 
@@ -51,20 +51,20 @@ Provider verification files in `public/` are intentionally public proof files.
 
 ## Design
 
-Keep the header focused on download, pricing and account access; contact logos sit beside policy
+Keep the header focused on download, plugins and account access; contact logos sit beside policy
 links in a compact footer row, centered on mobile with copyright below. The retired `/contact` URL redirects
 to the footer; support and privacy requests also have direct email links in the policies.
 Logo artwork in `public/brands/` matches the desktop assets, sourced from
 https://github.com/gilbarbara/logos/tree/main/logos. The Next.js root layout owns the header and footer for
 all pages, including missing routes. `app/integrations.ts` owns the public product descriptions
-and planned prices used by both the home and pricing pages.
+and planned prices displayed on the home plugin cards. `/pricing` redirects to this section.
 The home plugin cards use a responsive three-column grid with a small image zoom
 and highlight on hover or keyboard focus; reduced motion disables transitions.
 The preset preview is a static illustration, not an interactive product demo. It adds no animation
 library, external font, tracker or image download.
 
 The layout supports narrow screens, visible keyboard focus, a skip link and
-reduced motion. When changing it, check home, pricing and policy pages
+reduced motion. When changing it, check home, download and policy pages
 at mobile and desktop widths. Preserve launch-status and billing-policy notices.
 
 ## Website accounts and releases
@@ -81,7 +81,7 @@ The profile-picture dropdown owns account navigation, admin entry and sign-out o
 every page. It uses a native popover for keyboard and outside-click dismissal.
 Trials require confirmation. Active trial buttons count down locally from server time and expiry using
 elapsed browser time, without polling. Public plugin portraits are optimized copies
-of the desktop artwork in `public/plugins/`, shared by home, pricing and account pages.
+of the desktop artwork in `public/plugins/`, shared by home and account pages.
 Backend prices (including Sandbox prices) drive account billing, while public pricing
 remains clearly labeled planned launch pricing. Website
 login readiness comes from `/web/config`; do not enable public sign-in before the backend

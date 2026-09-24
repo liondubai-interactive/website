@@ -39,7 +39,7 @@ export default function TermsPage() {
         <h2>Subscriptions and trials</h2>
         <p>
           When purchases become available, subscriptions unlock the selected
-          plugin at the <Link href="/pricing">published price</Link>. Each
+          plugin at the <Link href="/#games">published price</Link>. Each
           subscription renews monthly until cancelled. Applicable taxes and the
           full payable amount are shown at checkout. Cancellation stops future
           renewals and access continues until the current paid period ends. Free

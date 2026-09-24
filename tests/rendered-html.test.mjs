@@ -17,7 +17,7 @@ test("exports the product home with visible policy links", async () => {
   assert.match(html, new RegExp(`href="${basePath}/privacy/"`));
   assert.match(html, new RegExp(`href="${basePath}/terms/"`));
   assert.match(html, /aria-label="Contact"/);
-  assert.match(html, /limited testing/i);
+  assert.match(html, /24-hour free trial/);
   assert.match(html, /TikTok does not own or operate (?:it|this app)/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 
@@ -33,7 +33,6 @@ test("exports every compliance route", async () => {
   const pages = [
     ["privacy/index.html", /Privacy Policy/, "privacy"],
     ["terms/index.html", /Terms of Use/, "terms"],
-    ["pricing/index.html", /Your way to play/, "pricing"],
     ["refunds/index.html", /Refunds &amp; cancellation/, "refunds"],
   ];
 
@@ -93,7 +92,6 @@ test("retains the shared social image on every page with its own metadata", asyn
 test("every exported page has one shared navigation and a working skip target", async () => {
   for (const route of [
     "index.html",
-    "pricing/index.html",
     "privacy/index.html",
     "terms/index.html",
     "refunds/index.html",
@@ -113,7 +111,7 @@ test("exports a real download destination only when a release is configured", as
   const html = await readPage("download/index.html");
   assert.match(html, /Download for Windows/);
   if (!process.env.NEXT_PUBLIC_WINDOWS_DOWNLOAD_URL) {
-    assert.match(html, /Public download coming soon/);
+    assert.match(html, /Public download is not available yet/);
     assert.match(html, /<button[^>]*disabled/);
     assert.doesNotMatch(html, /href="[^"]+\.(exe|msi)/);
   }

@@ -9,20 +9,16 @@ export function DownloadButton() {
           <WindowsIcon /> Download for Windows
         </a>
       ) : (
-        <button className="button button-primary" disabled>
+        <button className="button button-primary" disabled title="Public download is not available yet">
           <WindowsIcon /> Download for Windows
         </button>
       )}
-      <p className="beta-note">
-        {windowsRelease ? (
-          <>
-            Version {windowsRelease.version} · Windows x64 ·{" "}
-            <Link href="/download/">Installation details</Link>
-          </>
-        ) : (
-          "Limited testing · Public download coming soon"
-        )}
-      </p>
+      {windowsRelease && (
+        <p className="beta-note">
+          Version {windowsRelease.version} · Windows x64 ·{" "}
+          <Link href="/download/">Installation details</Link>
+        </p>
+      )}
       <p className="independent-note">
         An independent app. Not an official Minecraft product or associated with Mojang or
         Microsoft. TikTok does not own or operate this app.

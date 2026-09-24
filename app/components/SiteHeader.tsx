@@ -19,7 +19,7 @@ export function SiteHeader() {
           </Link>
           <nav className="site-nav" aria-label="Primary navigation">
             <Link href="/download/">Download</Link>
-            <Link href="/pricing">Pricing</Link>
+            <Link href="/#games">Plugins</Link>
             <AccountMenu />
           </nav>
         </div>

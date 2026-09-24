@@ -88,7 +88,7 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
     await page.setViewportSize({ width, height: 850 });
     await page.goto("/");
     await expect(page.getByRole("button", { name: "Download for Windows" })).toBeDisabled();
-    await expect(page.getByText("Limited testing · Public download coming soon")).toBeVisible();
+    await expect(page.getByText(/An independent app\./)).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);

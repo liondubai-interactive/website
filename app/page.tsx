@@ -29,13 +29,14 @@ export default function Home() {
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">PLUGINS</p>
+            <p className="eyebrow">PLUGINS · PLANNED LAUNCH PRICES</p>
             <h2 id="games-heading">Pick your way to play.</h2>
+            <p className="trial-note">24-hour free trial · No card required</p>
           </div>
         </div>
         <div className="game-list">
           {integrations.map(({ id, name, description, price }) => (
-            <Link href={`/pricing#${id}`} className="game-item" key={id}>
+            <Link href="/account/?view=customer" className="game-item" key={id}>
               <div className="game-artwork"><PluginImage id={id} large /></div>
               <div className="game-copy">
                 <h3>{name}</h3>
@@ -43,19 +44,13 @@ export default function Home() {
               </div>
               <span className="game-price">
                 ${price}
-                <span> / month</span>
+                <span> USD / month</span>
               </span>
               <span className="game-arrow" aria-hidden="true">
                 ↗
               </span>
             </Link>
           ))}
-        </div>
-        <div className="games-footnote">
-          <p>Planned launch prices in USD. One free 24-hour trial per plugin.</p>
-          <Link className="text-link" href="/pricing">
-            Pricing details <span aria-hidden="true">↗</span>
-          </Link>
         </div>
       </section>
     </main>
