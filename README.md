@@ -135,8 +135,12 @@ reallocate its bitmap; other size changes are applied after the scroll settles.
 Success and error states use colors with contrast against these dark surfaces.
 Shared links use a versioned image of this hero. Regenerate it against the local
 preview with `node scripts/render-social-card.mjs`; update its versioned filename
-and shared metadata when replacing it. Keep older published image URLs available
-for cached cards. Open Graph and Twitter metadata use the same image definition.
+and metadata when the artwork changes. The capture script also updates `/og.png`
+for crawlers that retained the original image URL. Messenger services may cache
+both page metadata and image bytes independently; deploying does not invalidate
+their stored previews. Request a refresh through the messenger when needed.
+Keep older published image URLs available for cached cards. Open Graph and Twitter
+metadata use the same image definition.
 On mobile, the hero places the headline above the scene, followed by the short
 description, actions and trial facts. The mobile scene is centered at 125% of its
 layout width, using the render's surrounding space without changing device proportions.

@@ -130,6 +130,8 @@ test("ships valid portal and social images", async () => {
   assert.ok(appIcon.length < 50_000, "Shared browser/header icon should stay small");
   assert.equal(socialCard.readUInt32BE(16), 1200);
   assert.equal(socialCard.readUInt32BE(20), 800);
+  assert.deepEqual(await readFile(new URL("og.png", outputRoot)), socialCard,
+    "Old link previews must receive the current artwork at the legacy image URL");
 });
 
 test("retains the shared social image on every page with its own metadata", async () => {

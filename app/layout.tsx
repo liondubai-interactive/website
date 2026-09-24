@@ -8,7 +8,7 @@ import { socialImages } from "./site-metadata";
 import "./globals.css";
 
 const description =
-  "Turn live interactions into in-game actions with LionDubai Interactive.";
+  "Go live on any streaming platform and bind any type of donation to in-game events.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteOrigin),
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
+    siteName: "LionDubai Interactive",
     url: `${siteOrigin}/`,
     title: "LionDubai Interactive",
     description,
