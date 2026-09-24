@@ -57,8 +57,10 @@ to the footer; support and privacy requests also have direct email links in the 
 Logo artwork in `public/brands/` matches the desktop assets, sourced from
 https://github.com/gilbarbara/logos/tree/main/logos. The Next.js root layout owns the header and footer for
 all pages, including missing routes. `app/integrations.ts` owns the public product descriptions
-and planned prices used by both the home and pricing pages. The preset preview
-is a static illustration, not an interactive product demo. It adds no animation
+and planned prices used by both the home and pricing pages.
+The home plugin cards use a responsive three-column grid with a small image zoom
+and highlight on hover or keyboard focus; reduced motion disables transitions.
+The preset preview is a static illustration, not an interactive product demo. It adds no animation
 library, external font, tracker or image download.
 
 The layout supports narrow screens, visible keyboard focus, a skip link and
