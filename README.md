@@ -63,7 +63,7 @@ add other games only when their integrations are ready.
 The home plugin cards use a responsive three-column grid with a small image zoom
 and highlight on hover or keyboard focus; reduced motion disables transitions.
 The Games catalog uses those same cards. Scrollbar space stays reserved so navigation does not shift between pages.
-Footer logos stay muted until hover or keyboard focus, with compact 40px click targets.
+Footer logos retain their original brand colors, with compact 40px click targets.
 Shared type, color and surface styles keep public and account pages consistent.
 The sticky header uses centered pill navigation, with account and download actions on the right.
 It blends into the page at the top and gains a subtle divider when scrolled. The opening section

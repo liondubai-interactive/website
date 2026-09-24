@@ -395,8 +395,7 @@ h3 {
 }
 .footer-inner .footer-contact { grid-column: 2; grid-row: 1; gap: 4px; }
 .footer-contact a { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; }
-.footer-contact img { width: 18px; height: 18px; object-fit: contain; filter: grayscale(1); opacity: .65; transition: filter 150ms ease, opacity 150ms ease; }
-.footer-contact a:is(:hover, :focus-visible) img { filter: none; opacity: 1; }
+.footer-contact img { width: 18px; height: 18px; object-fit: contain; }
 .footer-legal { grid-column: 3; grid-row: 1; justify-self: end; }
 .footer-legal a { display: flex; align-items: center; min-height: 40px; }
 .policy-shell,
