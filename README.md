@@ -94,7 +94,7 @@ This preserves animated roots and screen materials, reduces repeated geometry an
 keyframes, and quantizes vertices without shipping a decoder. Check all animated
 objects, the loop boundary, the initial camera framing and a rotated view after updates.
 
-The layout supports narrow screens, visible keyboard focus, a skip link and
+The layout supports narrow screens, keyboard controls, a skip link and
 reduced motion. When changing it, check home, download and policy pages
 at mobile and desktop widths. Keep availability and payment information accurate.
 

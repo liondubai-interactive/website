@@ -10,9 +10,9 @@ export default function Home() {
       <section className="hero shell">
         <div className="hero-copy">
           <h1>
-            Your stream.
+            <span>Interactive</span>
             <br />
-            <span>In their hands.</span>
+            Multi-platform
           </h1>
           <p className="hero-lead">
             Turn live interactions into in-game actions.

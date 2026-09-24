@@ -28,7 +28,7 @@ test("exports the product home with visible policy links", async () => {
   const html = await readPage("index.html");
 
   assert.match(html, /<title>LionDubai Interactive<\/title>/i);
-  assert.match(html, /Your stream\./);
+  assert.match(html, /<span>Interactive<\/span><br\s*\/>Multi-platform/);
   assert.match(html, new RegExp(`href="${basePath}/privacy/"`));
   assert.match(html, new RegExp(`href="${basePath}/terms/"`));
   assert.match(html, /aria-label="Contact"/);

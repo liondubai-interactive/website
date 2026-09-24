@@ -29,9 +29,8 @@ a {
   color: inherit;
   text-underline-offset: 4px;
 }
-a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 6px;
+:focus {
+  outline: none;
 }
 h1,
 h2,
@@ -489,7 +488,7 @@ h3 {
     gap: 32px;
   }
   .hero h1 {
-    font-size: clamp(45px, 6.2vw, 65px);
+    font-size: clamp(40px, 5.4vw, 54px);
   }
 }
 @media (max-width: 760px) {
@@ -554,7 +553,7 @@ h3 {
   .header-actions { gap: 10px; font-size: 11px; }
   .header-download { padding-inline: 12px; }
   .hero h1 {
-    font-size: 47px;
+    font-size: clamp(40px, 12vw, 47px);
   }
   .hero-lead {
     font-size: 16px;
@@ -578,10 +577,6 @@ h3 {
 button, input { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: default; opacity: .5; }
-button:focus-visible, summary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
 .button-primary:disabled { background: var(--ink); }
 .header-top-marker { position: absolute; top: 0; width: 1px; height: 1px; pointer-events: none; }
 .site-header { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid transparent; background: var(--paper); transition: border-color 180ms ease; }

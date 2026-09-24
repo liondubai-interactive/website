@@ -38,6 +38,10 @@ export function HeroScene() {
         await import("@google/model-viewer");
         if (disposed) return;
         const scene = document.createElement("model-viewer");
+        // The viewer's keyboard control lives inside its shadow root.
+        const focusStyle = document.createElement("style");
+        focusStyle.textContent = ":focus { outline: none; }";
+        scene.shadowRoot?.append(focusStyle);
         viewer = scene;
         viewer.src = "/models/hero-v4.glb";
         viewer.alt = "Floating laptop, phone and TikTok coins. Drag or use arrow keys to rotate.";
