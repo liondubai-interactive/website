@@ -66,8 +66,9 @@ test("ships valid portal and social images", async () => {
   const appIcon = await readFile(new URL("app-icon.png", outputRoot));
   const socialCard = await readFile(new URL("og.png", outputRoot));
 
-  assert.equal(appIcon.readUInt32BE(16), 1024);
-  assert.equal(appIcon.readUInt32BE(20), 1024);
+  assert.equal(appIcon.readUInt32BE(16), 192);
+  assert.equal(appIcon.readUInt32BE(20), 192);
+  assert.ok(appIcon.length < 50_000, "Shared browser/header icon should stay small");
   assert.equal(socialCard.readUInt32BE(16), 1536);
   assert.equal(socialCard.readUInt32BE(20), 1024);
 });
