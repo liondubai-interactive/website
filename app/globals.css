@@ -417,6 +417,7 @@ h3 {
   gap: 20px;
 }
 .game-item {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-rows: auto 1fr auto;
@@ -427,13 +428,18 @@ h3 {
   border-radius: 14px;
   background: var(--white);
   overflow: hidden;
-  transition: border-color 180ms ease, box-shadow 180ms ease;
 }
-.game-item:hover,
-.game-item:focus-visible {
-  border-color: #e6a6ad;
-  box-shadow: 0 6px 22px #1e202808;
+.game-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
 }
+.game-item:hover::after,
+.game-item:focus-visible::after { opacity: .045; }
 .game-item:hover .game-arrow,
 .game-item:focus-visible .game-arrow {
   color: var(--accent);
