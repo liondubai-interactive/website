@@ -74,13 +74,17 @@ scrolling stays normal. Independent floating animation plays automatically while
 visible, pausing offscreen and in hidden tabs. Reduced motion stays static.
 There is no visible control row. The scene fades in after loading with its camera settled,
 so there is no mismatched poster-to-model jump. A small WebP downloads only if 3D fails.
-The 402 KB GLB contains the complete scene and eight-second animation; it needs no
-textures, external decoder, environment download, API requests or server rendering.
+The GLB stays below 500 KB and contains the complete scene and eight-second animation.
+It needs no textures, external decoder, environment download, API requests or server rendering.
 Cloudflare serves static files only. Versioned `/models/` assets are cached for one
 year; change their filenames and component references whenever their contents change.
 The viewer runtime is a separate browser chunk, loaded only when the home scene is
 visible. Other routes do not initialize a 3D viewer. No external font or tracker is loaded.
 
+The scene has one TikTok coin, a Twitch crystal, gift box and subscription star,
+one KICKs gem and one YouTube chat symbol, each floating independently alongside
+the laptop and phone. The symbols retain the original coin motion, staggered in
+depth and height with clearance from devices and one another throughout the loop.
 Model provenance is in `public/models/LICENSE.txt`. The phone is original geometry
 with a continuous back; the earlier royalty-free reference phone is not distributed.
 Screens retain separate materials for future media. Keep the Blender authoring

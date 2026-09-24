@@ -5,17 +5,41 @@ import test from "node:test";
 const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
 
-test("hero stays small, self-contained and keeps all seven animated objects", async () => {
-  const data = await readFile(new URL("models/hero-v4.glb", outputRoot));
+test("hero stays small, self-contained and keeps all eight animated objects", async () => {
+  const data = await readFile(new URL("models/hero-v15.glb", outputRoot));
   assert.ok(data.length < 500_000, "Keep the complete model below 500 KB");
   const gltf = JSON.parse(data.subarray(20, 20 + data.readUInt32LE(12)).toString());
   assert.equal(gltf.animations.length, 1);
   const names = new Set(gltf.animations[0].channels.map((channel) => gltf.nodes[channel.target.node].name));
-  assert.deepEqual([...names].sort(), ["Coin.01", "Coin.02", "Coin.03", "Coin.04", "Coin.05", "Laptop", "Phone"]);
+  assert.deepEqual([...names].sort(), ["Coin.01", "Kick", "Laptop", "Phone", "Twitch", "TwitchGift", "TwitchStar", "YouTube"]);
+  // Validate the exported loop itself: a mismatched endpoint causes a visible snap.
+  const binaryOffset = 28 + data.readUInt32LE(12);
+  function sample(accessorIndex, index) {
+    const accessor = gltf.accessors[accessorIndex];
+    assert.equal(accessor.componentType, 5126, "Animation samples must be floats");
+    assert.ok(!accessor.sparse, "Animation samples must have explicit storage");
+    const components = { SCALAR: 1, VEC3: 3, VEC4: 4 }[accessor.type];
+    assert.ok(components);
+    const view = gltf.bufferViews[accessor.bufferView];
+    const offset = binaryOffset + (view.byteOffset ?? 0) + (accessor.byteOffset ?? 0)
+      + index * (view.byteStride ?? components * 4);
+    return Array.from({ length: components }, (_, component) => data.readFloatLE(offset + component * 4));
+  }
+  for (const sampler of gltf.animations[0].samplers) {
+    assert.equal(sampler.interpolation ?? "LINEAR", "LINEAR");
+    const count = gltf.accessors[sampler.input].count;
+    assert.equal(gltf.accessors[sampler.output].count, count);
+    assert.equal(sample(sampler.input, 0)[0], 0);
+    assert.equal(sample(sampler.input, count - 1)[0], 8);
+    const first = sample(sampler.output, 0);
+    const last = sample(sampler.output, count - 1);
+    assert.ok(first.every((value, index) => Math.abs(value - last[index]) < 0.00001),
+      "Every animated object must return to its starting pose");
+  }
   assert.equal(gltf.images?.length ?? 0, 0);
   assert.ok(gltf.buffers.every((buffer) => !buffer.uri));
   assert.ok(!(gltf.extensionsRequired ?? []).some((name) => /draco|meshopt/i.test(name)));
-  const poster = await readFile(new URL("models/hero-v4.webp", outputRoot));
+  const poster = await readFile(new URL("models/hero-v15.webp", outputRoot));
   assert.ok(poster.length < 30_000);
   assert.match(await readFile(new URL("_headers", outputRoot), "utf8"), /max-age=31536000, immutable/);
 });

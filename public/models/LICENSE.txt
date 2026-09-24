@@ -5,12 +5,31 @@ https://www.blendkit.com/asset-gallery-detail/b147eaa3-47f4-4882-82b4-e338d8d84b
 https://creativecommons.org/publicdomain/zero/1.0/
 Modified proportions, materials, screen and trackpad for LionDubai.
 
-Phone geometry, coin geometry, composition and floating animation created for
+Phone, coin, gem and token geometry, composition and floating animation created for
 LionDubai Interactive. The phone uses original rounded shapes; it contains no
 geometry from the earlier royalty-free reference model.
 
 TikTok silhouette: third-party TikTok brand mark, sourced from
 https://github.com/gilbarbara/logos/blob/main/logos/tiktok-icon.svg
 Brand rights remain with TikTok. This scene does not imply endorsement.
+
+Kick silhouette: third-party Kick brand mark, sourced from
+https://github.com/simple-icons/simple-icons/blob/develop/icons/kick.svg
+https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md
+Brand rights remain with Kick.
+The original faceted KICKs gem geometry uses Kick's official standalone currency
+artwork as a visual reference:
+https://files.kick.com/kicks/bundles/kicks-xxs-static.webp
+The reference bitmap is not included in the website or the GLB.
+
+Twitch silhouette on the gift box: third-party Twitch brand mark, sourced from
+https://github.com/simple-icons/simple-icons/blob/develop/icons/twitch.svg
+https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md
+Brand rights remain with Twitch.
+
+The purple crystal, gift box, subscription star and red chat token are original
+visual interpretations of Twitch support options and YouTube Super Chat, not
+official 3D assets. Platform names and marks remain with their respective owners.
+No platform endorsement is implied.
 
 The GLB is provided as part of the LionDubai website, not as an asset marketplace.

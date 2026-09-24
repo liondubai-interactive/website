@@ -43,8 +43,8 @@ export function HeroScene() {
         focusStyle.textContent = ":focus { outline: none; }";
         scene.shadowRoot?.append(focusStyle);
         viewer = scene;
-        viewer.src = "/models/hero-v4.glb";
-        viewer.alt = "Floating laptop, phone and TikTok coins. Drag or use arrow keys to rotate.";
+        viewer.src = "/models/hero-v15.glb";
+        viewer.alt = "Floating laptop, phone, TikTok coin, Twitch crystal, gift box and subscription star, KICKs gem and YouTube chat. Drag or use arrow keys to rotate.";
         viewer.cameraControls = true;
         viewer.disableZoom = true;
         viewer.disablePan = true;
@@ -93,7 +93,7 @@ export function HeroScene() {
 
   return (
     <div className="hero-visual" ref={host} data-ready={status === "ready"}>
-      {status === "failed" && <Image className="hero-poster" src="/models/hero-v4.webp" alt="A floating laptop, phone and gold TikTok coins" width={800} height={726} unoptimized />}
+      {status === "failed" && <Image className="hero-poster" src="/models/hero-v15.webp" alt="A floating laptop and phone with TikTok, Twitch, Kick and YouTube symbols" width={800} height={726} unoptimized />}
     </div>
   );
 }
