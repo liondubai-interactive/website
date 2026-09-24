@@ -28,8 +28,7 @@ export default function Home() {
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">MINECRAFT PLUGINS</p>
-            <h2 id="games-heading">Pick your way to play.</h2>
+            <h2 id="games-heading" className="eyebrow">MINECRAFT PLUGINS</h2>
           </div>
           <p className="trial-note">
             <strong>24-hour free trial</strong>
