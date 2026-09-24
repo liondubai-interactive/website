@@ -36,7 +36,7 @@ export default function Home() {
         <div className="game-list">
           {integrations.map(({ id, name, description, price }) => (
             <Link href={`/pricing#${id}`} className="game-item" key={id}>
-              <PluginImage id={id} />
+              <div className="game-artwork"><PluginImage id={id} large /></div>
               <div className="game-copy">
                 <h3>{name}</h3>
                 <p>{description}</p>
