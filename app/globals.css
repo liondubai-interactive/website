@@ -582,7 +582,7 @@ h3 {
     padding-block: 28px 45px;
     gap: 0;
   }
-  .hero-visual { left: 0; grid-row: 2; max-width: 480px; justify-self: center; margin-block: 12px 20px; --preview-size: 100%; --preview-inset: 0; --glow-inset: -12%; }
+  .hero-visual { left: 0; grid-row: 2; max-width: 480px; justify-self: center; margin-block: 12px 20px; --preview-size: 125%; --preview-inset: -12.5%; --glow-inset: -12%; }
   .hero-copy {
     display: contents;
   }

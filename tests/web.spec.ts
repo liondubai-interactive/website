@@ -1,6 +1,55 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { ModelViewerElement } from "@google/model-viewer";
 
+test("local mobile URLs work directly and follow navigation inside the phone frame", async ({ page }, testInfo) => {
+  for (const host of ["localhost", "127.0.0.1"]) {
+    for (const path of ["/mobile", "/mobile/", "/mobile/games/"]) {
+      const response = await page.request.get(`http://${host}:3100${path}`);
+      expect(response.status()).toBe(200);
+      expect(await response.text()).toContain('aria-label="Mobile website preview"');
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("http://localhost:3100/mobile/");
+  const phone = page.frameLocator("iframe");
+  await expect(phone.locator("h1")).toHaveText("InteractiveStreaming");
+  expect(await phone.locator("body").evaluate(() => innerWidth)).toBe(390);
+  await expect(phone.locator("html")).toHaveCSS("scrollbar-width", "none");
+  expect(await phone.locator("html").evaluate(el => el.clientWidth)).toBe(390);
+  for (const size of [{ width: 485, height: 927 }, { width: 320, height: 600 }, { width: 1440, height: 600 }, { width: 1440, height: 960 }]) {
+    await page.setViewportSize(size);
+    await expect.poll(async () => {
+      const box = (await page.locator(".phone").boundingBox())!;
+      return Math.max(Math.abs(box.x + box.width / 2 - size.width / 2), Math.abs(box.y + box.height / 2 - size.height / 2));
+    }).toBeLessThan(1);
+    const box = (await page.locator(".phone").boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(23);
+    expect(box.y).toBeGreaterThanOrEqual(23);
+    expect(box.x + box.width).toBeLessThanOrEqual(size.width - 23);
+    expect(box.y + box.height).toBeLessThanOrEqual(size.height - 23);
+  }
+  const screen = (await page.locator("iframe").boundingBox())!;
+  await page.mouse.move(screen.x + 40, screen.y + screen.height - 80);
+  await page.mouse.wheel(0, 600);
+  await expect.poll(() => phone.locator("html").evaluate(() => scrollY)).toBeGreaterThan(100);
+  await phone.locator("html").evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  await phone.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Games", exact: true }).click();
+  await expect(page).toHaveURL("http://localhost:3100/mobile/games/");
+  await expect(phone.getByRole("searchbox", { name: "Search games" })).toBeVisible();
+  await page.reload();
+  await expect(phone.getByRole("searchbox", { name: "Search games" })).toBeVisible();
+  await expect(phone.locator("html")).toHaveCSS("scrollbar-width", "none");
+  await phone.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Home", exact: true }).click();
+  await expect(page).toHaveURL("http://localhost:3100/mobile/");
+  await page.goBack();
+  await expect(page).toHaveURL("http://localhost:3100/mobile/games/");
+  await expect(phone.getByRole("searchbox", { name: "Search games" })).toBeVisible();
+  await page.goto("http://localhost:3100/mobile/privacy/?preview=1#main-content");
+  await expect(phone.getByRole("heading", { name: "Privacy Policy", exact: true })).toBeVisible();
+  await expect(page).toHaveURL("http://localhost:3100/mobile/privacy/?preview=1#main-content");
+  await page.screenshot({ path: testInfo.outputPath("local-phone-preview.png") });
+});
+
 test("page particles drift independently and pause for reduced motion or lost focus", async ({ page }) => {
   await page.goto("/games/");
   const canvas = page.locator(".background-particles");
@@ -145,7 +194,7 @@ test("mobile rendering limits pixel work without shrinking the scene", async ({ 
         return { visible: view.getBoundingClientRect().width, host: view.parentElement!.getBoundingClientRect().width,
           density: view.clientWidth * devicePixelRatio / view.getBoundingClientRect().width };
       });
-      expect(dimensions.visible).toBeCloseTo(dimensions.host, 0);
+      expect(dimensions.visible).toBeCloseTo(dimensions.host * 1.25, 0);
       expect(dimensions.density).toBeLessThanOrEqual(economy ? 1.51 : 2.01);
       const particleDensity = await page.locator(".background-particles").evaluate((el) => (el as HTMLCanvasElement).width / el.getBoundingClientRect().width);
       expect(particleDensity).toBeCloseTo(economy ? 1 : 1.5);

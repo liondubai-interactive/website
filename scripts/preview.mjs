@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdirSync, openSync, closeSync, existsSync, readFileSync } from "node:fs";
+import { mkdirSync, openSync, closeSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -69,17 +69,7 @@ async function main() {
   });
   const page = context.pages()[0] ?? await context.newPage();
   try {
-    if (mobile) {
-      // Launcher-only wrapper: never add preview chrome to the public website.
-      const previewUrl = `${url}__mobile-preview`;
-      await context.route(previewUrl, (route) => route.fulfill({
-        contentType: "text/html",
-        body: readFileSync(join(root, "scripts", "mobile-preview.html"), "utf8"),
-      }));
-      await page.goto(previewUrl);
-    } else {
-      await page.goto(url);
-    }
+    await page.goto(mobile ? `${url}mobile/` : url);
   } catch (error) {
     await context.close();
     throw error;

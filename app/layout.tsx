@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     canonical: `${siteOrigin}/`,
   },
   icons: {
-    icon: "/app-icon.png",
-    shortcut: "/app-icon.png",
-    apple: "/app-icon.png",
+    icon: "/app-icon-v3.png",
+    shortcut: "/app-icon-v3.png",
+    apple: "/app-icon-v3.png",
   },
   openGraph: {
     type: "website",

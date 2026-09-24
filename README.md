@@ -14,8 +14,12 @@ folder. Both start or reuse the local development server on port 3100, with live
 reload. The mobile launcher opens a separate Chrome (or Edge) window with a
 centered, framed 390 x 844 phone screen with touch input; the frame scales to fit
 the window while the website keeps its mobile layout. Desktop opens a normal
-resizable preview. The mobile wrapper exists only inside the launcher's browser;
-it is not published with the site. Neither changes your everyday browser profile.
+resizable preview. The phone frame also opens directly at `/mobile/` on the local
+server, using either localhost or 127.0.0.1; page navigation uses `/mobile/games/`,
+`/mobile/privacy/`, etc. It displays the real website in a 390px iframe, sharing its
+assets and live reload. `next.config.ts` discovers `route.dev.ts` only during development;
+no mobile preview routes or frame are included in the production export.
+Neither launcher changes your everyday browser profile.
 Install dependencies with `npm ci` first. Closing a preview leaves the shared
 server running; startup logs stay in the ignored `.artifacts/preview/` folder.
 
@@ -61,6 +65,10 @@ Provider verification files in `public/` are intentionally public proof files.
 
 ## Design
 
+The header and browser icons use `public/app-icon-v3.png`, a 192px optimized
+copy of the approved white lion/Burj symbol on red (`1-symbol-padded.png`). The symbol
+retains the source artwork and colors, with roughly 17–20% surrounding space to
+match the legacy icon's framing. The existing header wordmark stays separate.
 Keep the header focused on Home, Games and account access; contact logos sit beside policy
 links in a compact footer row, centered on mobile with copyright below. The retired `/contact` URL redirects
 to the footer; support and privacy requests also have direct email links in the policies.
@@ -112,7 +120,9 @@ preview with `node scripts/render-social-card.mjs`; update its versioned filenam
 and shared metadata when replacing it. Keep older published image URLs available
 for cached cards. Open Graph and Twitter metadata use the same image definition.
 On mobile, the hero places the headline above the scene, followed by the short
-description, actions and trial facts. The featured-plugin section uses a compact
+description, actions and trial facts. The mobile scene is centered at 125% of its
+layout width, using the render's surrounding space without changing device proportions.
+The featured-plugin section uses a compact
 heading row, with the trial note stacked beneath it on narrow screens.
 The home hero uses a locally bundled, lazy-loaded `@google/model-viewer` for the
 interactive scene. Drag or arrow keys rotate it; zoom/pan are disabled so page

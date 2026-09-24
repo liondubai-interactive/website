@@ -7,20 +7,21 @@
   <style>
     * { box-sizing: border-box; }
     html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
-    body { display: grid; place-items: center; background: #e8e9ed; }
-    .stage { position: relative; width: calc(410px * var(--scale, 1)); height: calc(864px * var(--scale, 1)); }
+    body { background: #e8e9ed; }
+    .stage { position: fixed; inset: 0; overflow: hidden; }
     .phone {
-      position: absolute; width: 410px; height: 864px;
+      position: absolute; top: 50%; left: 50%; width: 410px; height: 864px;
       padding: 10px; border-radius: 48px; background: #202126;
       box-shadow: 0 0 0 1px #53555d, 0 24px 64px #20212630;
-      transform: scale(var(--scale, 1)); transform-origin: top left;
+      transform: translate(-50%, -50%) scale(var(--scale, 1));
     }
-    iframe { display: block; width: 390px; height: 844px; border: 0; border-radius: 38px; background: #f7f7f9; }
+    .screen { width: 390px; height: 844px; border-radius: 38px; overflow: hidden; isolation: isolate; }
+    iframe { display: block; width: 390px; height: 844px; border: 0; background: #41101b; }
   </style>
 </head>
 <body>
   <main class="stage" aria-label="Mobile website preview">
-    <div class="phone"><iframe src="/" title="LionDubai website — 390 by 844 phone screen"></iframe></div>
+    <div class="phone"><div class="screen"><iframe title="LionDubai website — 390 by 844 phone screen"></iframe></div></div>
   </main>
   <script>
     function fitPhone() {
@@ -29,6 +30,42 @@
     }
     fitPhone();
     addEventListener("resize", fitPhone);
+
+    const frame = document.querySelector("iframe");
+    function contentUrl() {
+      return (location.pathname.replace(/^\/mobile(?=\/|$)/, "") || "/") + location.search + location.hash;
+    }
+    frame.src = contentUrl();
+    frame.addEventListener("load", () => {
+      const child = frame.contentWindow;
+      try {
+        // External sign-in pages can leave this origin; never inspect those documents.
+        if (child.location.origin !== location.origin) return;
+        // Desktop scrollbars are not part of the phone screen. Keep native scrolling.
+        const style = child.document.createElement("style");
+        style.textContent = "html { scrollbar-width: none; scrollbar-gutter: auto; } html::-webkit-scrollbar { display: none; }";
+        child.document.head.append(style);
+        function syncAddress() {
+          const address = "/mobile" + child.location.pathname + child.location.search + child.location.hash;
+          if (address !== location.pathname + location.search + location.hash) history.replaceState(null, "", address);
+        }
+        // Keep normal app navigation inside the frame, including Next.js client routing.
+        for (const method of ["pushState", "replaceState"]) {
+          const original = child.history[method].bind(child.history);
+          child.history[method] = (...args) => { original(...args); syncAddress(); };
+        }
+        child.addEventListener("popstate", syncAddress);
+        child.addEventListener("hashchange", syncAddress);
+        syncAddress();
+      } catch { /* A cross-origin page owns its own navigation. */ }
+    });
+    addEventListener("popstate", () => {
+      try {
+        const child = frame.contentWindow.location;
+        if (child.pathname + child.search + child.hash === contentUrl()) return;
+      } catch { /* Restore the local frame after external navigation. */ }
+      frame.src = contentUrl();
+    });
   </script>
 </body>
 </html>

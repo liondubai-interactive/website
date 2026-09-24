@@ -27,7 +27,7 @@ export function SiteHeader() {
       <header className="site-header" data-scrolled={scrolled || undefined}>
         <div className="header-inner shell">
           <Link className="brand" href="/" aria-label="LionDubai Interactive home">
-            <img src="/app-icon.png" alt="" width="32" height="32" />
+            <img src="/app-icon-v3.png" alt="" width="32" height="32" />
             <span className="brand-wordmark">
               <span><span className="brand-lion">LION</span>DUBAI</span>
               <span className="brand-detail">INTERACTIVE</span>

@@ -1,9 +1,15 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 const outputRoot = new URL("../out/", import.meta.url);
 const basePath = "";
+
+test("local phone preview is excluded from the production export", async () => {
+  const files = await readdir(outputRoot, { recursive: true });
+  assert.ok(!files.some(file => /(^|[\\/])mobile(?:[\\/]|\.html|$)/.test(file)));
+  assert.ok(!files.some(file => file.includes("mobile-preview")));
+});
 
 test("hero stays small, self-contained and keeps all eight animated objects", async () => {
   const data = await readFile(new URL("models/hero-v30.glb", outputRoot));
@@ -97,14 +103,14 @@ test("uses the custom domain for links, metadata, and images", async () => {
   const html = await readPage("index.html");
   const origin = "https://liondubai.net";
 
-  assert.match(html, new RegExp(`${origin}${basePath}/og-v3\\.png`));
-  assert.match(html, new RegExp(`src="${basePath}/app-icon\\.png"`));
+  assert.match(html, new RegExp(`${origin}${basePath}/og-v4\\.png`));
+  assert.match(html, new RegExp(`src="${basePath}/app-icon-v3\\.png"`));
   assert.doesNotMatch(html, /localhost/);
 });
 
 test("ships valid portal and social images", async () => {
-  const appIcon = await readFile(new URL("app-icon.png", outputRoot));
-  const socialCard = await readFile(new URL("og-v3.png", outputRoot));
+  const appIcon = await readFile(new URL("app-icon-v3.png", outputRoot));
+  const socialCard = await readFile(new URL("og-v4.png", outputRoot));
 
   assert.equal(appIcon.readUInt32BE(16), 192);
   assert.equal(appIcon.readUInt32BE(20), 192);
@@ -118,7 +124,7 @@ test("retains the shared social image on every page with its own metadata", asyn
     const html = await readPage(`${route}index.html`);
     assert.match(
       html,
-      /property="og:image" content="https:\/\/liondubai\.net\/og-v3\.png"/,
+      /property="og:image" content="https:\/\/liondubai\.net\/og-v4\.png"/,
       route || "home",
     );
     assert.match(
