@@ -9,6 +9,16 @@ Node.js 24 and npm 11. Run `npm ci`, then `npm run dev`.
 Open http://localhost:3000/ (no repository subpath).
 Run `npm run lint` and `npm test` to check the complete static export.
 
+On Windows, double-click `Preview Desktop.cmd` or `Preview Mobile.cmd` in this
+folder. Both start or reuse the local development server on port 3100, with live
+reload. The mobile launcher opens a separate Chrome (or Edge) window with a
+centered, framed 390 x 844 phone screen with touch input; the frame scales to fit
+the window while the website keeps its mobile layout. Desktop opens a normal
+resizable preview. The mobile wrapper exists only inside the launcher's browser;
+it is not published with the site. Neither changes your everyday browser profile.
+Install dependencies with `npm ci` first. Closing a preview leaves the shared
+server running; startup logs stay in the ignored `.artifacts/preview/` folder.
+
 ## Publish
 
 Cloudflare Pages builds and hosts the static export. The `liondubai-website`
@@ -68,6 +78,9 @@ Shared type, color and surface styles keep public and account pages consistent.
 The sticky header uses centered pill navigation, with account and download actions on the right.
 It blends into the page at the top and gains a subtle divider when scrolled. The opening section
 fills the available viewport; the plugin cards follow below it.
+On mobile, the hero places the headline above the scene, followed by the short
+description, actions and trial facts. The featured-plugin section uses a compact
+heading row, with the trial note stacked beneath it on narrow screens.
 The home hero uses a locally bundled, lazy-loaded `@google/model-viewer` for the
 interactive scene. Drag or arrow keys rotate it; zoom/pan are disabled so page
 scrolling stays normal. Independent floating animation plays automatically while

@@ -14,22 +14,22 @@ export default function Home() {
             <br />
             Multi-platform
           </h1>
-          <p className="hero-lead">
-            Turn live interactions into in-game actions.
-          </p>
-          <DownloadButton browseGames />
-          <dl className="hero-facts">
-            <div><dt>Plugins</dt><dd>{integrations.length}</dd></div>
-            <div><dt>Free trial per plugin</dt><dd>24h</dd></div>
-          </dl>
+          <div className="hero-details">
+            <p className="hero-lead">
+              Turn live interactions into in-game actions.
+            </p>
+            <DownloadButton browseGames />
+            <dl className="hero-facts">
+              <div><dt>Plugins</dt><dd>{integrations.length}</dd></div>
+              <div><dt>Free trial per plugin</dt><dd>24h</dd></div>
+            </dl>
+          </div>
         </div>
         <HeroScene />
       </section>
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
-          <div>
-            <h2 id="games-heading" className="eyebrow">MINECRAFT PLUGINS</h2>
-          </div>
+          <h2 id="games-heading" className="eyebrow">FEATURED PLUGINS</h2>
           <p className="trial-note">
             <strong>24-hour free trial</strong>
             <span>No card required · One trial per plugin</span>
