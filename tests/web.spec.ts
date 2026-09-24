@@ -89,6 +89,8 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
     await page.goto("/");
     await expect(page.getByRole("button", { name: "Download for Windows" })).toBeDisabled();
     await expect(page.getByText(/An independent app\./)).toBeVisible();
+    const header = page.locator(".site-header");
+    await expect(header).not.toHaveAttribute("data-scrolled", "true");
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
@@ -98,6 +100,11 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
     await expect(page.getByRole("heading", { name: "Minecraft", exact: true })).toBeVisible();
     await page.getByRole("link", { name: "Explore Minecraft plugins" }).click();
     await expect(page).toHaveURL(/\/#games$/);
+    await expect(header).toHaveAttribute("data-scrolled", "true");
+    expect((await header.boundingBox())!.y).toBe(0);
+    await page.screenshot({ path: testInfo.outputPath(`header-scrolled-${width}.png`) });
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect(header).not.toHaveAttribute("data-scrolled", "true");
   }
   expect(calls.filter((call) => call.method === "POST")).toHaveLength(0);
 });

@@ -14,7 +14,7 @@
 }
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 40px;
+  scroll-padding-top: 104px;
 }
 body {
   margin: 0;
@@ -182,7 +182,7 @@ h3 {
   top: 10px;
   left: 10px;
   transform: translateY(-180%);
-  z-index: 10;
+  z-index: 30;
   background: var(--ink);
   color: white;
   padding: 12px 18px;
@@ -366,9 +366,6 @@ h3 {
   max-width: 440px;
   line-height: 1.6;
   margin: 12px 0 0;
-}
-.site-footer {
-  border-top: 1px solid var(--line);
 }
 .footer-inner {
   display: grid;
@@ -568,7 +565,9 @@ button:focus-visible, summary:focus-visible {
   outline-offset: 4px;
 }
 .button-primary:disabled { background: var(--ink); }
-.site-header { border-bottom: 1px solid var(--line); background: var(--white); }
+.header-top-marker { position: absolute; top: 0; width: 1px; height: 1px; pointer-events: none; }
+.site-header { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid transparent; background: var(--paper); transition: border-color 180ms ease; }
+.site-header[data-scrolled] { border-bottom-color: var(--line); }
 .download-shell { padding-block: 70px 90px; }
 .download-details { max-width: 600px; margin-top: 55px; padding-top: 30px; border-top: 1px solid var(--line); }
 .download-details h2 { font-size: 25px; }
