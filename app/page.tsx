@@ -28,7 +28,7 @@ export default function Home() {
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">MINECRAFT PLUGINS · PLANNED LAUNCH PRICES</p>
+            <p className="eyebrow">MINECRAFT PLUGINS</p>
             <h2 id="games-heading">Pick your way to play.</h2>
           </div>
           <p className="trial-note">
