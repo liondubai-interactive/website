@@ -97,7 +97,8 @@ test("exports the product home with visible policy links", async () => {
   assert.match(html, new RegExp(`href="${basePath}/privacy/"`));
   assert.match(html, new RegExp(`href="${basePath}/terms/"`));
   assert.match(html, /aria-label="Contact"/);
-  assert.match(html, /24-hour free trial/);
+  assert.match(html, /No plugins available yet\./);
+  assert.doesNotMatch(html, /24-hour free trial|Minecraft|Mojang|Clash Royale|Battle Simulator/);
   assert.match(html, /Go live on any streaming platform and bind any type of donation to in-game events\./);
   assert.doesNotMatch(html, /Turn live interactions into in-game actions\./);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
@@ -122,7 +123,7 @@ test("exports every compliance route", async () => {
     assert.match(html, expected);
     assert.match(html, /LionDubai Interactive/);
     if (route === "privacy") assert.match(html, /mailto:liondubai\.interactive@gmail\.com/);
-    if (route === "privacy" || route === "terms") {
+    if (route === "privacy") {
       assert.match(html, /TikTok does not own or operate (?:it|this app)/);
     }
     assert.match(
@@ -216,4 +217,14 @@ test("private pages export no account records and are not indexed", async () => 
     assert.match(html, /name="robots" content="noindex, nofollow"/);
     assert.doesNotMatch(html, /session-csrf|Test Streamer|client_secret|DATABASE_URL/);
   }
+});
+
+
+test("games export is empty and has no retired artwork", async () => {
+  const html = await readPage("games/index.html");
+  assert.match(html, /Search games/);
+  assert.match(html, /No games available yet/);
+  assert.doesNotMatch(html, /Minecraft|minecraft/);
+  const files = await readdir(outputRoot, { recursive: true });
+  assert.ok(!files.some(file => /(?:minecraft|survival|battle-simulator|clash-royale).*\.webp$/.test(file)));
 });

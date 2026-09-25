@@ -140,9 +140,10 @@ export function Account() {
             {billing.mode === "sandbox" && (
               <p className="notice">No payment will be collected.</p>
             )}
+            {integrations.length === 0 && <p role="status">No plugins available yet.</p>}
             <div className="account-plugins">
               {integrations.map((plugin) => {
-                const id = `minecraft-${plugin.id}`;
+                const id = plugin.id;
                 const access = billing.plugins.find((entry) => entry.pluginId === id);
                 const remaining = access?.expiresAt ? Math.max(0, Date.parse(access.expiresAt) - now) : 0;
                 const active = Boolean(access && access.access !== "locked" && remaining > 0);
@@ -152,7 +153,7 @@ export function Account() {
                 return (
                   <article className="account-plugin" key={id}>
                     <div className="plugin-summary">
-                      <PluginImage id={plugin.id} />
+                      <PluginImage src={plugin.image} />
                       <div className="account-plugin-info">
                         <h3>
                           <span

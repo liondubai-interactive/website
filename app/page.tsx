@@ -22,7 +22,7 @@ export default function Home() {
               <DownloadButton />
               <dl className="hero-facts">
                 <div><dt>Plugins</dt><dd>{integrations.length}</dd></div>
-                <div><dt>Free trial per plugin</dt><dd>24h</dd></div>
+                {integrations.length > 0 && <div><dt>Free trial per plugin</dt><dd>24h</dd></div>}
               </dl>
             </div>
           </div>
@@ -32,15 +32,16 @@ export default function Home() {
       <section id="games" className="games shell" aria-labelledby="games-heading">
         <div className="section-heading">
           <h2 id="games-heading" className="eyebrow">FEATURED PLUGINS</h2>
-          <p className="trial-note">
+          {integrations.length > 0 && <p className="trial-note">
             <strong>24-hour free trial</strong>
             <span>No card required · One trial per plugin</span>
-          </p>
+          </p>}
         </div>
+        {integrations.length === 0 && <p className="catalog-empty">No plugins available yet.</p>}
         <div className="game-list">
-          {integrations.map(({ id, name, description, price }) => (
+          {integrations.map(({ id, name, description, price, cardImage }) => (
             <Link href="/account/?view=customer" className="game-item" key={id}>
-              <div className="game-artwork"><PluginImage id={id} large /></div>
+              <div className="game-artwork"><PluginImage src={cardImage} large /></div>
               <div className="game-copy">
                 <h3>{name}</h3>
                 <p>{description}</p>

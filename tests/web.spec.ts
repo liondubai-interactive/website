@@ -396,19 +396,14 @@ test("language catalogue stays compact and changes only its selected label", asy
   await expect(menu).not.toBeVisible();
 });
 
-test("game search filters compact cards and recovers from no matches", async ({ page }) => {
+test("empty game search is honest and remains usable", async ({ page }) => {
   await page.goto("/games/");
   const search = page.getByRole("searchbox", { name: "Search games" });
-  const card = page.getByRole("link", { name: "Explore Minecraft plugins" });
-  await search.fill("  MINECRAFT  ");
-  await expect(card).toBeVisible();
-  await expect(card.locator("img")).toHaveJSProperty("naturalWidth", 780);
+  await expect(page.getByRole("status")).toHaveText("No games available yet.");
   await search.fill("unknown game");
-  await expect(card).toHaveCount(0);
-  await expect(page.getByRole("status")).toHaveText("No games found.");
+  await expect(page.locator(".game-item")).toHaveCount(0);
   await search.fill("");
-  await expect(card).toBeVisible();
-  await expect(card).toHaveAttribute("href", "/#games");
+  await expect(page.getByRole("status")).toHaveText("No games available yet.");
 });
 
 const user = {
@@ -422,7 +417,7 @@ const state = () => ({
   mode: "sandbox",
   serverTime: "2026-09-23T12:00:00Z",
   plugins: ["survival", "battle-simulator", "clash-royale"].map((id) => ({
-    pluginId: `minecraft-${id}`,
+    pluginId: `retired-${id}`,
     access: "locked",
     expiresAt: null as string | null,
     trialUsed: false,
@@ -512,12 +507,12 @@ test("download-first home remains honest and fits desktop/mobile", async ({ page
     await expect(page).toHaveURL(/\/games\/$/);
     await expect(page.getByRole("link", { name: "Games", exact: true })).toHaveAttribute("aria-current", "page");
     expect((await page.getByRole("navigation", { name: "Primary navigation" }).boundingBox())!.x).toBe(homeNav!.x);
-    await expect(page.getByRole("heading", { name: "Minecraft", exact: true })).toBeVisible();
+    await expect(page.getByRole("status")).toHaveText("No games available yet.");
     await page.screenshot({ path: testInfo.outputPath(`games-${width}.png`), fullPage: true });
-    await page.getByRole("link", { name: "Explore Minecraft plugins" }).click();
+    await page.goto("/#games");
     await expect(page).toHaveURL(/\/#games$/);
     await expect(page.locator("body")).toHaveCSS("background-color", "rgb(65, 16, 27)");
-    await expect(page.locator(".game-item").first()).toHaveCSS("background-color", "rgb(82, 27, 41)");
+    await expect(page.locator(".game-item")).toHaveCount(0);
     await expect(header).toHaveAttribute("data-scrolled", "true");
     expect((await header.boundingBox())!.y).toBe(0);
     await page.screenshot({ path: testInfo.outputPath(`header-scrolled-${width}.png`) });
@@ -574,71 +569,24 @@ test("disabled config exposes a useful state", async ({ page }) => {
   await expect(page.getByRole("status")).toContainText("Website sign-in is unavailable");
 });
 
-test("callback failure is concise and unsafe payment redirects are rejected", async ({ page }) => {
+test("callback failure is concise", async ({ page }) => {
   await mock(page);
   await page.goto("/login/?error=provider_failure");
-  await expect(page.getByRole("main").getByRole("alert")).toHaveText(
-    "Sign-in was not completed. Please try again.",
-  );
-  await page.unroute("https://api.liondubai.net/api/liondubai/web/**");
-  const calls = await mock(page, { signedIn: true });
-  await page.route("**/web/billing/checkout", (route) =>
-    route.request().method() === "OPTIONS"
-      ? route.fallback()
-      : route.fulfill({
-          headers: {
-            "Access-Control-Allow-Origin": "http://127.0.0.1:3100",
-            "Access-Control-Allow-Credentials": "true",
-            "Access-Control-Allow-Headers": "content-type,x-csrf-token",
-          },
-          json: { url: "https://untrusted.example/checkout" },
-        }),
-  );
-  await page.goto("/account/");
-  await page.getByRole("button", { name: "Subscribe", exact: true }).first().click();
-  await expect(page.getByRole("main").getByRole("alert")).toContainText("Please try again");
-  await expect(page).toHaveURL(/127\.0\.0\.1:3100\/account/);
-  expect(calls.filter((call) => call.path === "/billing/trial")).toHaveLength(0);
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText("Sign-in was not completed. Please try again.");
 });
 
-test("trial requires confirmation, uses CSRF, updates once; logout clears account", async ({
+test("empty account rejects retired offerings and logout uses CSRF", async ({
   page,
 }, testInfo) => {
   const calls = await mock(page, { signedIn: true });
   await page.goto("/account/");
   await expect(page.getByRole("heading", { name: "Your plugins", level: 1 })).toBeVisible();
   await expect(page.getByRole("main")).not.toContainText("Test Streamer");
-  const survival = page
-    .getByRole("article")
-    .filter({ has: page.getByRole("heading", { name: /Survival$/ }) });
-  await survival.getByRole("button", { name: "24-hour free trial" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByRole("dialog")).toHaveCSS("background-color", "rgb(82, 27, 41)");
-  await expect(page.getByRole("button", { name: "Cancel", exact: true })).toBeFocused();
-  await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).not.toBeVisible();
-  expect(calls.filter((call) => call.path === "/billing/trial")).toHaveLength(0);
-  await survival.getByRole("button", { name: "24-hour free trial" }).click();
-  await page.getByRole("button", { name: "Start free trial", exact: true }).click();
-  await expect(survival.getByRole("button", { name: "Free trial: 24 hours 0 minutes left" })).toBeDisabled();
-  await expect(survival).not.toContainText("Trial until");
-  await expect(survival.locator("img")).toHaveJSProperty("naturalWidth", 128);
-  expect(calls.filter((call) => call.path === "/billing/trial")).toEqual([
-    {
-      path: "/billing/trial",
-      method: "POST",
-      body: { pluginId: "minecraft-survival" },
-      csrf: "session-csrf",
-    },
-  ]);
-  await page.screenshot({ path: testInfo.outputPath("account.png"), fullPage: true });
-  await page.setViewportSize({ width: 320, height: 850 });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await expect(page.getByText("No plugins available yet.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Subscribe", exact: true })).toHaveCount(0);
+  expect(calls.some(call => call.path === "/billing/trial" || call.path === "/billing/checkout")).toBe(false);
   await page.setViewportSize({ width: 390, height: 850 });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
-    true,
-  );
-  await page.screenshot({ path: testInfo.outputPath("account-mobile.png"), fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   const menu = page.getByRole("button", { name: "Account menu" });
   await expect(page.getByRole("button", { name: "Sign out" })).not.toBeVisible();
   await menu.click();
@@ -671,30 +619,7 @@ test("admin uses the existing sign-in for its dashboard while customer view rema
   await expect(page.getByRole("main").getByRole("button", { name: "Admin", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Account menu" }).click();
   await expect(page.getByRole("button", { name: "Admin", exact: true })).toBeVisible();
-  await expect(page.getByRole("article").first().getByRole("img", { name: "Active", exact: true })).toBeVisible();
+  await expect(page.getByText("No plugins available yet.")).toBeVisible();
   await page.getByRole("button", { name: "Admin", exact: true }).click();
   await expect(page).toHaveURL("https://api.liondubai.net/admin/");
-});
-
-test("trial countdown uses server time, updates locally and expires without another request", async ({ page }) => {
-  await page.clock.install({ time: new Date("2030-01-01T00:00:00Z") });
-  const calls = await mock(page, { signedIn: true });
-  await page.goto("/account/");
-  const plugin = page.getByRole("article").first();
-  const trialButton = plugin.getByRole("button", { name: "24-hour free trial" });
-  const width = (await trialButton.boundingBox())!.width;
-  await trialButton.click();
-  await page.getByRole("button", { name: "Start free trial", exact: true }).click();
-  const countdown = plugin.getByRole("button", { name: /^Free trial:/ });
-  await expect(countdown).toHaveText("24:00 left");
-  expect((await countdown.boundingBox())!.width).toBe(width);
-  await page.clock.fastForward(60_000);
-  await expect(countdown).toHaveText("23:59 left");
-  await page.clock.setSystemTime(new Date("2020-01-01T00:00:00Z"));
-  await page.clock.fastForward(60_000);
-  await expect(countdown).toHaveText("23:58 left");
-  await page.clock.fastForward(24 * 60 * 60_000);
-  await expect(plugin.getByRole("button", { name: "Trial used" })).toBeDisabled();
-  await expect(plugin.getByRole("img", { name: "Locked", exact: true })).toBeVisible();
-  expect(calls.filter((call) => call.path === "/billing")).toHaveLength(1);
 });

@@ -83,12 +83,10 @@ export default function TermsPage() {
       <section>
         <h2>Third-party products</h2>
         <p>
-          You need your own lawful access to Minecraft Java Edition and any
-          required game content. TikTok, TikTok Login Kit, Minecraft and related
-          services are governed by their owners&apos; separate terms. LionDubai
-          Interactive develops this app independently; TikTok does not own or
-          operate it. The app is not sponsored by, endorsed by, or affiliated
-          with Mojang or Microsoft.
+          You need your own lawful access to any games and required game content.
+          Streaming platforms and related services are governed by their
+          owners&apos; separate terms. LionDubai Interactive develops this app
+          independently and is not owned or operated by those platforms.
         </p>
       </section>
 

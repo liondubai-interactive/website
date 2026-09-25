@@ -3,15 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { integrations } from "../integrations";
-
-const games = [{
-  name: "Minecraft",
-  edition: "Java Edition",
-  href: "/#games",
-  image: "/games/minecraft-cover.webp",
-  plugins: integrations.length,
-}];
+import { games, integrations } from "../integrations";
 
 export function GameCatalog() {
   const [query, setQuery] = useState("");
@@ -38,13 +30,13 @@ export function GameCatalog() {
               <h2>{game.name}</h2>
               <p>{game.edition}</p>
             </div>
-            <span className="game-meta">{game.plugins}<span> plugins</span></span>
+            <span className="game-meta">{integrations.filter(item => item.gameId === game.id).length}<span> plugins</span></span>
             <span className="game-arrow" aria-hidden="true">↗</span>
           </Link>
         ))}
       </div>
       <p role="status" className={matches.length ? "sr-only" : "catalog-empty"}>
-        {matches.length ? `${matches.length} ${matches.length === 1 ? "game" : "games"} found` : "No games found."}
+        {matches.length ? `${matches.length} ${matches.length === 1 ? "game" : "games"} found` : games.length ? "No games found." : "No games available yet."}
       </p>
     </>
   );

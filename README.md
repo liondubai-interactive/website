@@ -87,16 +87,13 @@ Logo artwork in `public/brands/` matches the desktop assets, sourced from
 https://github.com/gilbarbara/logos/tree/main/logos. The Next.js root layout owns the header and footer for
 all pages, including missing routes. `app/integrations.ts` owns the public product descriptions
 and planned prices displayed on the home plugin cards. `/pricing` redirects to this section.
-`/games/` lists Minecraft as the current supported game and links to those plugins;
-add other games only when their integrations are ready.
-The home plugin cards use a responsive three-column grid with a small image zoom
-and highlight on hover or keyboard focus; reduced motion disables transitions.
-The Games catalog starts with a search field that filters game names and editions,
-followed by compact landscape cards in an auto-filling grid, with a
-260px maximum card width. Minecraft artwork is sourced from the official
-[key art update](https://www.minecraft.net/en-us/article/key-art-update)
-(`NewKeyArt_Header.jpg`), optimized locally as `public/games/minecraft-cover.webp`.
-Artwork remains copyright Mojang/Microsoft. Scrollbar space stays reserved so navigation does not shift between pages.
+`/games/` displays the searchable game catalogue, currently empty. The homepage
+and account page also show zero plugins. Reviewed game and integration metadata
+belongs in `app/integrations.ts`; IDs must exactly match the backend catalogue.
+Artwork paths are explicit per integration. Registering public metadata does not
+grant permission to execute gameplay events.
+
+Scrollbar space stays reserved so navigation does not shift between pages.
 Footer logos retain their original brand colors, with compact 40px click targets.
 Shared type, color and surface styles keep public and account pages consistent.
 The sticky header uses centered pill navigation, with account access on the right.

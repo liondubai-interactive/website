@@ -16,8 +16,7 @@ export default function PrivacyPage() {
         <h2>Who operates the app</h2>
         <p>
           LionDubai Interactive operates this application. TikTok does not own
-          or operate it. The app is not approved by or associated with Mojang or
-          Microsoft. For questions about your information, email{" "}
+          or operate it. For questions about your information, email{" "}
           <a href="mailto:liondubai.interactive@gmail.com">liondubai.interactive@gmail.com</a>.
         </p>
       </section>
